@@ -49,10 +49,14 @@
                     </select>
                 </label>
 
-                <label class="inline-flex h-10 items-center gap-2 rounded-md border border-slate-300 px-3 text-sm text-slate-700">
-                    <input type="checkbox" wire:model.live="includeTrashed" class="rounded border-slate-300 text-slate-900 focus:ring-slate-400">
-                    Include Trashed
-                </label>
+                @if ($canManageTrash)
+                    <label class="inline-flex h-10 items-center gap-2 rounded-md border border-slate-300 px-3 text-sm text-slate-700">
+                        <input type="checkbox" wire:model.live="includeTrashed" class="rounded border-slate-300 text-slate-900 focus:ring-slate-400">
+                        Include Trashed
+                    </label>
+                @else
+                    <div class="hidden lg:block"></div>
+                @endif
 
                 <button type="button" wire:click="resetFilters" class="admin-btn-secondary h-10">
                     Reset Filters
@@ -118,27 +122,29 @@
                                             <a href="{{ $unit->signedQrUrl() }}" target="_blank" rel="noopener noreferrer" class="block rounded-md px-3 py-2 text-left text-slate-700 hover:bg-slate-100">Print QR</a>
                                         @endif
 
-                                        @if ($unit->trashed())
-                                            <button
-                                                type="button"
-                                                wire:click="restore({{ $unit->id }})"
-                                                wire:loading.attr="disabled"
-                                                wire:target="restore"
-                                                class="block w-full rounded-md px-3 py-2 text-left text-emerald-700 hover:bg-emerald-50"
-                                            >
-                                                Restore
-                                            </button>
-                                        @else
-                                            <button
-                                                type="button"
-                                                wire:click="delete({{ $unit->id }})"
-                                                wire:confirm="Soft delete this unit?"
-                                                wire:loading.attr="disabled"
-                                                wire:target="delete"
-                                                class="block w-full rounded-md px-3 py-2 text-left text-red-700 hover:bg-red-50"
-                                            >
-                                                Soft Delete
-                                            </button>
+                                        @if ($canManageTrash)
+                                            @if ($unit->trashed())
+                                                <button
+                                                    type="button"
+                                                    wire:click="restore({{ $unit->id }})"
+                                                    wire:loading.attr="disabled"
+                                                    wire:target="restore"
+                                                    class="block w-full rounded-md px-3 py-2 text-left text-emerald-700 hover:bg-emerald-50"
+                                                >
+                                                    Restore
+                                                </button>
+                                            @else
+                                                <button
+                                                    type="button"
+                                                    wire:click="delete({{ $unit->id }})"
+                                                    wire:confirm="Soft delete this unit?"
+                                                    wire:loading.attr="disabled"
+                                                    wire:target="delete"
+                                                    class="block w-full rounded-md px-3 py-2 text-left text-red-700 hover:bg-red-50"
+                                                >
+                                                    Soft Delete
+                                                </button>
+                                            @endif
                                         @endif
                                     </div>
                                 </details>

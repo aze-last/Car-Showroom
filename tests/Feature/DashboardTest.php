@@ -22,3 +22,11 @@ test('admin users are redirected to the admin dashboard', function () {
     $response = $this->get(route('dashboard'));
     $response->assertRedirect(route('admin.dashboard'));
 });
+
+test('employee users are redirected to the units workspace', function () {
+    $employee = User::factory()->employee()->create();
+    $this->actingAs($employee);
+
+    $response = $this->get(route('dashboard'));
+    $response->assertRedirect(route('admin.units.index'));
+});

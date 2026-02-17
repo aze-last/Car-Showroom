@@ -21,6 +21,15 @@ Route::middleware(['auth', 'verified'])
     ->prefix('admin')
     ->name('admin.')
     ->group(function (): void {
+        Route::get('/units', AdminUnitsIndex::class)
+            ->middleware('can:viewAny,'.Unit::class)
+            ->name('units.index');
+        Route::get('/units/create', AdminUnitForm::class)
+            ->middleware('can:create,'.Unit::class)
+            ->name('units.create');
+        Route::get('/units/{unit}/edit', AdminUnitForm::class)
+            ->middleware('can:update,unit')
+            ->name('units.edit');
         Route::get('/units/{unit}/qr', AdminUnitQrAction::class)
             ->middleware(['staff', 'signed', 'can:viewQr,unit'])
             ->name('units.qr');
@@ -37,15 +46,6 @@ Route::middleware(['auth', 'verified', 'admin'])
     ->name('admin.')
     ->group(function (): void {
         Route::get('/', AdminDashboard::class)->name('dashboard');
-        Route::get('/units', AdminUnitsIndex::class)
-            ->middleware('can:viewAny,'.Unit::class)
-            ->name('units.index');
-        Route::get('/units/create', AdminUnitForm::class)
-            ->middleware('can:create,'.Unit::class)
-            ->name('units.create');
-        Route::get('/units/{unit}/edit', AdminUnitForm::class)
-            ->middleware('can:update,unit')
-            ->name('units.edit');
         Route::get('/categories', AdminCategories::class)->name('categories.index');
         Route::get('/employees', AdminEmployees::class)->name('employees.index');
         Route::get('/logs', AdminLogs::class)
@@ -58,6 +58,10 @@ Route::get('dashboard', function () {
 
     if ((bool) ($user?->is_admin ?? false)) {
         return redirect()->route('admin.dashboard');
+    }
+
+    if ((bool) ($user?->isStaff() ?? false)) {
+        return redirect()->route('admin.units.index');
     }
 
     $canViewInventory = (bool) ($user?->is_admin ?? false);

@@ -45,6 +45,10 @@ class AdminUnitsIndex extends Component
 
     public function updatedIncludeTrashed(): void
     {
+        if (! $this->canManageTrash()) {
+            $this->includeTrashed = false;
+        }
+
         $this->resetPage();
     }
 
@@ -122,6 +126,10 @@ class AdminUnitsIndex extends Component
     {
         Gate::authorize('viewAny', Unit::class);
 
+        if (! $this->canManageTrash()) {
+            $this->includeTrashed = false;
+        }
+
         $statusFilter = in_array($this->status, Unit::statuses(), true)
             ? $this->status
             : '';
@@ -133,7 +141,7 @@ class AdminUnitsIndex extends Component
         $units = Unit::query()
             ->with(['category', 'mainImage'])
             ->when(
-                $this->includeTrashed,
+                $this->canManageTrash() && $this->includeTrashed,
                 fn ($query) => $query->withTrashed(),
             )
             ->when(
@@ -154,8 +162,14 @@ class AdminUnitsIndex extends Component
         return view('livewire.admin-units-index', [
             'categories' => $categories,
             'units' => $units,
+            'canManageTrash' => $this->canManageTrash(),
         ])->layout('layouts.admin-panel', [
             'title' => 'Manage Units',
         ]);
+    }
+
+    private function canManageTrash(): bool
+    {
+        return (bool) (auth()->user()?->is_admin ?? false);
     }
 }

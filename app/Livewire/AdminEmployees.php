@@ -80,6 +80,26 @@ class AdminEmployees extends Component
         session()->flash('status', 'Employee account created successfully.');
     }
 
+    public function delete(int $employeeId): void
+    {
+        Gate::authorize('access-admin');
+
+        $employee = User::query()
+            ->where('is_employee', true)
+            ->find($employeeId);
+
+        if (! $employee instanceof User) {
+            session()->flash('error', 'Employee account not found.');
+
+            return;
+        }
+
+        $employee->delete();
+        $this->resetPage();
+
+        session()->flash('status', 'Employee account deleted successfully.');
+    }
+
     private function applyDefaults(): void
     {
         /** @var array{job_title: string, preferred_locale: string, preferred_timezone: string} $defaults */

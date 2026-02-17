@@ -13,6 +13,10 @@
 
         @php
             $currentUser = auth()->user();
+            $isAdmin = (bool) ($currentUser?->is_admin ?? false);
+            $isStaff = (bool) ($currentUser?->isStaff() ?? false);
+            $panelTitle = $isAdmin ? 'Admin Panel' : 'Staff Panel';
+            $homeRoute = $isAdmin ? route('admin.dashboard') : route('admin.units.index');
         @endphp
 
         <div id="admin-shell" class="min-h-screen" data-collapsed="false">
@@ -28,7 +32,7 @@
                 aria-label="Sidebar"
             >
                 <div class="flex h-16 items-center justify-between border-b border-slate-200 px-4">
-                    <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3 text-slate-900">
+                    <a href="{{ $homeRoute }}" class="flex items-center gap-3 text-slate-900">
                         <span class="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-slate-900 text-xs font-semibold text-white">CS</span>
                         <span class="admin-brand-text text-sm font-semibold">Showroom Admin</span>
                     </a>
@@ -41,7 +45,7 @@
                 </div>
 
                 <nav class="flex h-[calc(100%-4rem)] flex-col px-3 py-4">
-                    @if ($currentUser?->is_admin)
+                    @if ($isAdmin)
                         <a
                             href="{{ route('admin.dashboard') }}"
                             data-admin-nav-link
@@ -101,25 +105,30 @@
                             </svg>
                             <span class="admin-label">Logs</span>
                         </a>
-                    @endif
+                    @elseif ($isStaff)
+                        <a
+                            href="{{ route('admin.units.index') }}"
+                            data-admin-nav-link
+                            class="admin-nav-item {{ request()->routeIs('admin.units.*') ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-700 hover:bg-slate-100' }}"
+                        >
+                            <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="1.8">
+                                <path d="M4 8.5L12 4L20 8.5V15.5L12 20L4 15.5V8.5Z" stroke-linejoin="round"/>
+                                <path d="M4 8.5L12 13L20 8.5" stroke-linecap="round"/>
+                            </svg>
+                            <span class="admin-label">Units</span>
+                        </a>
 
-                    @if (! $currentUser?->is_admin)
-                        <span class="admin-nav-item text-slate-600">
+                        <a
+                            href="{{ route('admin.units.index') }}"
+                            data-admin-nav-link
+                            class="admin-nav-item {{ request()->routeIs('admin.units.qr') ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-700 hover:bg-slate-100' }}"
+                        >
                             <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="1.8">
                                 <path d="M4 6H20V18H4V6Z" stroke-linejoin="round"/>
                                 <path d="M8 10L11 13L16 8" stroke-linecap="round" stroke-linejoin="round"/>
                             </svg>
-                            <span class="admin-label">QR Workflow</span>
-                        </span>
-                    @else
-                        <button type="button" class="admin-nav-item cursor-not-allowed text-slate-400" disabled aria-disabled="true">
-                            <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="1.8">
-                                <path d="M4 6H20V18H4V6Z" stroke-linejoin="round"/>
-                                <path d="M8 10L11 13L16 8" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
-                            <span class="admin-label">QR Scanner</span>
-                            <span class="admin-label ms-auto rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-500">Soon</span>
-                        </button>
+                            <span class="admin-label">QR Actions</span>
+                        </a>
                     @endif
 
                     <div class="mt-auto border-t border-slate-200 pt-3">
@@ -161,13 +170,13 @@
                             </button>
 
                             <div>
-                                <p class="text-xs font-medium uppercase tracking-[0.12em] text-slate-500">Admin Panel</p>
+                                <p class="text-xs font-medium uppercase tracking-[0.12em] text-slate-500">{{ $panelTitle }}</p>
                                 <h1 class="text-lg font-semibold text-slate-900">{{ $title ?? 'Admin' }}</h1>
                             </div>
                         </div>
 
                         <div class="order-3 w-full md:order-2 md:w-auto md:flex-1 md:max-w-xl">
-                            @if ($currentUser?->is_admin)
+                            @if ($isAdmin)
                                 <form method="GET" action="{{ route('admin.units.index') }}" class="relative">
                                     <label for="admin-global-search" class="sr-only">Search units by name</label>
                                     <svg viewBox="0 0 24 24" fill="none" class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" stroke="currentColor" stroke-width="1.8">
@@ -185,7 +194,7 @@
                                 </form>
                             @else
                                 <div class="rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-600">
-                                    Staff mode: QR status actions only.
+                                    Staff mode: Add units, manage images, and run QR status actions.
                                 </div>
                             @endif
                         </div>

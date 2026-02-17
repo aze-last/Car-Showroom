@@ -73,6 +73,7 @@
                         <th scope="col" class="px-4 py-3">Locale</th>
                         <th scope="col" class="px-4 py-3">Timezone</th>
                         <th scope="col" class="px-4 py-3 sm:px-5">Created</th>
+                        <th scope="col" class="px-4 py-3 text-right sm:px-5">Actions</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100">
@@ -84,10 +85,22 @@
                             <td class="px-4 py-3 text-slate-600">{{ $employee->preferred_locale }}</td>
                             <td class="px-4 py-3 text-slate-600">{{ $employee->preferred_timezone }}</td>
                             <td class="px-4 py-3 text-slate-600 sm:px-5">{{ $employee->created_at?->format('Y-m-d H:i') }}</td>
+                            <td class="px-4 py-3 text-right sm:px-5">
+                                <button
+                                    type="button"
+                                    wire:click="delete({{ $employee->id }})"
+                                    wire:confirm="Delete this employee account? This action cannot be undone."
+                                    wire:loading.attr="disabled"
+                                    wire:target="delete"
+                                    class="inline-flex items-center rounded-md border border-red-200 bg-red-50 px-3 py-1.5 text-xs font-medium text-red-700 transition hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-60"
+                                >
+                                    Delete
+                                </button>
+                            </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="px-4 py-10 text-center text-sm text-slate-500">
+                            <td colspan="7" class="px-4 py-10 text-center text-sm text-slate-500">
                                 No employee accounts yet.
                             </td>
                         </tr>

@@ -9,22 +9,22 @@ class UnitPolicy
 {
     public function viewAny(User $user): bool
     {
-        return $user->is_admin;
+        return $user->isStaff();
     }
 
     public function view(User $user, Unit $unit): bool
     {
-        return $user->is_admin;
+        return $user->isStaff();
     }
 
     public function create(User $user): bool
     {
-        return $user->is_admin;
+        return $user->isStaff();
     }
 
     public function update(User $user, Unit $unit): bool
     {
-        return $user->is_admin;
+        return $user->isStaff();
     }
 
     public function delete(User $user, Unit $unit): bool
@@ -54,6 +54,6 @@ class UnitPolicy
 
     public function manageImages(User $user, Unit $unit): bool
     {
-        return $user->is_admin;
+        return $user->isStaff();
     }
 }

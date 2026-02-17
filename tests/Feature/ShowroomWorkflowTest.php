@@ -180,6 +180,43 @@ it('employee staff can set available from sold through qr workflow', function ()
     expect($log?->user_id)->toBe($employee->id);
 });
 
+it('employee staff can only access units and qr workflows in admin panel', function (): void {
+    $employee = User::factory()->employee()->create();
+    $unit = Unit::factory()->create();
+
+    $this->actingAs($employee)
+        ->get(route('dashboard'))
+        ->assertRedirect(route('admin.units.index'));
+
+    $this->actingAs($employee)
+        ->get('/admin/units')
+        ->assertOk();
+
+    $this->actingAs($employee)
+        ->get('/admin/units/create')
+        ->assertOk();
+
+    $this->actingAs($employee)
+        ->get(route('admin.units.edit', $unit))
+        ->assertOk();
+
+    $this->actingAs($employee)
+        ->get('/admin')
+        ->assertForbidden();
+
+    $this->actingAs($employee)
+        ->get('/admin/categories')
+        ->assertForbidden();
+
+    $this->actingAs($employee)
+        ->get('/admin/employees')
+        ->assertForbidden();
+
+    $this->actingAs($employee)
+        ->get('/admin/logs')
+        ->assertForbidden();
+});
+
 it('creates a log only when state changes', function (): void {
     $user = User::factory()->admin()->create();
     $unit = Unit::factory()->create([
@@ -360,4 +397,27 @@ it('admin can create employee account with default profile settings', function (
     expect($employee?->preferred_timezone)->toBe('Asia/Manila');
     expect(Hash::check('employee123', (string) $employee?->password))->toBeTrue();
     expect($employee?->email_verified_at)->not()->toBeNull();
+});
+
+it('admin can delete employee account from employee panel', function (): void {
+    $admin = User::factory()->admin()->create();
+    $employee = User::factory()->employee()->create();
+
+    $this->actingAs($admin);
+
+    Livewire::test(AdminEmployees::class)
+        ->call('delete', $employee->id);
+
+    expect(User::query()->whereKey($employee->id)->exists())->toBeFalse();
+});
+
+it('admin cannot delete non-employee account from employee panel', function (): void {
+    $admin = User::factory()->admin()->create();
+
+    $this->actingAs($admin);
+
+    Livewire::test(AdminEmployees::class)
+        ->call('delete', $admin->id);
+
+    expect(User::query()->whereKey($admin->id)->exists())->toBeTrue();
 });
