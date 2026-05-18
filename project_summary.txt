@@ -1,0 +1,32 @@
+# Car Showroom Project Summary - May 3, 2026
+
+## 1. Project Overview
+- A production-ready Laravel/Livewire application for a vehicle showroom.
+- Public side: Users can browse units, filter by category, and search by name.
+- Admin side: Secure dashboard for managing units, categories, and logs.
+- Key Feature: QR code scanning for authenticated staff to update unit status (Available/Sold).
+
+## 2. Recent Implementation: ZMoto Catalog Importer
+We have added a specialized agent (Service) to help you get professional photos for your listings from ZMoto.
+
+### Key Commands:
+- `php artisan migrate`: Run this first to prepare your database for imported data.
+- `php artisan showroom:import-zmoto --query="Model Name" --only-existing`: Downloads photos ONLY for items you already have in your list.
+- `php artisan showroom:import-zmoto --query="Model Name"`: Searches ZMoto and adds the vehicle + photos to your showroom if it's new.
+- `php artisan showroom:import-zmoto --dry-run`: Test the search without saving any data.
+
+### Safety Measures Added:
+- **No Deletions:** The importer never deletes your existing data.
+- **Search Precision:** It uses the official ZMoto search engine to find exact matches.
+- **Safety Flag:** The `--only-existing` flag prevents the agent from adding "new" items you didn't ask for.
+- **Photo Management:** Use `--refresh-images` if you want to replace old photos with fresh ones.
+
+## 3. Current Database Status
+- Migrations are ready for: Categories, Units, Unit Images, Status Logs, Inquiries, and Featured status.
+- Next step for you: Run `php artisan migrate` when you wake up to activate the new tracking features.
+
+## 4. Pending/Next Steps
+- Add an Admin Panel button to run the importer directly from the browser.
+- Finalize any specific UI adjustments for the Unit Detail pages.
+
+Goodnight! Your project is safe and updated.

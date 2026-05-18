@@ -56,10 +56,17 @@
                         </div>
                     </div>
 
-                    <label class="inline-flex items-center gap-2 rounded-md border border-slate-200 px-3 py-2 text-sm text-slate-700">
-                        <input type="checkbox" wire:model="show_price" class="rounded border-slate-300 text-slate-900 focus:ring-slate-400">
-                        Show price publicly
-                    </label>
+                    <div class="flex flex-wrap gap-4">
+                        <label class="inline-flex items-center gap-2 rounded-md border border-slate-200 px-3 py-2 text-sm text-slate-700">
+                            <input type="checkbox" wire:model="show_price" class="rounded border-slate-300 text-slate-900 focus:ring-slate-400">
+                            Show price publicly
+                        </label>
+
+                        <label class="inline-flex items-center gap-2 rounded-md border border-slate-200 px-3 py-2 text-sm text-slate-700">
+                            <input type="checkbox" wire:model="is_featured" class="rounded border-slate-300 text-slate-900 focus:ring-slate-400">
+                            Featured unit (Highlight on showroom)
+                        </label>
+                    </div>
 
                     <label class="block">
                         <span class="mb-2 block text-sm font-medium text-slate-700">Status</span>
@@ -69,6 +76,43 @@
                         </select>
                         <p class="mt-1 text-xs text-slate-500">Status updates are handled through secured set-state actions.</p>
                     </label>
+
+                    <div class="rounded-xl border border-slate-200 bg-slate-50/50 p-4">
+                        <h3 class="mb-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Specifications</h3>
+                        <div class="grid gap-4 sm:grid-cols-2">
+                            <label class="block">
+                                <span class="mb-2 block text-sm font-medium text-slate-700">Year Model</span>
+                                <input type="number" wire:model="year" class="admin-input" placeholder="e.g. 2024">
+                                @error('year') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                            </label>
+                            <label class="block">
+                                <span class="mb-2 block text-sm font-medium text-slate-700">Mileage (km)</span>
+                                <input type="number" wire:model="mileage" class="admin-input" placeholder="e.g. 15000">
+                                @error('mileage') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                            </label>
+                            <label class="block">
+                                <span class="mb-2 block text-sm font-medium text-slate-700">Transmission</span>
+                                <select wire:model="transmission" class="admin-select">
+                                    <option value="">Select transmission</option>
+                                    <option value="Automatic">Automatic</option>
+                                    <option value="Manual">Manual</option>
+                                    <option value="CVT">CVT</option>
+                                </select>
+                                @error('transmission') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                            </label>
+                            <label class="block">
+                                <span class="mb-2 block text-sm font-medium text-slate-700">Fuel Type</span>
+                                <select wire:model="fuel_type" class="admin-select">
+                                    <option value="">Select fuel type</option>
+                                    <option value="Gasoline">Gasoline</option>
+                                    <option value="Diesel">Diesel</option>
+                                    <option value="Electric">Electric</option>
+                                    <option value="Hybrid">Hybrid</option>
+                                </select>
+                                @error('fuel_type') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                            </label>
+                        </div>
+                    </div>
 
                     <label class="block">
                         <span class="mb-2 block text-sm font-medium text-slate-700">Description</span>
@@ -212,21 +256,14 @@
                         @endif
 
                         @if ($isEdit && $unit instanceof Unit)
-                            @if ($unit->status === Unit::STATUS_AVAILABLE)
-                                <form method="POST" action="{{ route('admin.units.set-sold', $unit) }}" onsubmit="return confirm('Confirm setting this unit to SOLD?')" data-disable-on-submit class="space-y-2">
-                                    @csrf
-                                    <input type="hidden" name="request_id" value="{{ (string) Str::uuid() }}">
-                                    <input type="text" name="reason" maxlength="255" class="admin-input" placeholder="Optional reason">
-                                    <button type="submit" class="admin-btn-danger w-full">Mark as SOLD</button>
-                                </form>
-                            @else
-                                <form method="POST" action="{{ route('admin.units.set-available', $unit) }}" onsubmit="return confirm('Confirm setting this unit to AVAILABLE?')" data-disable-on-submit class="space-y-2">
-                                    @csrf
-                                    <input type="hidden" name="request_id" value="{{ (string) Str::uuid() }}">
-                                    <input type="text" name="reason" maxlength="255" class="admin-input" placeholder="Optional correction reason">
-                                    <button type="submit" class="admin-btn-primary w-full bg-emerald-600 hover:bg-emerald-500">Mark as AVAILABLE</button>
-                                </form>
-                            @endif
+                            <div class="space-y-2">
+                                <input type="text" wire:model="statusReason" maxlength="255" class="admin-input" placeholder="Optional reason">
+                                @if ($unit->status === Unit::STATUS_AVAILABLE)
+                                    <button type="button" wire:click="markAsSold" onclick="confirm('Confirm setting this unit to SOLD?') || event.stopImmediatePropagation()" class="admin-btn-danger w-full">Mark as SOLD</button>
+                                @else
+                                    <button type="button" wire:click="markAsAvailable" onclick="confirm('Confirm setting this unit to AVAILABLE?') || event.stopImmediatePropagation()" class="admin-btn-primary w-full bg-emerald-600 hover:bg-emerald-500">Mark as AVAILABLE</button>
+                                @endif
+                            </div>
                         @else
                             <p class="text-xs text-slate-500">Save the unit first to enable status actions.</p>
                         @endif

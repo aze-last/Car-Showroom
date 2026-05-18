@@ -100,6 +100,7 @@ it('admin users can create categories and units', function (): void {
         ->set('price_php', 2500000)
         ->set('description', 'Performance hatchback')
         ->set('show_price', true)
+        ->set('is_featured', false)
         ->set('newImages', [$upload])
         ->set('newImageSortOrders', [0])
         ->call('save')

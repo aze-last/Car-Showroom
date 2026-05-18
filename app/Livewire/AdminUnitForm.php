@@ -35,6 +35,16 @@ class AdminUnitForm extends Component
 
     public bool $show_price = true;
 
+    public bool $is_featured = false;
+
+    public ?int $year = null;
+
+    public ?int $mileage = null;
+
+    public ?string $transmission = null;
+
+    public ?string $fuel_type = null;
+
     /** @var array<int, array{id: int, url: string, sort_order: int, remove: bool}> */
     public array $existingImages = [];
 
@@ -48,6 +58,8 @@ class AdminUnitForm extends Component
 
     public string $qrSvg = '';
 
+    public ?string $statusReason = null;
+
     public function mount(?Unit $unit = null): void
     {
         $this->unit = $unit?->exists ? $unit->load('images') : null;
@@ -60,7 +72,12 @@ class AdminUnitForm extends Component
             $this->name = $this->unit->name;
             $this->price_php = $this->unit->price_php;
             $this->description = $this->unit->description;
-            $this->show_price = $this->unit->show_price;
+            $this->show_price = (bool) $this->unit->show_price;
+            $this->is_featured = (bool) $this->unit->is_featured;
+            $this->year = $this->unit->year;
+            $this->mileage = $this->unit->mileage;
+            $this->transmission = $this->unit->transmission;
+            $this->fuel_type = $this->unit->fuel_type;
             $this->existingImages = $this->unit->images
                 ->map(fn (UnitImage $image): array => [
                     'id' => $image->id,
@@ -75,6 +92,50 @@ class AdminUnitForm extends Component
         } else {
             Gate::authorize('create', Unit::class);
         }
+    }
+
+    public function markAsSold(\App\Services\UnitStatusService $statusService): void
+    {
+        if ($this->unit === null) {
+            return;
+        }
+
+        Gate::authorize('changeStatus', $this->unit);
+
+        $result = $statusService->setSold(
+            unit: $this->unit,
+            userId: (int) auth()->id(),
+            reason: $this->statusReason,
+            ipAddress: request()->ip(),
+            userAgent: request()->userAgent(),
+        );
+
+        $this->statusReason = null;
+        $this->loadStatusAndQrMeta();
+
+        session()->flash($result['changed'] ? 'status' : 'info', $result['message']);
+    }
+
+    public function markAsAvailable(\App\Services\UnitStatusService $statusService): void
+    {
+        if ($this->unit === null) {
+            return;
+        }
+
+        Gate::authorize('changeStatus', $this->unit);
+
+        $result = $statusService->setAvailable(
+            unit: $this->unit,
+            userId: (int) auth()->id(),
+            reason: $this->statusReason,
+            ipAddress: request()->ip(),
+            userAgent: request()->userAgent(),
+        );
+
+        $this->statusReason = null;
+        $this->loadStatusAndQrMeta();
+
+        session()->flash($result['changed'] ? 'status' : 'info', $result['message']);
     }
 
     public function updatedNewImages(): void
@@ -149,6 +210,11 @@ class AdminUnitForm extends Component
             'price_php',
             'description',
             'show_price',
+            'is_featured',
+            'year',
+            'mileage',
+            'transmission',
+            'fuel_type',
         ]);
 
         $unit = $existingUnit ?? new Unit;
@@ -160,6 +226,11 @@ class AdminUnitForm extends Component
                 'price_php',
                 'description',
                 'show_price',
+                'is_featured',
+                'year',
+                'mileage',
+                'transmission',
+                'fuel_type',
             ]);
 
         $unit->fill($unitData);
@@ -264,6 +335,11 @@ class AdminUnitForm extends Component
             'price_php' => ['nullable', 'integer', 'min:0'],
             'description' => ['nullable', 'string'],
             'show_price' => ['boolean'],
+            'is_featured' => ['boolean'],
+            'year' => ['nullable', 'integer', 'min:1900', 'max:'.(date('Y') + 2)],
+            'mileage' => ['nullable', 'integer', 'min:0'],
+            'transmission' => ['nullable', 'string', 'max:50'],
+            'fuel_type' => ['nullable', 'string', 'max:50'],
             'existingImages' => ['array'],
             'existingImages.*.id' => ['required', 'integer'],
             'existingImages.*.sort_order' => ['required', 'integer', 'min:0'],
@@ -383,7 +459,7 @@ class AdminUnitForm extends Component
     {
         $changes = [];
 
-        foreach (['category_id', 'name', 'price_php', 'description', 'show_price'] as $field) {
+        foreach (['category_id', 'name', 'price_php', 'description', 'show_price', 'is_featured', 'year', 'mileage', 'transmission', 'fuel_type'] as $field) {
             $from = $original[$field] ?? null;
             $to = $current[$field] ?? null;
 

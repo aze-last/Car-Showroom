@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Models\Inquiry;
 use App\Models\Unit;
 use Illuminate\Contracts\View\View;
 use Livewire\Component;
@@ -12,12 +13,43 @@ class UnitDetail extends Component
 
     public int $currentImageIndex = 0;
 
+    public string $name = '';
+
+    public string $email = '';
+
+    public string $phone = '';
+
+    public string $message = '';
+
+    public bool $submitted = false;
+
     public function mount(Unit $unit): void
     {
         $this->unit = $unit->load([
             'category',
             'images',
         ]);
+    }
+
+    public function submitInquiry(): void
+    {
+        $validated = $this->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'max:255'],
+            'phone' => ['nullable', 'string', 'max:50'],
+            'message' => ['required', 'string', 'max:2000'],
+        ]);
+
+        Inquiry::query()->create([
+            'unit_id' => $this->unit->id,
+            'name' => $this->name,
+            'email' => $this->email,
+            'phone' => $this->phone,
+            'message' => $this->message,
+        ]);
+
+        $this->reset(['name', 'email', 'phone', 'message']);
+        $this->submitted = true;
     }
 
     public function nextImage(): void
@@ -42,8 +74,18 @@ class UnitDetail extends Component
     {
         $image = $this->unit->images->get($this->currentImageIndex);
 
+        $similarUnits = Unit::query()
+            ->with(['category', 'mainImage'])
+            ->where('category_id', $this->unit->category_id)
+            ->where('id', '!=', $this->unit->id)
+            ->where('status', Unit::STATUS_AVAILABLE)
+            ->latest('updated_at')
+            ->take(3)
+            ->get();
+
         return view('livewire.unit-detail', [
             'activeImage' => $image,
+            'similarUnits' => $similarUnits,
         ])->layout('layouts.public-showroom', [
             'title' => $this->unit->name,
         ]);

@@ -19,6 +19,15 @@ class PublicShowroom extends Component
     #[Url(as: 'category', history: true)]
     public ?int $categoryId = null;
 
+    #[Url(as: 'sort', history: true)]
+    public string $sortBy = 'newest';
+
+    #[Url(as: 'min', history: true)]
+    public ?int $minPrice = null;
+
+    #[Url(as: 'max', history: true)]
+    public ?int $maxPrice = null;
+
     public function updatedSearch(): void
     {
         $this->resetPage();
@@ -26,6 +35,27 @@ class PublicShowroom extends Component
 
     public function updatedCategoryId(): void
     {
+        $this->resetPage();
+    }
+
+    public function updatedSortBy(): void
+    {
+        $this->resetPage();
+    }
+
+    public function updatedMinPrice(): void
+    {
+        $this->resetPage();
+    }
+
+    public function updatedMaxPrice(): void
+    {
+        $this->resetPage();
+    }
+
+    public function resetFilters(): void
+    {
+        $this->reset(['search', 'categoryId', 'sortBy', 'minPrice', 'maxPrice']);
         $this->resetPage();
     }
 
@@ -55,7 +85,18 @@ class PublicShowroom extends Component
                 $this->categoryId !== null,
                 fn ($query) => $query->where('category_id', $this->categoryId),
             )
-            ->latest()
+            ->when(
+                $this->minPrice !== null,
+                fn ($query) => $query->where('price_php', '>=', $this->minPrice),
+            )
+            ->when(
+                $this->maxPrice !== null,
+                fn ($query) => $query->where('price_php', '<=', $this->maxPrice),
+            )
+            ->orderByDesc('is_featured')
+            ->when($this->sortBy === 'price_asc', fn ($q) => $q->orderBy('price_php', 'asc'))
+            ->when($this->sortBy === 'price_desc', fn ($q) => $q->orderBy('price_php', 'desc'))
+            ->when($this->sortBy === 'newest', fn ($q) => $q->latest('updated_at'))
             ->paginate(12);
 
         return view('livewire.public-showroom', [

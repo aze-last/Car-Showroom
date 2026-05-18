@@ -100,7 +100,12 @@
                                 </div>
                             </td>
                             <td class="px-4 py-3">
-                                <p class="font-medium text-slate-900 {{ $unit->trashed() ? 'line-through opacity-70' : '' }}">{{ $unit->name }}</p>
+                                <div class="flex items-center gap-2">
+                                    <p class="font-medium text-slate-900 {{ $unit->trashed() ? 'line-through opacity-70' : '' }}">{{ $unit->name }}</p>
+                                    @if ($unit->is_featured)
+                                        <span class="inline-flex items-center rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-bold text-amber-700 uppercase tracking-wider">Featured</span>
+                                    @endif
+                                </div>
                                 <p class="text-xs text-slate-500">#{{ $unit->public_id }}</p>
                             </td>
                             <td class="px-4 py-3 text-slate-700">{{ $unit->category?->name ?? 'Uncategorized' }}</td>
@@ -136,10 +141,10 @@
                                             @else
                                                 <button
                                                     type="button"
-                                                    wire:click="delete({{ $unit->id }})"
-                                                    wire:confirm="Soft delete this unit?"
+                                                    wire:click="confirmDelete({{ $unit->id }})"
+                                                    x-on:click="$flux.modal('confirm-unit-deletion').show()"
                                                     wire:loading.attr="disabled"
-                                                    wire:target="delete"
+                                                    wire:target="confirmDelete"
                                                     class="block w-full rounded-md px-3 py-2 text-left text-red-700 hover:bg-red-50"
                                                 >
                                                     Soft Delete
@@ -165,4 +170,25 @@
     <div class="flex justify-end">
         {{ $units->links() }}
     </div>
+
+    <flux:modal name="confirm-unit-deletion" class="min-w-[22rem]">
+        <div class="space-y-6">
+            <div>
+                <flux:heading size="lg">Delete Unit?</flux:heading>
+                <flux:subheading>
+                    Are you sure you want to soft delete <strong>{{ $unitToDeleteName }}</strong>?
+                </flux:subheading>
+            </div>
+
+            <div class="flex gap-2">
+                <flux:spacer />
+                <flux:modal.close>
+                    <flux:button variant="ghost">Cancel</flux:button>
+                </flux:modal.close>
+                <flux:button type="button" variant="danger" wire:click="executeDelete" x-on:click="$flux.modal('confirm-unit-deletion').close()">
+                    Delete
+                </flux:button>
+            </div>
+        </div>
+    </flux:modal>
 </section>

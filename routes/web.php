@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\UnitStatusController;
 use App\Livewire\AdminCategories;
 use App\Livewire\AdminDashboard;
 use App\Livewire\AdminEmployees;
+use App\Livewire\AdminInquiriesIndex;
 use App\Livewire\AdminLogs;
 use App\Livewire\AdminUnitForm;
 use App\Livewire\AdminUnitQrAction;
@@ -48,6 +49,7 @@ Route::middleware(['auth', 'verified', 'admin'])
         Route::get('/', AdminDashboard::class)->name('dashboard');
         Route::get('/categories', AdminCategories::class)->name('categories.index');
         Route::get('/employees', AdminEmployees::class)->name('employees.index');
+        Route::get('/inquiries', AdminInquiriesIndex::class)->name('inquiries.index');
         Route::get('/logs', AdminLogs::class)
             ->middleware('can:viewAny,'.UnitStatusLog::class)
             ->name('logs.index');

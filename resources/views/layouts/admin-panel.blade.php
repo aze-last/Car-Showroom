@@ -95,6 +95,17 @@
                         </a>
 
                         <a
+                            href="{{ route('admin.inquiries.index') }}"
+                            data-admin-nav-link
+                            class="admin-nav-item {{ request()->routeIs('admin.inquiries.*') ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-700 hover:bg-slate-100' }}"
+                        >
+                            <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="1.8">
+                                <path d="M21 15V19A2 2 0 0 1 19 21H5A2 2 0 0 1 3 19V15M7 10L12 15L17 10M12 15V3" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            <span class="admin-label">Inquiries</span>
+                        </a>
+
+                        <a
                             href="{{ route('admin.logs.index') }}"
                             data-admin-nav-link
                             class="admin-nav-item {{ request()->routeIs('admin.logs.*') ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-700 hover:bg-slate-100' }}"

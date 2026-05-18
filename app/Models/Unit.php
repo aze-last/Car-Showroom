@@ -26,6 +26,14 @@ class Unit extends Model
         'description',
         'status',
         'show_price',
+        'is_featured',
+        'year',
+        'mileage',
+        'transmission',
+        'fuel_type',
+        'source_name',
+        'source_external_id',
+        'source_url',
     ];
 
     protected function casts(): array
@@ -34,6 +42,9 @@ class Unit extends Model
             'public_id' => 'string',
             'price_php' => 'integer',
             'show_price' => 'boolean',
+            'is_featured' => 'boolean',
+            'year' => 'integer',
+            'mileage' => 'integer',
         ];
     }
 
@@ -110,6 +121,15 @@ class Unit extends Model
     public function statusLogs(): HasMany
     {
         return $this->hasMany(UnitStatusLog::class)
+            ->latest();
+    }
+
+    /**
+     * @return HasMany<Inquiry, $this>
+     */
+    public function inquiries(): HasMany
+    {
+        return $this->hasMany(Inquiry::class)
             ->latest();
     }
 

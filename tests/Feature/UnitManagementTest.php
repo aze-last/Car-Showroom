@@ -39,6 +39,7 @@ class UnitManagementTest extends TestCase
             ->set('price_php', 1000000)
             ->set('description', 'Test Description')
             ->set('show_price', true)
+            ->set('is_featured', false)
             ->call('save')
             ->assertRedirect(route('admin.units.index'));
 
@@ -57,11 +58,18 @@ class UnitManagementTest extends TestCase
     public function test_soft_deletes_unit(): void
     {
         $user = User::factory()->create(['is_admin' => true]);
-        $unit = Unit::factory()->create();
+        $unit = Unit::factory()->create(['name' => 'Delete Me']);
 
         Livewire::actingAs($user)
             ->test(AdminUnitsIndex::class)
-            ->call('delete', $unit->id);
+            // 1. Test confirmation state
+            ->call('confirmDelete', $unit->id)
+            ->assertSet('unitToDeleteId', $unit->id)
+            ->assertSet('unitToDeleteName', 'Delete Me')
+            // 2. Test execution
+            ->call('executeDelete')
+            ->assertSet('unitToDeleteId', null)
+            ->assertSet('unitToDeleteName', null);
 
         $this->assertSoftDeleted('units', ['id' => $unit->id]);
 

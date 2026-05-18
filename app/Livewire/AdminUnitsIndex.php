@@ -28,6 +28,10 @@ class AdminUnitsIndex extends Component
     #[Url(as: 'trashed', history: true)]
     public bool $includeTrashed = false;
 
+    public ?int $unitToDeleteId = null;
+
+    public ?string $unitToDeleteName = null;
+
     public function updatedSearch(): void
     {
         $this->resetPage();
@@ -62,6 +66,25 @@ class AdminUnitsIndex extends Component
     {
         $this->reset(['search', 'categoryId', 'status', 'includeTrashed']);
         $this->resetPage();
+    }
+
+    public function confirmDelete(int $unitId): void
+    {
+        $unit = Unit::query()
+            ->withTrashed()
+            ->findOrFail($unitId);
+
+        $this->unitToDeleteId = $unit->id;
+        $this->unitToDeleteName = $unit->name;
+    }
+
+    public function executeDelete(): void
+    {
+        if ($this->unitToDeleteId) {
+            $this->delete($this->unitToDeleteId);
+            $this->unitToDeleteId = null;
+            $this->unitToDeleteName = null;
+        }
     }
 
     public function delete(int $unitId): void
