@@ -16,6 +16,14 @@ new class extends Component {
     public string $email = '';
 
     /**
+     * Set the layout for the component.
+     */
+    public function rendering($view): void
+    {
+        $view->layout('layouts.admin-panel', ['title' => 'Profile Settings']);
+    }
+
+    /**
      * Mount the component.
      */
     public function mount(): void

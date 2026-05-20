@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\Admin\UnitStatusController;
 use App\Livewire\AdminCategories;
 use App\Livewire\AdminDashboard;
 use App\Livewire\AdminEmployees;
@@ -34,12 +33,6 @@ Route::middleware(['auth', 'verified'])
         Route::get('/units/{unit}/qr', AdminUnitQrAction::class)
             ->middleware(['staff', 'signed', 'can:viewQr,unit'])
             ->name('units.qr');
-        Route::post('/units/{unit}/set-sold', [UnitStatusController::class, 'setSold'])
-            ->middleware(['staff', 'can:changeStatus,unit', 'throttle:20,1'])
-            ->name('units.set-sold');
-        Route::post('/units/{unit}/set-available', [UnitStatusController::class, 'setAvailable'])
-            ->middleware(['staff', 'can:changeStatus,unit', 'throttle:20,1'])
-            ->name('units.set-available');
     });
 
 Route::middleware(['auth', 'verified', 'admin'])

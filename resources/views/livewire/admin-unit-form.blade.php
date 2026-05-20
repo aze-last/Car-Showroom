@@ -259,9 +259,9 @@
                             <div class="space-y-2">
                                 <input type="text" wire:model="statusReason" maxlength="255" class="admin-input" placeholder="Optional reason">
                                 @if ($unit->status === Unit::STATUS_AVAILABLE)
-                                    <button type="button" wire:click="markAsSold" onclick="confirm('Confirm setting this unit to SOLD?') || event.stopImmediatePropagation()" class="admin-btn-danger w-full">Mark as SOLD</button>
+                                    <button type="button" x-on:click="$flux.modal('confirm-sold').show()" class="admin-btn-danger w-full">Mark as SOLD</button>
                                 @else
-                                    <button type="button" wire:click="markAsAvailable" onclick="confirm('Confirm setting this unit to AVAILABLE?') || event.stopImmediatePropagation()" class="admin-btn-primary w-full bg-emerald-600 hover:bg-emerald-500">Mark as AVAILABLE</button>
+                                    <button type="button" x-on:click="$flux.modal('confirm-available').show()" class="admin-btn-primary w-full bg-emerald-600 hover:bg-emerald-500">Mark as AVAILABLE</button>
                                 @endif
                             </div>
                         @else
@@ -305,6 +305,49 @@
             </button>
         </div>
     </form>
+
+    {{-- Confirmation Modals --}}
+    <flux:modal name="confirm-sold" class="min-w-[22rem] rounded-[32px] border-none shadow-2xl">
+        <div class="space-y-6 p-4">
+            <div>
+                <h2 class="text-xs font-black uppercase tracking-[0.2em] text-red-600">Status Update</h2>
+                <p class="mt-4 text-sm font-medium text-zinc-500 leading-relaxed">
+                    Confirm setting this unit to <strong class="text-red-600">SOLD</strong>? This action will be recorded in the inventory logs.
+                </p>
+            </div>
+
+            <div class="flex gap-3">
+                <flux:modal.close>
+                    <button type="button" class="admin-btn-secondary">Cancel</button>
+                </flux:modal.close>
+                <flux:spacer />
+                <button type="button" wire:click="markAsSold" x-on:click="$flux.modal('confirm-sold').close()" class="admin-btn-danger">
+                    Confirm Sold
+                </button>
+            </div>
+        </div>
+    </flux:modal>
+
+    <flux:modal name="confirm-available" class="min-w-[22rem] rounded-[32px] border-none shadow-2xl">
+        <div class="space-y-6 p-4">
+            <div>
+                <h2 class="text-xs font-black uppercase tracking-[0.2em] text-emerald-600">Status Update</h2>
+                <p class="mt-4 text-sm font-medium text-zinc-500 leading-relaxed">
+                    Confirm setting this unit to <strong class="text-emerald-600">AVAILABLE</strong>? The vehicle will be visible again in the public showroom.
+                </p>
+            </div>
+
+            <div class="flex gap-3">
+                <flux:modal.close>
+                    <button type="button" class="admin-btn-secondary">Cancel</button>
+                </flux:modal.close>
+                <flux:spacer />
+                <button type="button" wire:click="markAsAvailable" x-on:click="$flux.modal('confirm-available').close()" class="admin-btn-primary bg-emerald-600 hover:bg-emerald-500">
+                    Confirm Available
+                </button>
+            </div>
+        </div>
+    </flux:modal>
 
     @if (! empty($existingImages))
         @script

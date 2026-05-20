@@ -145,6 +145,28 @@ class AdminUnitsIndex extends Component
         session()->flash('status', 'Unit restored.');
     }
 
+    public function runImporter(): void
+    {
+        if (! $this->canManageTrash()) {
+            return;
+        }
+
+        try {
+            /** @var \App\Services\ZmotoCatalogImporter $importer */
+            $importer = app(\App\Services\ZmotoCatalogImporter::class);
+
+            // Run a targeted import (e.g. only existing or basic sync)
+            $result = $importer->import(
+                onlyExisting: true, // Safety first for UI trigger
+                refreshImages: false
+            );
+
+            session()->flash('status', "Sync complete. Updated {$result['updated']} units.");
+        } catch (\Exception $e) {
+            session()->flash('error', 'Import failed: '.$e->getMessage());
+        }
+    }
+
     public function render(): View
     {
         Gate::authorize('viewAny', Unit::class);

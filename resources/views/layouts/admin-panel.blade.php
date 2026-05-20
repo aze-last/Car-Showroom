@@ -3,7 +3,7 @@
     <head>
         @include('partials.head')
     </head>
-    <body class="min-h-screen bg-slate-100 font-sans text-slate-900 antialiased">
+    <body class="min-h-screen bg-zinc-50 font-sans text-zinc-900 antialiased">
         <a
             href="#admin-main"
             class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded-md focus:bg-white focus:px-3 focus:py-2 focus:text-sm focus:shadow"
@@ -22,136 +22,141 @@
         <div id="admin-shell" class="min-h-screen" data-collapsed="false">
             <input id="admin-mobile-nav" type="checkbox" class="peer sr-only" aria-hidden="true">
 
-            <div class="fixed inset-0 z-30 hidden bg-slate-900/40 peer-checked:block lg:hidden">
+            <div class="fixed inset-0 z-30 hidden bg-zinc-900/40 peer-checked:block lg:hidden">
                 <label for="admin-mobile-nav" class="block h-full w-full cursor-pointer" aria-label="Close navigation"></label>
             </div>
 
             <aside
                 id="admin-sidebar"
-                class="fixed inset-y-0 left-0 z-40 w-72 -translate-x-full border-r border-slate-200 bg-white transition-transform duration-200 ease-out peer-checked:translate-x-0 lg:translate-x-0"
+                class="fixed inset-y-0 left-0 z-40 w-72 -translate-x-full border-r border-zinc-100 bg-white transition-transform duration-200 ease-out peer-checked:translate-x-0 lg:translate-x-0"
                 aria-label="Sidebar"
             >
-                <div class="flex h-16 items-center justify-between border-b border-slate-200 px-4">
-                    <a href="{{ $homeRoute }}" class="flex items-center gap-3 text-slate-900">
-                        <span class="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-slate-900 text-xs font-semibold text-white">CS</span>
-                        <span class="admin-brand-text text-sm font-semibold">Showroom Admin</span>
+                <div class="flex h-16 items-center justify-between border-b border-zinc-100 px-6">
+                    <a href="{{ $homeRoute }}" class="flex items-center gap-3 text-zinc-900">
+                        <span class="inline-flex h-8 w-8 items-center justify-center rounded bg-zinc-900 text-[10px] font-black text-white uppercase tracking-tighter">CS</span>
+                        <span class="admin-brand-text text-sm font-black uppercase tracking-widest">Showroom</span>
                     </a>
 
-                    <label for="admin-mobile-nav" class="rounded-md p-2 text-slate-500 hover:bg-slate-100 lg:hidden" aria-label="Close sidebar">
-                        <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="1.8">
+                    <label for="admin-mobile-nav" class="rounded-md p-2 text-zinc-400 hover:bg-zinc-50 lg:hidden" aria-label="Close sidebar">
+                        <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="2">
                             <path d="M6 6L18 18M6 18L18 6" stroke-linecap="round"/>
                         </svg>
                     </label>
                 </div>
 
-                <nav class="flex h-[calc(100%-4rem)] flex-col px-3 py-4">
-                    @if ($isAdmin)
-                        <a
-                            href="{{ route('admin.dashboard') }}"
-                            data-admin-nav-link
-                            class="admin-nav-item {{ request()->routeIs('admin.dashboard') ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-700 hover:bg-slate-100' }}"
-                        >
-                            <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="1.8">
-                                <path d="M3 12L12 4L21 12V20A1 1 0 0 1 20 21H4A1 1 0 0 1 3 20V12Z" stroke-linejoin="round"/>
-                            </svg>
-                            <span class="admin-label">Dashboard</span>
-                        </a>
+                <nav class="flex h-[calc(100%-4rem)] flex-col px-4 py-6">
+                    <div class="space-y-1">
+                        @if ($isAdmin)
+                            <a
+                                href="{{ route('admin.dashboard') }}"
+                                data-admin-nav-link
+                                class="admin-nav-item {{ request()->routeIs('admin.dashboard') ? 'bg-zinc-900 text-white shadow-lg shadow-zinc-200' : 'text-zinc-500 hover:bg-zinc-50 hover:text-zinc-900' }}"
+                            >
+                                <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="2">
+                                    <path d="M3 12L12 4L21 12V20A1 1 0 0 1 20 21H4A1 1 0 0 1 3 20V12Z" stroke-linejoin="round"/>
+                                </svg>
+                                <span class="admin-label text-xs font-bold uppercase tracking-widest">Dashboard</span>
+                            </a>
+
+                            <a
+                                href="{{ route('admin.units.index') }}"
+                                data-admin-nav-link
+                                class="admin-nav-item {{ request()->routeIs('admin.units.*') ? 'bg-zinc-900 text-white shadow-lg shadow-zinc-200' : 'text-zinc-500 hover:bg-zinc-50 hover:text-zinc-900' }}"
+                            >
+                                <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="2">
+                                    <path d="M4 8.5L12 4L20 8.5V15.5L12 20L4 15.5V8.5Z" stroke-linejoin="round"/>
+                                </svg>
+                                <span class="admin-label text-xs font-bold uppercase tracking-widest">Units</span>
+                            </a>
+
+                            <a
+                                href="{{ route('admin.categories.index') }}"
+                                data-admin-nav-link
+                                class="admin-nav-item {{ request()->routeIs('admin.categories.*') ? 'bg-zinc-900 text-white shadow-lg shadow-zinc-200' : 'text-zinc-500 hover:bg-zinc-50 hover:text-zinc-900' }}"
+                            >
+                                <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="2">
+                                    <path d="M4 7H20M4 12H20M4 17H14" stroke-linecap="round"/>
+                                </svg>
+                                <span class="admin-label text-xs font-bold uppercase tracking-widest">Categories</span>
+                            </a>
+
+                            <a
+                                href="{{ route('admin.employees.index') }}"
+                                data-admin-nav-link
+                                class="admin-nav-item {{ request()->routeIs('admin.employees.*') ? 'bg-zinc-900 text-white shadow-lg shadow-zinc-200' : 'text-zinc-500 hover:bg-zinc-50 hover:text-zinc-900' }}"
+                            >
+                                <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="2">
+                                    <circle cx="9" cy="7" r="4"/>
+                                    <path d="M22 21v-2a4 4 0 0 0-3-3.87" stroke-linecap="round"/>
+                                    <path d="M16 3.13a4 4 0 0 1 0 7.75" stroke-linecap="round"/>
+                                    <path d="M9 21v-2a4 4 0 0 1 4-4h2" stroke-linecap="round"/>
+                                </svg>
+                                <span class="admin-label text-xs font-bold uppercase tracking-widest">Employees</span>
+                            </a>
+
+                            <a
+                                href="{{ route('admin.inquiries.index') }}"
+                                data-admin-nav-link
+                                class="admin-nav-item relative {{ request()->routeIs('admin.inquiries.*') ? 'bg-zinc-900 text-white shadow-lg shadow-zinc-200' : 'text-zinc-500 hover:bg-zinc-50 hover:text-zinc-900' }}"
+                            >
+                                <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15V19A2 2 0 0 1 19 21H5A2 2 0 0 1 3 19V15M7 10L12 15L17 10M12 15V3" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                <span class="admin-label text-xs font-bold uppercase tracking-widest">Inquiries</span>
+                                @livewire('inquiry-badge')
+                            </a>
+
+                            <a
+                                href="{{ route('admin.logs.index') }}"
+                                data-admin-nav-link
+                                class="admin-nav-item {{ request()->routeIs('admin.logs.*') ? 'bg-zinc-900 text-white shadow-lg shadow-zinc-200' : 'text-zinc-500 hover:bg-zinc-50 hover:text-zinc-900' }}"
+                            >
+                                <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="2">
+                                    <path d="M6 6H18V18H6V6Z" stroke-linejoin="round"/>
+                                    <path d="M9 10H15M9 14H13" stroke-linecap="round"/>
+                                </svg>
+                                <span class="admin-label text-xs font-bold uppercase tracking-widest">Logs</span>
+                            </a>
+                        @elseif ($isStaff)
+                            <a
+                                href="{{ route('admin.units.index') }}"
+                                data-admin-nav-link
+                                class="admin-nav-item {{ request()->routeIs('admin.units.*') ? 'bg-zinc-900 text-white shadow-lg shadow-zinc-200' : 'text-zinc-500 hover:bg-zinc-50 hover:text-zinc-900' }}"
+                            >
+                                <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="2">
+                                    <path d="M4 8.5L12 4L20 8.5V15.5L12 20L4 15.5V8.5Z" stroke-linejoin="round"/>
+                                </svg>
+                                <span class="admin-label text-xs font-bold uppercase tracking-widest">Units</span>
+                            </a>
+                        @endif
+
+                        <div class="mt-6 mb-2 px-4">
+                            <span class="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400">Settings</span>
+                        </div>
 
                         <a
-                            href="{{ route('admin.units.index') }}"
+                            href="{{ route('profile.edit') }}"
                             data-admin-nav-link
-                            class="admin-nav-item {{ request()->routeIs('admin.units.*') ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-700 hover:bg-slate-100' }}"
+                            class="admin-nav-item {{ request()->routeIs('profile.edit') || request()->is('settings*') ? 'bg-zinc-900 text-white shadow-lg shadow-zinc-200' : 'text-zinc-500 hover:bg-zinc-50 hover:text-zinc-900' }}"
                         >
-                            <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="1.8">
-                                <path d="M4 8.5L12 4L20 8.5V15.5L12 20L4 15.5V8.5Z" stroke-linejoin="round"/>
-                                <path d="M4 8.5L12 13L20 8.5" stroke-linecap="round"/>
+                            <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="3"/>
+                                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
                             </svg>
-                            <span class="admin-label">Units</span>
+                            <span class="admin-label text-xs font-bold uppercase tracking-widest">My Account</span>
                         </a>
+                    </div>
 
-                        <a
-                            href="{{ route('admin.categories.index') }}"
-                            data-admin-nav-link
-                            class="admin-nav-item {{ request()->routeIs('admin.categories.*') ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-700 hover:bg-slate-100' }}"
-                        >
-                            <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="1.8">
-                                <path d="M4 7H20M4 12H20M4 17H14" stroke-linecap="round"/>
-                            </svg>
-                            <span class="admin-label">Categories</span>
-                        </a>
-
-                        <a
-                            href="{{ route('admin.employees.index') }}"
-                            data-admin-nav-link
-                            class="admin-nav-item {{ request()->routeIs('admin.employees.*') ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-700 hover:bg-slate-100' }}"
-                        >
-                            <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="1.8">
-                                <path d="M7 11A3 3 0 1 0 7 5A3 3 0 0 0 7 11Z" stroke-linejoin="round"/>
-                                <path d="M17 13A2 2 0 1 0 17 9A2 2 0 0 0 17 13Z" stroke-linejoin="round"/>
-                                <path d="M3.5 19.5C3.5 16.7 5.6 15 8.2 15H8.8C11.4 15 13.5 16.7 13.5 19.5" stroke-linecap="round"/>
-                                <path d="M14.5 19.5C14.5 17.6 16 16.4 17.8 16.4H18.2C20 16.4 21.5 17.6 21.5 19.5" stroke-linecap="round"/>
-                            </svg>
-                            <span class="admin-label">Employees</span>
-                        </a>
-
-                        <a
-                            href="{{ route('admin.inquiries.index') }}"
-                            data-admin-nav-link
-                            class="admin-nav-item {{ request()->routeIs('admin.inquiries.*') ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-700 hover:bg-slate-100' }}"
-                        >
-                            <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="1.8">
-                                <path d="M21 15V19A2 2 0 0 1 19 21H5A2 2 0 0 1 3 19V15M7 10L12 15L17 10M12 15V3" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
-                            <span class="admin-label">Inquiries</span>
-                        </a>
-
-                        <a
-                            href="{{ route('admin.logs.index') }}"
-                            data-admin-nav-link
-                            class="admin-nav-item {{ request()->routeIs('admin.logs.*') ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-700 hover:bg-slate-100' }}"
-                        >
-                            <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="1.8">
-                                <path d="M6 6H18V18H6V6Z" stroke-linejoin="round"/>
-                                <path d="M9 10H15M9 14H13" stroke-linecap="round"/>
-                            </svg>
-                            <span class="admin-label">Logs</span>
-                        </a>
-                    @elseif ($isStaff)
-                        <a
-                            href="{{ route('admin.units.index') }}"
-                            data-admin-nav-link
-                            class="admin-nav-item {{ request()->routeIs('admin.units.*') ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-700 hover:bg-slate-100' }}"
-                        >
-                            <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="1.8">
-                                <path d="M4 8.5L12 4L20 8.5V15.5L12 20L4 15.5V8.5Z" stroke-linejoin="round"/>
-                                <path d="M4 8.5L12 13L20 8.5" stroke-linecap="round"/>
-                            </svg>
-                            <span class="admin-label">Units</span>
-                        </a>
-
-                        <a
-                            href="{{ route('admin.units.index') }}"
-                            data-admin-nav-link
-                            class="admin-nav-item {{ request()->routeIs('admin.units.qr') ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-700 hover:bg-slate-100' }}"
-                        >
-                            <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="1.8">
-                                <path d="M4 6H20V18H4V6Z" stroke-linejoin="round"/>
-                                <path d="M8 10L11 13L16 8" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
-                            <span class="admin-label">QR Actions</span>
-                        </a>
-                    @endif
-
-                    <div class="mt-auto border-t border-slate-200 pt-3">
+                    <div class="mt-auto border-t border-zinc-100 pt-6">
                         <form method="POST" action="{{ route('logout') }}" data-disable-on-submit>
                             @csrf
-                            <button type="submit" class="admin-nav-item w-full text-slate-700 hover:bg-slate-100">
-                                <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="1.8">
+                            <button type="submit" class="admin-nav-item w-full text-zinc-500 hover:bg-zinc-50 hover:text-zinc-900">
+                                <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="2">
                                     <path d="M9 5H5V19H9" stroke-linecap="round"/>
-                                    <path d="M15 16L19 12L15 8" stroke-linecap="round" stroke-linejoin="round"/>
                                     <path d="M19 12H9" stroke-linecap="round"/>
+                                    <path d="M16 15L19 12L16 9" stroke-linecap="round" stroke-linejoin="round"/>
                                 </svg>
-                                <span class="admin-label">Logout</span>
+                                <span class="admin-label text-xs font-bold uppercase tracking-widest">Logout</span>
                             </button>
                         </form>
                     </div>
@@ -159,11 +164,11 @@
             </aside>
 
             <div id="admin-content" class="min-h-screen transition-[padding] duration-200 ease-out lg:pl-72">
-                <header class="sticky top-0 z-20 border-b border-slate-200 bg-white/95 backdrop-blur">
-                    <div class="flex flex-wrap items-center gap-3 px-4 py-3 sm:px-6 lg:px-8">
-                        <div class="flex flex-1 items-center gap-2 sm:gap-3">
-                            <label for="admin-mobile-nav" class="inline-flex rounded-md border border-slate-300 p-2 text-slate-600 hover:bg-slate-100 lg:hidden" aria-label="Open sidebar">
-                                <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="1.8">
+                <header class="sticky top-0 z-20 border-b border-zinc-100 bg-white/80 backdrop-blur-md">
+                    <div class="flex h-16 items-center justify-between gap-6 px-4 sm:px-8">
+                        <div class="flex items-center gap-4">
+                            <label for="admin-mobile-nav" class="inline-flex rounded-full border border-zinc-200 p-2 text-zinc-400 hover:bg-zinc-50 hover:text-zinc-900 lg:hidden" aria-label="Open sidebar">
+                                <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="2">
                                     <path d="M4 7H20M4 12H20M4 17H20" stroke-linecap="round"/>
                                 </svg>
                             </label>
@@ -171,126 +176,101 @@
                             <button
                                 id="admin-sidebar-toggle"
                                 type="button"
-                                class="hidden rounded-md border border-slate-300 p-2 text-slate-600 hover:bg-slate-100 lg:inline-flex"
+                                class="hidden rounded-full border border-zinc-200 p-2 text-zinc-400 hover:bg-zinc-50 hover:text-zinc-900 lg:inline-flex"
                                 aria-label="Collapse sidebar"
-                                title="Collapse sidebar"
                             >
-                                <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="1.8">
-                                    <path d="M15 6L9 12L15 18" stroke-linecap="round" stroke-linejoin="round"/>
+                                <svg viewBox="0 0 24 24" fill="none" class="h-4 w-4" stroke="currentColor" stroke-width="2.5">
+                                    <path d="M15 18L9 12L15 6" stroke-linecap="round" stroke-linejoin="round"/>
                                 </svg>
                             </button>
 
+                            <div class="h-8 w-px bg-zinc-100"></div>
+
                             <div>
-                                <p class="text-xs font-medium uppercase tracking-[0.12em] text-slate-500">{{ $panelTitle }}</p>
-                                <h1 class="text-lg font-semibold text-slate-900">{{ $title ?? 'Admin' }}</h1>
+                                <h1 class="text-sm font-black uppercase tracking-widest text-zinc-900">{{ $title ?? 'Admin' }}</h1>
                             </div>
                         </div>
 
-                        <div class="order-3 w-full md:order-2 md:w-auto md:flex-1 md:max-w-xl">
+                        <div class="hidden flex-1 max-w-xl md:block">
                             @if ($isAdmin)
                                 <form method="GET" action="{{ route('admin.units.index') }}" class="relative">
-                                    <label for="admin-global-search" class="sr-only">Search units by name</label>
-                                    <svg viewBox="0 0 24 24" fill="none" class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" stroke="currentColor" stroke-width="1.8">
+                                    <svg viewBox="0 0 24 24" fill="none" class="pointer-events-none absolute left-3.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-zinc-400" stroke="currentColor" stroke-width="2.5">
                                         <circle cx="11" cy="11" r="7"/>
                                         <path d="M20 20L16.65 16.65" stroke-linecap="round"/>
                                     </svg>
                                     <input
-                                        id="admin-global-search"
                                         type="search"
                                         name="q"
                                         value="{{ request('q') }}"
-                                        placeholder="Search units by name"
-                                        class="admin-input w-full pl-9"
+                                        placeholder="Search catalog..."
+                                        class="h-10 w-full rounded-full border border-zinc-100 bg-zinc-50 pl-10 text-xs text-zinc-900 placeholder:text-zinc-400 focus:border-zinc-900 focus:bg-white focus:outline-none transition-all"
                                     >
                                 </form>
-                            @else
-                                <div class="rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-600">
-                                    Staff mode: Add units, manage images, and run QR status actions.
-                                </div>
                             @endif
                         </div>
 
-                        <div class="order-2 ms-auto flex items-center gap-2 md:order-3">
-                            <button
-                                type="button"
-                                class="inline-flex rounded-md border border-slate-300 p-2 text-slate-600 hover:bg-slate-100"
-                                aria-label="Notifications"
-                                title="Notifications placeholder"
+                        <div class="flex items-center gap-4">
+                            <a
+                                href="{{ route('admin.inquiries.index') }}"
+                                class="relative inline-flex rounded-full border border-zinc-200 p-2 text-zinc-400 hover:bg-zinc-50 hover:text-zinc-900"
+                                aria-label="Inquiries"
+                                title="Recent Inquiries"
                             >
-                                <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="1.8">
+                                <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="2">
                                     <path d="M12 4A4 4 0 0 0 8 8V11.4L6.3 14.8A1 1 0 0 0 7.2 16.2H16.8A1 1 0 0 0 17.7 14.8L16 11.4V8A4 4 0 0 0 12 4Z" stroke-linejoin="round"/>
                                     <path d="M10 19A2 2 0 0 0 14 19" stroke-linecap="round"/>
                                 </svg>
-                            </button>
+                                @livewire('inquiry-badge')
+                            </a>
+
+                            <div class="hidden flex-col items-end text-right sm:flex">
+                                <span class="text-xs font-black tracking-tight text-zinc-900 leading-none">{{ $currentUser?->name }}</span>
+                                <span class="mt-1 text-[10px] font-bold uppercase tracking-widest text-zinc-400 leading-none">{{ $isAdmin ? 'Administrator' : 'Staff' }}</span>
+                            </div>
 
                             <details class="relative [&_summary::-webkit-details-marker]:hidden">
-                                <summary class="inline-flex cursor-pointer items-center gap-2 rounded-md border border-slate-300 px-2.5 py-2 text-slate-700 hover:bg-slate-100">
-                                    <span class="hidden text-left sm:block">
-                                        <span class="block text-sm font-medium leading-none">{{ $currentUser?->name }}</span>
-                                        <span class="mt-1 block text-xs text-slate-500">{{ $currentUser?->email }}</span>
-                                    </span>
-                                    <svg viewBox="0 0 24 24" fill="none" class="h-4 w-4" stroke="currentColor" stroke-width="1.8">
-                                        <path d="M6 9L12 15L18 9" stroke-linecap="round" stroke-linejoin="round"/>
-                                    </svg>
+                                <summary class="flex cursor-pointer h-9 w-9 items-center justify-center rounded-full bg-zinc-900 text-[10px] font-black text-white uppercase tracking-tighter hover:scale-105 transition-transform">
+                                    {{ substr($currentUser?->name ?? 'U', 0, 1) }}
                                 </summary>
 
-                                <div class="absolute right-0 z-30 mt-2 w-64 rounded-lg border border-slate-200 bg-white p-3 shadow-lg">
-                                    <p class="text-sm font-semibold text-slate-900">{{ $currentUser?->name }}</p>
-                                    <p class="mb-3 mt-1 break-all text-xs text-slate-500">{{ $currentUser?->email }}</p>
-                                    <form method="POST" action="{{ route('logout') }}" data-disable-on-submit>
-                                        @csrf
-                                        <button type="submit" class="admin-btn-secondary w-full">
-                                            Logout
-                                        </button>
-                                    </form>
+                                <div class="absolute right-0 z-30 mt-3 w-64 rounded-2xl border border-zinc-100 bg-white p-4 shadow-2xl">
+                                    <p class="text-xs font-black uppercase tracking-widest text-zinc-400">Account</p>
+                                    <p class="mt-2 text-sm font-bold text-zinc-900">{{ $currentUser?->name }}</p>
+                                    <p class="mt-0.5 text-xs text-zinc-500">{{ $currentUser?->email }}</p>
+                                    
+                                    <div class="mt-4 space-y-1 border-t border-zinc-50 pt-4">
+                                        <form method="POST" action="{{ route('logout') }}" data-disable-on-submit>
+                                            @csrf
+                                            <button type="submit" class="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-xs font-bold text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900 transition-colors">
+                                                <svg viewBox="0 0 24 24" fill="none" class="h-4 w-4" stroke="currentColor" stroke-width="2">
+                                                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>
+                                                </svg>
+                                                Sign Out
+                                            </button>
+                                        </form>
+                                    </div>
                                 </div>
                             </details>
                         </div>
                     </div>
                 </header>
 
-                <div id="admin-toast-region" class="pointer-events-none fixed right-4 top-4 z-50 space-y-2" aria-live="polite" aria-atomic="true">
+                <div id="admin-toast-region" class="pointer-events-none fixed right-6 top-6 z-50 space-y-3" aria-live="polite" aria-atomic="true">
                     @if (session('status'))
-                        <div data-admin-toast class="admin-toast pointer-events-auto rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800 shadow">
-                            <div class="flex items-start justify-between gap-4">
-                                <p>{{ session('status') }}</p>
-                                <button type="button" class="text-emerald-700" data-admin-toast-close aria-label="Close notification">
-                                    <svg viewBox="0 0 24 24" fill="none" class="h-4 w-4" stroke="currentColor" stroke-width="1.8">
-                                        <path d="M6 6L18 18M6 18L18 6" stroke-linecap="round"/>
+                        <div data-admin-toast class="admin-toast pointer-events-auto rounded-2xl border border-emerald-100 bg-white p-4 shadow-xl shadow-emerald-500/5">
+                            <div class="flex items-center gap-3">
+                                <span class="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-500 text-white">
+                                    <svg viewBox="0 0 24 24" fill="none" class="h-3.5 w-3.5" stroke="currentColor" stroke-width="3">
+                                        <path d="M20 6L9 17L4 12" stroke-linecap="round" stroke-linejoin="round"/>
                                     </svg>
-                                </button>
-                            </div>
-                        </div>
-                    @endif
-
-                    @if (session('info'))
-                        <div data-admin-toast class="admin-toast pointer-events-auto rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-800 shadow">
-                            <div class="flex items-start justify-between gap-4">
-                                <p>{{ session('info') }}</p>
-                                <button type="button" class="text-blue-700" data-admin-toast-close aria-label="Close notification">
-                                    <svg viewBox="0 0 24 24" fill="none" class="h-4 w-4" stroke="currentColor" stroke-width="1.8">
-                                        <path d="M6 6L18 18M6 18L18 6" stroke-linecap="round"/>
-                                    </svg>
-                                </button>
-                            </div>
-                        </div>
-                    @endif
-
-                    @if (session('error'))
-                        <div data-admin-toast class="admin-toast pointer-events-auto rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800 shadow">
-                            <div class="flex items-start justify-between gap-4">
-                                <p>{{ session('error') }}</p>
-                                <button type="button" class="text-red-700" data-admin-toast-close aria-label="Close notification">
-                                    <svg viewBox="0 0 24 24" fill="none" class="h-4 w-4" stroke="currentColor" stroke-width="1.8">
-                                        <path d="M6 6L18 18M6 18L18 6" stroke-linecap="round"/>
-                                    </svg>
-                                </button>
+                                </span>
+                                <p class="text-xs font-bold text-zinc-900">{{ session('status') }}</p>
                             </div>
                         </div>
                     @endif
                 </div>
 
-                <main id="admin-main" class="space-y-6 px-4 py-6 sm:px-6 lg:px-8">
+                <main id="admin-main" class="px-4 py-8 sm:px-8">
                     {{ $slot }}
                 </main>
             </div>

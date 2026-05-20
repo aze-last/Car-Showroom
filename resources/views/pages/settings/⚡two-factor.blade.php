@@ -11,6 +11,14 @@ use Livewire\Component;
 use Symfony\Component\HttpFoundation\Response;
 
 new class extends Component {
+    /**
+     * Set the layout for the component.
+     */
+    public function rendering($view): void
+    {
+        $view->layout('layouts.admin-panel', ['title' => 'Security Settings']);
+    }
+
     #[Locked]
     public bool $twoFactorEnabled;
 

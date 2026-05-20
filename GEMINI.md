@@ -2,6 +2,20 @@
 
 A production-ready Laravel application for a public vehicle showroom with a hidden admin panel.
 
+## Agent Team (Source of Truth)
+This project utilizes a specialized **Agent Team** for architectural orchestration, logic verification, and UI/UX auditing.
+- **Location:** `.agent-team/`
+- **Mandate:** The agent profiles in this folder are the **primary source of truth** for any AI coding assistant or developer working on this project. All changes must align with the objectives and rules defined in the agent files.
+- **Coordination:** The `Coordinator` agent orchestrates all tasks and ensures end-to-end integration (Database -> Model -> UI) for every feature.
+
+## Design System (LOCKED)
+The application follows a **"Premium White"** aesthetic. All new UI must adhere to these tokens:
+- **Palette:** Pure White backgrounds, `zinc-50` for secondary areas, and `zinc-900` for primary typography/actions.
+- **Accents:** No Amber/Gold. Use `emerald-500` for success/available states and `red-600` for critical actions.
+- **Typography:** Professional tracking-widest on headers and bold, high-contrast labels.
+- **Components:** Rounded-3xl corners for cards, rounded-xl for inputs/buttons. Use Flux UI components idiomatically.
+- **Motion:** Staggered `animate-showroom-fade-up` (cubic-bezier) for all grid entrances and list items.
+
 ## Project Overview
 - **Technology Stack:** Laravel 12, Livewire 4, Flux UI, Tailwind CSS 4, Pest (Testing).
 - **Architecture:** Monolithic Laravel app using Livewire for interactive components.

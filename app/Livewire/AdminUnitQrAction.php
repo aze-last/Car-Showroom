@@ -20,6 +20,8 @@ class AdminUnitQrAction extends Component
 
     public string $qrSvg = '';
 
+    public ?string $reason = null;
+
     public function mount(Unit $unit): void
     {
         Gate::authorize('changeStatus', $unit);
@@ -27,6 +29,42 @@ class AdminUnitQrAction extends Component
         $this->unit = $unit->load('category');
         $this->refreshUnitData();
         $this->generateQrSvg();
+    }
+
+    public function markAsSold(\App\Services\UnitStatusService $statusService): void
+    {
+        Gate::authorize('changeStatus', $this->unit);
+
+        $result = $statusService->setSold(
+            unit: $this->unit,
+            userId: (int) auth()->id(),
+            reason: $this->reason,
+            ipAddress: request()->ip(),
+            userAgent: request()->userAgent(),
+        );
+
+        $this->reason = null;
+        $this->refreshUnitData();
+
+        session()->flash($result['changed'] ? 'status' : 'info', $result['message']);
+    }
+
+    public function markAsAvailable(\App\Services\UnitStatusService $statusService): void
+    {
+        Gate::authorize('changeStatus', $this->unit);
+
+        $result = $statusService->setAvailable(
+            unit: $this->unit,
+            userId: (int) auth()->id(),
+            reason: $this->reason,
+            ipAddress: request()->ip(),
+            userAgent: request()->userAgent(),
+        );
+
+        $this->reason = null;
+        $this->refreshUnitData();
+
+        session()->flash($result['changed'] ? 'status' : 'info', $result['message']);
     }
 
     private function refreshUnitData(): void

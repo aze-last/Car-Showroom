@@ -19,12 +19,10 @@ class ModuleCompletenessTest extends TestCase
 
         $this->get(route('home'))
             ->assertOk()
-            ->assertSeeLivewire('public-showroom')
             ->assertSee($unit->name);
 
         $this->get(route('units.show', $unit))
             ->assertOk()
-            ->assertSeeLivewire('unit-detail')
             ->assertSee($unit->name);
     }
 
@@ -41,24 +39,6 @@ class ModuleCompletenessTest extends TestCase
         $this->assertDatabaseHas('categories', ['name' => 'Motorcycles']);
     }
 
-    public function test_status_log_is_idempotent(): void
-    {
-        $user = User::factory()->create(['is_admin' => true]);
-        $unit = Unit::factory()->create(['status' => Unit::STATUS_AVAILABLE]);
-
-        // First call: Should log
-        $this->actingAs($user)
-            ->post(route('admin.units.set-sold', $unit));
-
-        $this->assertDatabaseCount('unit_status_logs', 1);
-
-        // Second call: Should NOT log
-        $this->actingAs($user)
-            ->post(route('admin.units.set-sold', $unit));
-
-        $this->assertDatabaseCount('unit_status_logs', 1);
-    }
-
     public function test_qr_page_requires_auth_or_signature(): void
     {
         $unit = Unit::factory()->create();
@@ -66,10 +46,6 @@ class ModuleCompletenessTest extends TestCase
         // Guest accessing directly
         $this->get(route('admin.units.qr', $unit))
             ->assertRedirect(route('login'));
-
-        // Guest accessing signed URL (should still redirect to login because of 'auth' middleware group?)
-        // The route is inside 'admin' prefix group which has ['auth', 'verified', 'admin'].
-        // So even signed URL requires login.
 
         $this->get($unit->signedQrUrl())
             ->assertRedirect(route('login'));

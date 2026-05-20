@@ -98,7 +98,7 @@ class ZmotoCatalogImporter
             $path = $page === 1 ? '/shop'.$searchParam : '/shop/page/'.$page.$searchParam;
             $html = $this->getHtml(self::BASE_URL.$path);
             $xpath = $this->makeXPath($html);
-// ... (omitting unchanged lines for brevity in instruction, but will provide full block)
+            // ... (omitting unchanged lines for brevity in instruction, but will provide full block)
 
             foreach ($xpath->query('//form[contains(@class, "oe_product_cart")]//a[contains(@href, "/shop/")] | //a[contains(@href, "/shop/")]') as $anchor) {
                 if (! $anchor instanceof DOMElement) {

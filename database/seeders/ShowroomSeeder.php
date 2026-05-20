@@ -14,7 +14,7 @@ class ShowroomSeeder extends Seeder
     public function run(): void
     {
         $categories = Category::all()->keyBy('name');
-        
+
         if ($categories->isEmpty()) {
             return;
         }
@@ -51,35 +51,35 @@ class ShowroomSeeder extends Seeder
                 'category' => 'Motorcycle',
                 'price' => 1099000,
                 'description' => 'The R1 features a next-generation R-series design, sophisticated electronic control, and a crossplane engine for ultimate performance.',
-                'image_query' => 'yamaha,r1,motorcycle'
+                'image_query' => 'yamaha,r1,motorcycle',
             ],
             [
                 'name' => 'Honda Civic Type R',
                 'category' => 'Cars',
                 'price' => 3870000,
                 'description' => 'The ultimate hot hatch. Engineered for speed and precision, the Civic Type R delivers an exhilarating driving experience on both road and track.',
-                'image_query' => 'honda,civic,typer,car'
+                'image_query' => 'honda,civic,typer,car',
             ],
             [
                 'name' => 'Toyota Fortuner GR Sport',
                 'category' => 'Cars',
                 'price' => 2550000,
                 'description' => 'Dominate every road with the GR Sport edition. Rugged, powerful, and luxurious, it is the perfect companion for any adventure.',
-                'image_query' => 'toyota,fortuner,suv'
+                'image_query' => 'toyota,fortuner,suv',
             ],
             [
                 'name' => 'Vespa Primavera 150',
                 'category' => 'Motorcycle',
                 'price' => 210000,
                 'description' => 'Iconic Italian style meets modern technology. The Primavera is agile, stylish, and perfect for city cruising.',
-                'image_query' => 'vespa,scooter'
+                'image_query' => 'vespa,scooter',
             ],
             [
                 'name' => 'Mazda MX-5 Miata',
                 'category' => 'Sportscars',
                 'price' => 2250000,
                 'description' => 'The world\'s best-selling roadster. Lightweight, perfectly balanced, and pure driving joy.',
-                'image_query' => 'mazda,mx5,miata,car'
+                'image_query' => 'mazda,mx5,miata,car',
             ],
         ];
 
@@ -107,12 +107,15 @@ class ShowroomSeeder extends Seeder
         Storage::disk('public')->makeDirectory($folder);
 
         for ($i = 0; $i < 3; $i++) {
-            $filename = (string) Str::uuid() . '.jpg';
+            $filename = (string) Str::uuid().'.jpg';
             $path = "{$folder}/{$filename}";
-            $url = "https://source.unsplash.com/featured/800x600/?{$query}&sig=" . rand(1, 1000);
-            
+            // Fallback to picsum as unsplash source API is deprecated and redirects to HTML
+            $url = 'https://picsum.photos/seed/'.rand(1, 10000).'/800/600.jpg';
+
             try {
-                $contents = @file_get_contents($url);
+                // Ensure stream context has a timeout
+                $context = stream_context_create(['http' => ['timeout' => 5]]);
+                $contents = @file_get_contents($url, false, $context);
                 if ($contents) {
                     Storage::disk('public')->put($path, $contents);
                     UnitImage::create([
@@ -121,7 +124,9 @@ class ShowroomSeeder extends Seeder
                         'sort_order' => $i,
                     ]);
                 }
-            } catch (\Exception $e) {}
+            } catch (\Exception $e) {
+                // Silently fail if download fails
+            }
         }
     }
 }

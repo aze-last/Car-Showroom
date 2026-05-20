@@ -9,6 +9,14 @@ use Livewire\Component;
 new class extends Component {
     use PasswordValidationRules;
 
+    /**
+     * Set the layout for the component.
+     */
+    public function rendering($view): void
+    {
+        $view->layout('layouts.admin-panel', ['title' => 'Security Settings']);
+    }
+
     public string $current_password = '';
     public string $password = '';
     public string $password_confirmation = '';

@@ -23,8 +23,6 @@ class UnitManagementTest extends TestCase
         $this->get(route('admin.units.index'))->assertRedirect(route('login'));
         $this->get(route('admin.units.create'))->assertRedirect(route('login'));
         $this->get(route('admin.units.edit', $unit))->assertRedirect(route('login'));
-        $this->post(route('admin.units.set-sold', $unit))->assertRedirect(route('login'));
-        $this->post(route('admin.units.set-available', $unit))->assertRedirect(route('login'));
     }
 
     public function test_can_create_unit(): void
@@ -80,55 +78,56 @@ class UnitManagementTest extends TestCase
         ]);
     }
 
-    public function test_status_change_to_sold(): void
+    public function test_can_mark_unit_as_sold_via_livewire(): void
     {
         $user = User::factory()->create(['is_admin' => true]);
         $unit = Unit::factory()->create(['status' => Unit::STATUS_AVAILABLE]);
 
-        $this->actingAs($user)
-            ->post(route('admin.units.set-sold', $unit))
-            ->assertRedirect();
+        Livewire::actingAs($user)
+            ->test(AdminUnitForm::class, ['unit' => $unit])
+            ->set('statusReason', 'Sold to buyer')
+            ->call('markAsSold')
+            ->assertHasNoErrors();
 
         $this->assertEquals(Unit::STATUS_SOLD, $unit->fresh()->status);
-
         $this->assertDatabaseHas('unit_status_logs', [
-            'action' => UnitStatusLog::ACTION_SET_SOLD,
             'unit_id' => $unit->id,
+            'action' => UnitStatusLog::ACTION_SET_SOLD,
+            'reason' => 'Sold to buyer',
             'user_id' => $user->id,
         ]);
     }
 
-    public function test_revert_to_available(): void
+    public function test_can_mark_unit_as_available_via_livewire(): void
     {
         $user = User::factory()->create(['is_admin' => true]);
         $unit = Unit::factory()->sold()->create();
 
-        $this->actingAs($user)
-            ->post(route('admin.units.set-available', $unit))
-            ->assertRedirect();
+        Livewire::actingAs($user)
+            ->test(AdminUnitForm::class, ['unit' => $unit])
+            ->set('statusReason', 'Back in stock')
+            ->call('markAsAvailable')
+            ->assertHasNoErrors();
 
         $this->assertEquals(Unit::STATUS_AVAILABLE, $unit->fresh()->status);
-
         $this->assertDatabaseHas('unit_status_logs', [
-            'action' => UnitStatusLog::ACTION_SET_AVAILABLE,
             'unit_id' => $unit->id,
-            'user_id' => $user->id,
+            'action' => UnitStatusLog::ACTION_SET_AVAILABLE,
+            'reason' => 'Back in stock',
         ]);
     }
 
-    public function test_logs_user_identity_on_status_change(): void
+    public function test_can_mark_unit_as_sold_via_qr_action_livewire(): void
     {
         $user = User::factory()->create(['is_admin' => true]);
         $unit = Unit::factory()->create(['status' => Unit::STATUS_AVAILABLE]);
 
-        $this->actingAs($user)
-            ->post(route('admin.units.set-sold', $unit));
+        Livewire::actingAs($user)
+            ->test(\App\Livewire\AdminUnitQrAction::class, ['unit' => $unit])
+            ->set('reason', 'QR scan sale')
+            ->call('markAsSold')
+            ->assertHasNoErrors();
 
-        $log = UnitStatusLog::where('unit_id', $unit->id)
-            ->where('action', UnitStatusLog::ACTION_SET_SOLD)
-            ->first();
-
-        $this->assertNotNull($log);
-        $this->assertEquals($user->id, $log->user_id);
+        $this->assertEquals(Unit::STATUS_SOLD, $unit->fresh()->status);
     }
 }

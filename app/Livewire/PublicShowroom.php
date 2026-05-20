@@ -28,6 +28,34 @@ class PublicShowroom extends Component
     #[Url(as: 'max', history: true)]
     public ?int $maxPrice = null;
 
+    public array $compareIds = [];
+
+    public bool $showCompareModal = false;
+
+    public function toggleCompare(int $id): void
+    {
+        if (in_array($id, $this->compareIds)) {
+            $this->compareIds = array_values(array_diff($this->compareIds, [$id]));
+        } elseif (count($this->compareIds) < 3) {
+            $this->compareIds[] = $id;
+        }
+    }
+
+    public function clearCompare(): void
+    {
+        $this->compareIds = [];
+    }
+
+    #[\Livewire\Attributes\Computed]
+    public function selectedUnits()
+    {
+        return Unit::query()
+            ->with(['category', 'mainImage'])
+            ->whereIn('id', $this->compareIds)
+            ->get()
+            ->sortBy(fn($unit) => array_search($unit->id, $this->compareIds));
+    }
+
     public function updatedSearch(): void
     {
         $this->resetPage();
@@ -99,9 +127,18 @@ class PublicShowroom extends Component
             ->when($this->sortBy === 'newest', fn ($q) => $q->latest('updated_at'))
             ->paginate(12);
 
+        $featuredUnits = Unit::query()
+            ->with(['category', 'mainImage'])
+            ->where('is_featured', true)
+            ->where('status', Unit::STATUS_AVAILABLE)
+            ->latest()
+            ->limit(5)
+            ->get();
+
         return view('livewire.public-showroom', [
             'categories' => $categories,
             'units' => $units,
+            'featuredUnits' => $featuredUnits,
         ])->layout('layouts.public-showroom', [
             'title' => 'Vehicle Showroom',
         ]);

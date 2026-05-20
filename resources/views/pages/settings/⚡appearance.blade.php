@@ -3,7 +3,13 @@
 use Livewire\Component;
 
 new class extends Component {
-    //
+    /**
+     * Set the layout for the component.
+     */
+    public function rendering($view): void
+    {
+        $view->layout('layouts.admin-panel', ['title' => 'Appearance Settings']);
+    }
 }; ?>
 
 <section class="w-full">
