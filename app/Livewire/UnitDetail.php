@@ -86,7 +86,7 @@ class UnitDetail extends Component
         return view('livewire.unit-detail', [
             'activeImage' => $image,
             'similarUnits' => $similarUnits,
-        ])->layout('layouts.public-showroom', [
+        ])->layout('components.layouts.public-showroom', [
             'title' => $this->unit->name,
         ]);
     }

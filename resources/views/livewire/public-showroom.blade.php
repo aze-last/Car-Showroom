@@ -7,23 +7,7 @@
     <!-- 1. Search & Filter Card (Primary Action) -->
     <div x-data="{ shown: false }" x-intersect.once="shown = true" :class="shown ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'" class="rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm sm:p-8 transition-all duration-700 ease-out motion-reduce:transition-none motion-reduce:opacity-100 motion-reduce:translate-y-0">
         <div class="space-y-8">
-            <div class="grid gap-6 md:grid-cols-[1.5fr_1fr] md:items-end">
-                <label class="block">
-                    <span class="mb-2.5 block text-[10px] font-bold uppercase tracking-widest text-zinc-400">Search Catalog</span>
-                    <div class="relative">
-                        <svg viewBox="0 0 24 24" fill="none" class="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" stroke="currentColor" stroke-width="2">
-                            <circle cx="11" cy="11" r="7"/>
-                            <path d="M20 20L16.65 16.65" stroke-linecap="round"/>
-                        </svg>
-                        <input
-                            type="text"
-                            wire:model.live.debounce.300ms="search"
-                            placeholder="Type vehicle name..."
-                            class="h-12 w-full rounded-xl border border-zinc-200 bg-zinc-50 px-11 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-zinc-900 focus:bg-white focus:outline-none focus:ring-4 focus:ring-zinc-900/5 transition-all"
-                        >
-                    </div>
-                </label>
-
+            <div class="flex flex-wrap items-center justify-between gap-6">
                 <div>
                     <span class="mb-2.5 block text-[10px] font-bold uppercase tracking-widest text-zinc-400">Categories</span>
                     <div class="flex flex-wrap gap-2">
@@ -45,6 +29,24 @@
                             </button>
                         @endforeach
                     </div>
+                </div>
+
+                <div class="flex flex-1 min-w-[280px] max-w-md items-end">
+                    <label class="block w-full">
+                        <span class="mb-2.5 block text-[10px] font-bold uppercase tracking-widest text-zinc-400">Search Catalog</span>
+                        <div class="relative">
+                            <svg viewBox="0 0 24 24" fill="none" class="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" stroke="currentColor" stroke-width="2">
+                                <circle cx="11" cy="11" r="7"/>
+                                <path d="M20 20L16.65 16.65" stroke-linecap="round"/>
+                            </svg>
+                            <input
+                                type="text"
+                                wire:model.live.debounce.300ms="search"
+                                placeholder="Type vehicle name..."
+                                class="h-12 w-full rounded-xl border border-zinc-200 bg-zinc-50 px-11 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-zinc-900 focus:bg-white focus:outline-none focus:ring-4 focus:ring-zinc-900/5 transition-all"
+                            >
+                        </div>
+                    </label>
                 </div>
             </div>
 

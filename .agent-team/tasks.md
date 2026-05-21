@@ -2,11 +2,10 @@
 
 ## Active Tasks
 - [ ] **Feature:** Implement "Vehicle Compare" tool (Selection Tray + 3-Slot Modal).
-- [x] **Infrastructure:** Run `php artisan migrate` to activate new tracking features.
-- [x] **Admin:** Add "Sync Catalog" button to the Admin Units Index.
-- [x] **UX:** Add "Inquiry Notification" badge system to Admin Panel.
 
 ## Completed Tasks
+- [x] **Branding:** Implement "Change Logo" feature in Admin Settings.
+- [x] **Map:** Integrate Leaflet Map with Latitude/Longitude settings.
 - [x] Research existing "agent" references in the project.
 - [x] Analyze ZMotoCatalogImporter for safety and logic.
 - [x] Redesign Public Showroom to "Premium White" theme.

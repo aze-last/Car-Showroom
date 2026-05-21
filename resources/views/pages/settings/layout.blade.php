@@ -4,6 +4,11 @@
             <div class="me-10 w-full pb-4 md:w-[240px]">
                 <p class="mb-4 text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400">Settings</p>
                 <div class="space-y-1">
+                    @if (auth()->user()->is_admin)
+                        <a href="{{ route('admin.settings.shop') }}" wire:navigate class="flex items-center gap-3 rounded-xl px-4 py-3 text-xs font-bold transition-all {{ request()->routeIs('admin.settings.shop') ? 'bg-zinc-900 text-white shadow-lg shadow-zinc-200' : 'text-zinc-500 hover:bg-zinc-50 hover:text-zinc-900' }}">
+                            {{ __('Shop Information') }}
+                        </a>
+                    @endif
                     <a href="{{ route('profile.edit') }}" wire:navigate class="flex items-center gap-3 rounded-xl px-4 py-3 text-xs font-bold transition-all {{ request()->routeIs('profile.edit') ? 'bg-zinc-900 text-white shadow-lg shadow-zinc-200' : 'text-zinc-500 hover:bg-zinc-50 hover:text-zinc-900' }}">
                         {{ __('Profile') }}
                     </a>

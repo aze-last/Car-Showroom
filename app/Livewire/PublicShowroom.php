@@ -139,7 +139,7 @@ class PublicShowroom extends Component
             'categories' => $categories,
             'units' => $units,
             'featuredUnits' => $featuredUnits,
-        ])->layout('layouts.public-showroom', [
+        ])->layout('components.layouts.public-showroom', [
             'title' => 'Vehicle Showroom',
         ]);
     }

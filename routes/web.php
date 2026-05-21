@@ -16,6 +16,9 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', PublicShowroom::class)->name('home');
 Route::get('/units/{unit}', UnitDetail::class)->name('units.show');
+Route::get('/about', function () {
+    return view('pages.about');
+})->name('about');
 
 Route::middleware(['auth', 'verified'])
     ->prefix('admin')
@@ -46,6 +49,7 @@ Route::middleware(['auth', 'verified', 'admin'])
         Route::get('/logs', AdminLogs::class)
             ->middleware('can:viewAny,'.UnitStatusLog::class)
             ->name('logs.index');
+        Route::get('/settings/shop', \App\Livewire\AdminShopSettings::class)->name('settings.shop');
     });
 
 Route::get('dashboard', function () {
