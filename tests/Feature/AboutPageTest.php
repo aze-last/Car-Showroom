@@ -7,7 +7,7 @@ uses(RefreshDatabase::class);
 
 it('can render the about page', function () {
     Setting::set('shop_name', 'Test Showroom');
-    
+
     $response = $this->get(route('about'));
 
     $response->assertStatus(200);

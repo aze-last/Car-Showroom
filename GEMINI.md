@@ -17,12 +17,15 @@ The application follows a **"Premium White"** aesthetic. All new UI must adhere 
 - **Motion:** Staggered `animate-showroom-fade-up` (cubic-bezier) for all grid entrances and list items.
 
 ## Project Overview
-- **Technology Stack:** Laravel 12, Livewire 4, Flux UI, Tailwind CSS 4, Pest (Testing).
+- **Technology Stack:** Laravel 12, Livewire 4, Flux UI (Pro), Tailwind CSS 4, Pest (Testing).
 - **Architecture:** Monolithic Laravel app using Livewire for interactive components.
-- **Core Models:** `Unit` (Vehicles), `Category`, `UnitImage`, `UnitStatusLog`, `Inquiry`, `User`.
+- **Core Models:** `Unit` (Vehicles), `Category`, `UnitImage`, `UnitStatusLog`, `Inquiry`, `Setting`, `User`.
 - **Key Features:**
     - Public showroom with category filters and search.
+    - **Vehicle Comparison:** Side-by-side neutral breakdown for up to 3 vehicles.
     - Admin panel for managing units, categories, and viewing logs.
+    - **Inquiry System:** Lead capture and management for potential buyers.
+    - **Global Settings:** Centralized shop configuration (Name, Currency, Contact).
     - QR code workflow for quick unit status updates (Available <-> Sold).
     - Status change logging with concurrency protection (DB locking).
     - Cloud-ready storage implementation (Local/S3).
@@ -83,6 +86,9 @@ composer run lint
 
 ## Important Routes
 - `GET /` - Public Showroom
+- `GET /units/{unit}` - Public Vehicle Detail
 - `GET /login` - Admin Login
 - `GET /admin` - Admin Dashboard
+- `GET /admin/units` - Inventory Management
+- `GET /admin/settings/shop` - Shop Configuration
 - `GET /admin/units/{unit}/qr` - QR Action Page (Signed URL)

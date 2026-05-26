@@ -204,12 +204,20 @@ class AdminUnitsIndex extends Component
             ->latest('updated_at')
             ->paginate(15);
 
+        $recentStatusChanges = UnitStatusLog::query()
+            ->with(['unit', 'user'])
+            ->whereIn('action', [UnitStatusLog::ACTION_SET_AVAILABLE, UnitStatusLog::ACTION_SET_SOLD])
+            ->latest()
+            ->limit(3)
+            ->get();
+
         return view('livewire.admin-units-index', [
             'categories' => $categories,
             'units' => $units,
+            'recentStatusChanges' => $recentStatusChanges,
             'canManageTrash' => $this->canManageTrash(),
         ])->layout('layouts.admin-panel', [
-            'title' => 'Manage Units',
+            'title' => 'Unit Management',
         ]);
     }
 

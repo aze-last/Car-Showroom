@@ -3,10 +3,8 @@
 namespace App\Services;
 
 use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Storage;
-use ZipArchive;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Process;
+use ZipArchive;
 
 class BackupService
 {
@@ -15,17 +13,17 @@ class BackupService
     public function __construct()
     {
         $this->backupPath = storage_path('app/backups');
-        if (!File::exists($this->backupPath)) {
+        if (! File::exists($this->backupPath)) {
             File::makeDirectory($this->backupPath, 0755, true);
         }
     }
 
     public function create(): string
     {
-        $zipName = 'backup-' . now()->format('Y-m-d-H-i-s') . '.zip';
-        $zipPath = $this->backupPath . '/' . $zipName;
+        $zipName = 'backup-'.now()->format('Y-m-d-H-i-s').'.zip';
+        $zipPath = $this->backupPath.'/'.$zipName;
 
-        $zip = new ZipArchive();
+        $zip = new ZipArchive;
         if ($zip->open($zipPath, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== true) {
             throw new \Exception("Could not create ZIP file at {$zipPath}");
         }
@@ -54,7 +52,7 @@ class BackupService
         } elseif ($driver === 'mysql') {
             $dbConfig = config("database.connections.{$connection}");
             $tempSql = storage_path('app/temp_dump.sql');
-            
+
             // Build mysqldump command
             $command = sprintf(
                 'mysqldump --user=%s --password=%s --host=%s --port=%s %s > %s',
@@ -71,8 +69,8 @@ class BackupService
 
             if (File::exists($tempSql)) {
                 $zip->addFile($tempSql, 'database.sql');
-                // We'll delete the temp file after closing the zip in a better implementation, 
-                // but ZipArchive::addFile doesn't read immediately. 
+                // We'll delete the temp file after closing the zip in a better implementation,
+                // but ZipArchive::addFile doesn't read immediately.
                 // For simplicity here, we'll keep it until the end of the request.
             }
         }
@@ -88,9 +86,9 @@ class BackupService
             );
 
             foreach ($files as $file) {
-                if (!$file->isDir()) {
+                if (! $file->isDir()) {
                     $filePath = $file->getRealPath();
-                    $relativePath = 'units/' . substr($filePath, strlen($unitsPath) + 1);
+                    $relativePath = 'units/'.substr($filePath, strlen($unitsPath) + 1);
                     $zip->addFile($filePath, $relativePath);
                 }
             }
@@ -99,9 +97,9 @@ class BackupService
 
     public function restore(string $zipPath): void
     {
-        $zip = new ZipArchive();
+        $zip = new ZipArchive;
         if ($zip->open($zipPath) !== true) {
-            throw new \Exception("Could not open ZIP file");
+            throw new \Exception('Could not open ZIP file');
         }
 
         $tempPath = storage_path('app/temp_restore');
@@ -130,16 +128,16 @@ class BackupService
         $driver = config("database.connections.{$connection}.driver");
 
         if ($driver === 'sqlite') {
-            $sqlFile = $tempPath . '/database.sqlite';
+            $sqlFile = $tempPath.'/database.sqlite';
             if (File::exists($sqlFile)) {
                 $dbPath = config("database.connections.{$connection}.database");
                 File::copy($sqlFile, $dbPath);
             }
         } elseif ($driver === 'mysql') {
-            $sqlFile = $tempPath . '/database.sql';
+            $sqlFile = $tempPath.'/database.sql';
             if (File::exists($sqlFile)) {
                 $dbConfig = config("database.connections.{$connection}");
-                
+
                 $command = sprintf(
                     'mysql --user=%s --password=%s --host=%s --port=%s %s < %s',
                     escapeshellarg($dbConfig['username']),
@@ -158,7 +156,7 @@ class BackupService
     protected function importStorage(string $tempPath): void
     {
         $unitsPath = storage_path('app/public/units');
-        $tempUnits = $tempPath . '/units';
+        $tempUnits = $tempPath.'/units';
 
         if (File::exists($tempUnits)) {
             if (File::exists($unitsPath)) {

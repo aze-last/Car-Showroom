@@ -22,6 +22,8 @@ class AdminUnitQrAction extends Component
 
     public ?string $reason = null;
 
+    public ?int $buyer_id = null;
+
     public function mount(Unit $unit): void
     {
         Gate::authorize('changeStatus', $unit);
@@ -42,6 +44,19 @@ class AdminUnitQrAction extends Component
             ipAddress: request()->ip(),
             userAgent: request()->userAgent(),
         );
+
+        if ($result && $this->buyer_id) {
+            $this->unit->update(['buyer_id' => $this->buyer_id]);
+
+            $buyer = \App\Models\User::find($this->buyer_id);
+            if ($buyer) {
+                $buyer->notify(new \App\Notifications\UnitAcquiredNotification([
+                    'message' => "Congratulations! You have successfully acquired the {$this->unit->name}.",
+                    'unit_id' => $this->unit->id,
+                    'unit_name' => $this->unit->name,
+                ]));
+            }
+        }
 
         $this->reason = null;
         $this->refreshUnitData();
@@ -69,13 +84,8 @@ class AdminUnitQrAction extends Component
 
     private function refreshUnitData(): void
     {
-        $this->unit = Unit::query()
-            ->with('category')
-            ->findOrFail($this->unit->id);
-
-        $this->lastLog = $this->unit->statusLogs()
-            ->with('user')
-            ->first();
+        $this->unit->refresh();
+        $this->lastLog = $this->unit->statusLogs()->with('user')->first();
     }
 
     private function generateQrSvg(): void
@@ -91,9 +101,10 @@ class AdminUnitQrAction extends Component
 
     public function render(): View
     {
-        return view('livewire.admin-unit-qr-action')
-            ->layout('layouts.admin-panel', [
-                'title' => 'QR Status Action',
-            ]);
+        return view('livewire.admin-unit-qr-action', [
+            'users' => \App\Models\User::query()->orderBy('name')->get(),
+        ])->layout('layouts.admin-panel', [
+            'title' => 'Unit Status Action',
+        ]);
     }
 }

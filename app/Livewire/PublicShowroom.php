@@ -28,6 +28,7 @@ class PublicShowroom extends Component
     #[Url(as: 'max', history: true)]
     public ?int $maxPrice = null;
 
+    #[\Livewire\Attributes\Session(key: 'compare_ids')]
     public array $compareIds = [];
 
     public bool $showCompareModal = false;
@@ -38,6 +39,20 @@ class PublicShowroom extends Component
             $this->compareIds = array_values(array_diff($this->compareIds, [$id]));
         } elseif (count($this->compareIds) < 3) {
             $this->compareIds[] = $id;
+        }
+    }
+
+    public function toggleSave(int $id)
+    {
+        if (!auth()->check()) {
+            return redirect()->route('register');
+        }
+
+        $user = auth()->user();
+        if ($user->savedUnits()->where('unit_id', $id)->exists()) {
+            $user->savedUnits()->detach($id);
+        } else {
+            $user->savedUnits()->attach($id);
         }
     }
 
@@ -53,7 +68,7 @@ class PublicShowroom extends Component
             ->with(['category', 'mainImage'])
             ->whereIn('id', $this->compareIds)
             ->get()
-            ->sortBy(fn($unit) => array_search($unit->id, $this->compareIds));
+            ->sortBy(fn ($unit) => array_search($unit->id, $this->compareIds));
     }
 
     public function updatedSearch(): void
@@ -105,6 +120,7 @@ class PublicShowroom extends Component
 
         $units = Unit::query()
             ->with(['category', 'mainImage'])
+            ->where('status', Unit::STATUS_AVAILABLE)
             ->when(
                 $this->search !== '',
                 fn ($query) => $query->where('name', 'like', '%'.$this->search.'%'),

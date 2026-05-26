@@ -1,16 +1,12 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="light">
     <head>
         @include('partials.head')
+        <link href="https://fonts.googleapis.com" rel="preconnect"/>
+        <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>      
+        <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
     </head>
-    <body class="min-h-screen bg-zinc-50 font-sans text-zinc-900 antialiased">
-        <a
-            href="#admin-main"
-            class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded-md focus:bg-white focus:px-3 focus:py-2 focus:text-sm focus:shadow"
-        >
-            Skip to main content
-        </a>
-
+    <body class="min-h-screen bg-gallery-background font-hanken text-zinc-900 antialiased overflow-x-hidden">
         @php
             $currentUser = auth()->user();
             $isAdmin = (bool) ($currentUser?->is_admin ?? false);
@@ -19,354 +15,115 @@
             $homeRoute = $isAdmin ? route('admin.dashboard') : route('admin.units.index');
         @endphp
 
-        <div id="admin-shell" class="min-h-screen" data-collapsed="false">
-            <input id="admin-mobile-nav" type="checkbox" class="peer sr-only" aria-hidden="true">
-
-            <div class="fixed inset-0 z-30 hidden bg-zinc-900/40 peer-checked:block lg:hidden">
-                <label for="admin-mobile-nav" class="block h-full w-full cursor-pointer" aria-label="Close navigation"></label>
-            </div>
-
-            <aside
-                id="admin-sidebar"
-                class="fixed inset-y-0 left-0 z-40 w-72 -translate-x-full border-r border-zinc-100 bg-white transition-transform duration-200 ease-out peer-checked:translate-x-0 lg:translate-x-0"
-                aria-label="Sidebar"
-            >
-                <div class="flex h-16 items-center justify-between border-b border-zinc-100 px-6">
-                    <a href="{{ $homeRoute }}" class="flex items-center gap-3 text-zinc-900">
-                        <x-app-logo-icon class="h-8 w-8 rounded bg-zinc-900 p-1.5 text-white" />
-                        <span class="admin-brand-text text-sm font-black uppercase tracking-widest">{{ \App\Models\Setting::get('shop_name', 'Showroom') }}</span>
-                    </a>
-
-                    <label for="admin-mobile-nav" class="rounded-md p-2 text-zinc-400 hover:bg-zinc-50 lg:hidden" aria-label="Close sidebar">
-                        <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="2">
-                            <path d="M6 6L18 18M6 18L18 6" stroke-linecap="round"/>
-                        </svg>
-                    </label>
-                </div>
-
-                <nav class="flex h-[calc(100%-4rem)] flex-col px-4 py-6">
-                    <div class="space-y-1">
-                        @if ($isAdmin)
-                            <a
-                                href="{{ route('admin.dashboard') }}"
-                                data-admin-nav-link
-                                class="admin-nav-item {{ request()->routeIs('admin.dashboard') ? 'bg-zinc-900 text-white shadow-lg shadow-zinc-200' : 'text-zinc-500 hover:bg-zinc-50 hover:text-zinc-900' }}"
-                            >
-                                <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="2">
-                                    <path d="M3 12L12 4L21 12V20A1 1 0 0 1 20 21H4A1 1 0 0 1 3 20V12Z" stroke-linejoin="round"/>
-                                </svg>
-                                <span class="admin-label text-xs font-bold uppercase tracking-widest">Dashboard</span>
-                            </a>
-
-                            <a
-                                href="{{ route('admin.units.index') }}"
-                                data-admin-nav-link
-                                class="admin-nav-item {{ request()->routeIs('admin.units.*') ? 'bg-zinc-900 text-white shadow-lg shadow-zinc-200' : 'text-zinc-500 hover:bg-zinc-50 hover:text-zinc-900' }}"
-                            >
-                                <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="2">
-                                    <path d="M4 8.5L12 4L20 8.5V15.5L12 20L4 15.5V8.5Z" stroke-linejoin="round"/>
-                                </svg>
-                                <span class="admin-label text-xs font-bold uppercase tracking-widest">Units</span>
-                            </a>
-
-                            <a
-                                href="{{ route('admin.categories.index') }}"
-                                data-admin-nav-link
-                                class="admin-nav-item {{ request()->routeIs('admin.categories.*') ? 'bg-zinc-900 text-white shadow-lg shadow-zinc-200' : 'text-zinc-500 hover:bg-zinc-50 hover:text-zinc-900' }}"
-                            >
-                                <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="2">
-                                    <path d="M4 7H20M4 12H20M4 17H14" stroke-linecap="round"/>
-                                </svg>
-                                <span class="admin-label text-xs font-bold uppercase tracking-widest">Categories</span>
-                            </a>
-
-                            <a
-                                href="{{ route('admin.employees.index') }}"
-                                data-admin-nav-link
-                                class="admin-nav-item {{ request()->routeIs('admin.employees.*') ? 'bg-zinc-900 text-white shadow-lg shadow-zinc-200' : 'text-zinc-500 hover:bg-zinc-50 hover:text-zinc-900' }}"
-                            >
-                                <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="2">
-                                    <circle cx="9" cy="7" r="4"/>
-                                    <path d="M22 21v-2a4 4 0 0 0-3-3.87" stroke-linecap="round"/>
-                                    <path d="M16 3.13a4 4 0 0 1 0 7.75" stroke-linecap="round"/>
-                                    <path d="M9 21v-2a4 4 0 0 1 4-4h2" stroke-linecap="round"/>
-                                </svg>
-                                <span class="admin-label text-xs font-bold uppercase tracking-widest">Employees</span>
-                            </a>
-
-                            <a
-                                href="{{ route('admin.inquiries.index') }}"
-                                data-admin-nav-link
-                                class="admin-nav-item relative {{ request()->routeIs('admin.inquiries.*') ? 'bg-zinc-900 text-white shadow-lg shadow-zinc-200' : 'text-zinc-500 hover:bg-zinc-50 hover:text-zinc-900' }}"
-                            >
-                                <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="2">
-                                    <path d="M21 15V19A2 2 0 0 1 19 21H5A2 2 0 0 1 3 19V15M7 10L12 15L17 10M12 15V3" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
-                                <span class="admin-label text-xs font-bold uppercase tracking-widest">Inquiries</span>
-                                @livewire('inquiry-badge')
-                            </a>
-
-                            <a
-                                href="{{ route('admin.logs.index') }}"
-                                data-admin-nav-link
-                                class="admin-nav-item {{ request()->routeIs('admin.logs.*') ? 'bg-zinc-900 text-white shadow-lg shadow-zinc-200' : 'text-zinc-500 hover:bg-zinc-50 hover:text-zinc-900' }}"
-                            >
-                                <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="2">
-                                    <path d="M6 6H18V18H6V6Z" stroke-linejoin="round"/>
-                                    <path d="M9 10H15M9 14H13" stroke-linecap="round"/>
-                                </svg>
-                                <span class="admin-label text-xs font-bold uppercase tracking-widest">Logs</span>
-                            </a>
-                        @elseif ($isStaff)
-                            <a
-                                href="{{ route('admin.units.index') }}"
-                                data-admin-nav-link
-                                class="admin-nav-item {{ request()->routeIs('admin.units.*') ? 'bg-zinc-900 text-white shadow-lg shadow-zinc-200' : 'text-zinc-500 hover:bg-zinc-50 hover:text-zinc-900' }}"
-                            >
-                                <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="2">
-                                    <path d="M4 8.5L12 4L20 8.5V15.5L12 20L4 15.5V8.5Z" stroke-linejoin="round"/>
-                                </svg>
-                                <span class="admin-label text-xs font-bold uppercase tracking-widest">Units</span>
-                            </a>
-                        @endif
-
-                        <div class="mt-6 mb-2 px-4">
-                            <span class="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400">Settings</span>
-                        </div>
-
-                        <a
-                            href="{{ route('admin.settings.shop') }}"
-                            data-admin-nav-link
-                            class="admin-nav-item {{ request()->routeIs('admin.settings.*') || request()->is('settings*') ? 'bg-zinc-900 text-white shadow-lg shadow-zinc-200' : 'text-zinc-500 hover:bg-zinc-50 hover:text-zinc-900' }}"
-                        >
-                            <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="2">
-                                <circle cx="12" cy="12" r="3"/>
-                                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
-                            </svg>
-                            <span class="admin-label text-xs font-bold uppercase tracking-widest">Settings</span>
-                        </a>
-                    </div>
-
-                    <div class="mt-auto border-t border-zinc-100 pt-6">
-                        <form method="POST" action="{{ route('logout') }}" data-disable-on-submit>
-                            @csrf
-                            <button type="submit" class="admin-nav-item w-full text-zinc-500 hover:bg-zinc-50 hover:text-zinc-900">
-                                <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="2">
-                                    <path d="M9 5H5V19H9" stroke-linecap="round"/>
-                                    <path d="M19 12H9" stroke-linecap="round"/>
-                                    <path d="M16 15L19 12L16 9" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
-                                <span class="admin-label text-xs font-bold uppercase tracking-widest">Logout</span>
-                            </button>
-                        </form>
-                    </div>
-                </nav>
-            </aside>
-
-            <div id="admin-content" class="min-h-screen transition-[padding] duration-200 ease-out lg:pl-72">
-                <header class="sticky top-0 z-20 border-b border-zinc-100 bg-white/80 backdrop-blur-md">
-                    <div class="flex h-16 items-center justify-between gap-6 px-4 sm:px-8">
-                        <div class="flex items-center gap-4">
-                            <label for="admin-mobile-nav" class="inline-flex rounded-full border border-zinc-200 p-2 text-zinc-400 hover:bg-zinc-50 hover:text-zinc-900 lg:hidden" aria-label="Open sidebar">
-                                <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="2">
-                                    <path d="M4 7H20M4 12H20M4 17H20" stroke-linecap="round"/>
-                                </svg>
-                            </label>
-
-                            <button
-                                id="admin-sidebar-toggle"
-                                type="button"
-                                class="hidden rounded-full border border-zinc-200 p-2 text-zinc-400 hover:bg-zinc-50 hover:text-zinc-900 lg:inline-flex"
-                                aria-label="Collapse sidebar"
-                            >
-                                <svg viewBox="0 0 24 24" fill="none" class="h-4 w-4" stroke="currentColor" stroke-width="2.5">
-                                    <path d="M15 18L9 12L15 6" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
-                            </button>
-
-                            <div class="h-8 w-px bg-zinc-100"></div>
-
-                            <div>
-                                <h1 class="text-sm font-black uppercase tracking-widest text-zinc-900">{{ $title ?? 'Admin' }}</h1>
-                            </div>
-                        </div>
-
-                        <div class="hidden flex-1 max-w-xl md:block">
-                            @if ($isAdmin)
-                                <form method="GET" action="{{ route('admin.units.index') }}" class="relative">
-                                    <svg viewBox="0 0 24 24" fill="none" class="pointer-events-none absolute left-3.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-zinc-400" stroke="currentColor" stroke-width="2.5">
-                                        <circle cx="11" cy="11" r="7"/>
-                                        <path d="M20 20L16.65 16.65" stroke-linecap="round"/>
-                                    </svg>
-                                    <input
-                                        type="search"
-                                        name="q"
-                                        value="{{ request('q') }}"
-                                        placeholder="Search catalog..."
-                                        class="h-10 w-full rounded-full border border-zinc-100 bg-zinc-50 pl-10 text-xs text-zinc-900 placeholder:text-zinc-400 focus:border-zinc-900 focus:bg-white focus:outline-none transition-all"
-                                    >
-                                </form>
-                            @endif
-                        </div>
-
-                        <div class="flex items-center gap-4">
-                            <a
-                                href="{{ route('admin.inquiries.index') }}"
-                                class="relative inline-flex rounded-full border border-zinc-200 p-2 text-zinc-400 hover:bg-zinc-50 hover:text-zinc-900"
-                                aria-label="Inquiries"
-                                title="Recent Inquiries"
-                            >
-                                <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="2">
-                                    <path d="M12 4A4 4 0 0 0 8 8V11.4L6.3 14.8A1 1 0 0 0 7.2 16.2H16.8A1 1 0 0 0 17.7 14.8L16 11.4V8A4 4 0 0 0 12 4Z" stroke-linejoin="round"/>
-                                    <path d="M10 19A2 2 0 0 0 14 19" stroke-linecap="round"/>
-                                </svg>
-                                @livewire('inquiry-badge')
-                            </a>
-
-                            <div class="hidden flex-col items-end text-right sm:flex">
-                                <span class="text-xs font-black tracking-tight text-zinc-900 leading-none">{{ $currentUser?->name }}</span>
-                                <span class="mt-1 text-[10px] font-bold uppercase tracking-widest text-zinc-400 leading-none">{{ $isAdmin ? 'Administrator' : 'Staff' }}</span>
-                            </div>
-
-                            <details class="relative [&_summary::-webkit-details-marker]:hidden">
-                                <summary class="flex cursor-pointer h-9 w-9 items-center justify-center rounded-full bg-zinc-900 text-[10px] font-black text-white uppercase tracking-tighter hover:scale-105 transition-transform">
-                                    {{ substr($currentUser?->name ?? 'U', 0, 1) }}
-                                </summary>
-
-                                <div class="absolute right-0 z-30 mt-3 w-64 rounded-2xl border border-zinc-100 bg-white p-4 shadow-2xl">
-                                    <p class="text-xs font-black uppercase tracking-widest text-zinc-400">Account</p>
-                                    <p class="mt-2 text-sm font-bold text-zinc-900">{{ $currentUser?->name }}</p>
-                                    <p class="mt-0.5 text-xs text-zinc-500">{{ $currentUser?->email }}</p>
-                                    
-                                    <div class="mt-4 space-y-1 border-t border-zinc-50 pt-4">
-                                        <form method="POST" action="{{ route('logout') }}" data-disable-on-submit>
-                                            @csrf
-                                            <button type="submit" class="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-xs font-bold text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900 transition-colors">
-                                                <svg viewBox="0 0 24 24" fill="none" class="h-4 w-4" stroke="currentColor" stroke-width="2">
-                                                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>
-                                                </svg>
-                                                Sign Out
-                                            </button>
-                                        </form>
-                                    </div>
-                                </div>
-                            </details>
-                        </div>
-                    </div>
-                </header>
-
-                <div id="admin-toast-region" class="pointer-events-none fixed right-6 top-6 z-50 space-y-3" aria-live="polite" aria-atomic="true">
-                    @if (session('status'))
-                        <div data-admin-toast class="admin-toast pointer-events-auto rounded-2xl border border-emerald-100 bg-white p-4 shadow-xl shadow-emerald-500/5">
-                            <div class="flex items-center gap-3">
-                                <span class="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-500 text-white">
-                                    <svg viewBox="0 0 24 24" fill="none" class="h-3.5 w-3.5" stroke="currentColor" stroke-width="3">
-                                        <path d="M20 6L9 17L4 12" stroke-linecap="round" stroke-linejoin="round"/>
-                                    </svg>
-                                </span>
-                                <p class="text-xs font-bold text-zinc-900">{{ session('status') }}</p>
-                            </div>
-                        </div>
-                    @endif
-                </div>
-
-                <main id="admin-main" class="px-4 py-8 sm:px-8">
-                    {{ $slot }}
-                </main>
-            </div>
+        <!-- Mobile TopNav -->     
+        <div class="md:hidden flex justify-between items-center w-full px-8 h-20 bg-white border-b border-gallery-outline/20 fixed top-0 z-50">
+            <div class="text-[12px] font-bold uppercase tracking-widest text-black">Admin Suite</div>   
+            <button class="p-2 text-black" x-data x-on:click="document.getElementById('admin-mobile-nav').checked = true">
+                <svg viewBox="0 0 24 24" fill="none" class="h-6 w-6" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+            </button>
         </div>
 
+        <input id="admin-mobile-nav" type="checkbox" class="peer sr-only" aria-hidden="true">
+        <div class="fixed inset-0 z-[60] hidden bg-black/40 backdrop-blur-sm peer-checked:block lg:hidden" x-data x-on:click="document.getElementById('admin-mobile-nav').checked = false"></div>
+
+        <!-- Sidebar Navigation -->
+        <aside class="fixed left-0 top-0 h-full w-72 bg-gallery-surface-low border-r border-gallery-outline/10 shadow-sm flex flex-col py-10 px-6 z-[70] transition-transform duration-300 -translate-x-full lg:translate-x-0 peer-checked:translate-x-0">
+            <div class="mb-12 px-2">  
+                <div class="flex items-center gap-4 mb-8">
+                    <div class="h-12 w-12 rounded-full bg-black text-white flex items-center justify-center font-bold text-lg shadow-xl">
+                        {{ $currentUser?->initials() }}
+                    </div>
+                    <div>
+                        <h1 class="text-[13px] font-bold text-black uppercase tracking-widest">Admin Suite</h1>
+                        <p class="text-[11px] font-medium text-zinc-400">Elite Management</p>    
+                    </div>
+                </div>
+
+                <a href="{{ route('admin.units.create') }}" class="w-full bg-black text-white font-bold text-[11px] uppercase tracking-widest py-4 rounded-2xl hover:opacity-90 transition-all flex items-center justify-center gap-2 ambient-shadow">        
+                    <svg viewBox="0 0 24 24" fill="none" class="h-4 w-4" stroke="currentColor" stroke-width="3"><path d="M12 5v14M5 12h14" stroke-linecap="round"/></svg>
+                    Add Vehicle
+                </a>     
+            </div>
+
+            <nav class="flex-grow">
+                <ul class="space-y-2">
+                    @if ($isAdmin)
+                        <li>
+                            <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-4 px-4 py-4 rounded-2xl transition-all {{ request()->routeIs('admin.dashboard') ? 'bg-white text-black ambient-shadow font-bold' : 'text-zinc-400 hover:text-black' }}">
+                                <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="2"><path d="M3 12L12 4L21 12V20A1 1 0 0 1 20 21H4A1 1 0 0 1 3 20V12Z" stroke-linejoin="round"/></svg>
+                                <span class="text-[12px] uppercase tracking-widest">Dashboard</span>
+                            </a>
+                        </li>
+                    @endif
+
+                    <li>
+                        <a href="{{ route('admin.units.index') }}" class="flex items-center gap-4 px-4 py-4 rounded-2xl transition-all {{ request()->routeIs('admin.units.*') ? 'bg-white text-black ambient-shadow font-bold' : 'text-zinc-400 hover:text-black' }}">
+                            <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="2"><path d="M4 8.5L12 4L20 8.5V15.5L12 20L4 15.5V8.5Z" stroke-linejoin="round"/></svg>
+                            <span class="text-[12px] uppercase tracking-widest">Inventory</span>
+                        </a>
+                    </li>
+
+                    @if ($isAdmin)
+                        <li>
+                            <a href="{{ route('admin.categories.index') }}" class="flex items-center gap-4 px-4 py-4 rounded-2xl transition-all {{ request()->routeIs('admin.categories.*') ? 'bg-white text-black ambient-shadow font-bold' : 'text-zinc-400 hover:text-black' }}">
+                                <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="2"><path d="M4 7H20M4 12H20M4 17H14" stroke-linecap="round"/></svg>
+                                <span class="text-[12px] uppercase tracking-widest">Categories</span>
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="{{ route('admin.inquiries.index') }}" class="flex items-center gap-4 px-4 py-4 rounded-2xl transition-all {{ request()->routeIs('admin.inquiries.*') ? 'bg-white text-black ambient-shadow font-bold' : 'text-zinc-400 hover:text-black' }}">
+                                <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="2"><path d="M21 15V19A2 2 0 0 1 19 21H5A2 2 0 0 1 3 19V15M7 10L12 15L17 10M12 15V3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                <span class="text-[12px] uppercase tracking-widest">Inquiries</span>
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="{{ route('admin.auctions.index') }}" class="flex items-center gap-4 px-4 py-4 rounded-2xl transition-all {{ request()->routeIs('admin.auctions.*') ? 'bg-white text-black ambient-shadow font-bold' : 'text-zinc-400 hover:text-black' }}">
+                                <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="2"><path d="M12 8V12L15 15M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                <span class="text-[12px] uppercase tracking-widest">Auctions</span>
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="{{ route('admin.employees.index') }}" class="flex items-center gap-4 px-4 py-4 rounded-2xl transition-all {{ request()->routeIs('admin.employees.*') ? 'bg-white text-black ambient-shadow font-bold' : 'text-zinc-400 hover:text-black' }}">
+                                <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="2"><path d="M17 21V19A4 4 0 0 0 13 15H5A4 4 0 0 0 1 19V21M9 11A4 4 0 1 0 9 3A4 4 0 0 0 9 11ZM23 21V19A4 4 0 0 0 19.33 15.17M16 3.13A4 4 0 0 1 16 11" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                <span class="text-[12px] uppercase tracking-widest">Employees</span>
+                            </a>
+                        </li>
+
+                         <li>
+                            <a href="{{ route('admin.logs.index') }}" class="flex items-center gap-4 px-4 py-4 rounded-2xl transition-all {{ request()->routeIs('admin.logs.*') ? 'bg-white text-black ambient-shadow font-bold' : 'text-zinc-400 hover:text-black' }}">
+                                <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="2"><path d="M6 6H18V18H6V6Z" stroke-linejoin="round"/><path d="M9 10H15M9 14H13" stroke-linecap="round"/></svg>
+                                <span class="text-[12px] uppercase tracking-widest">Audit Trail</span>
+                            </a>
+                        </li>
+                    @endif
+                </ul>
+            </nav>
+
+            <div class="mt-auto pt-8 border-t border-gallery-outline/10 space-y-4">
+                <a href="{{ route('admin.settings.shop') }}" class="flex items-center gap-4 px-4 py-3 rounded-2xl text-zinc-400 hover:text-black transition-all">
+                    <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                    <span class="text-[12px] uppercase tracking-widest">Global Settings</span>
+                </a>
+                <form method="POST" action="{{ route('logout') }}" x-data>
+                    @csrf
+                    <button type="submit" class="w-full flex items-center gap-4 px-4 py-3 rounded-2xl text-zinc-400 hover:text-black transition-all">
+                        <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+                        <span class="text-[12px] uppercase tracking-widest">Sign Out</span>
+                    </button>
+                </form>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="lg:ml-72 pt-24 lg:pt-12 px-6 lg:px-12 pb-24 min-h-screen">
+            <div class="max-w-7xl mx-auto">
+                {{ $slot }}
+            </div>
+        </main>
+
         @fluxScripts
-        <script>
-            (() => {
-                const storageKey = 'admin.sidebar.collapsed';
-
-                const closeToast = (toast) => {
-                    toast.classList.add('opacity-0', 'translate-y-2');
-                    window.setTimeout(() => toast.remove(), 180);
-                };
-
-                const initAdminLayout = () => {
-                    const shell = document.getElementById('admin-shell');
-                    const sidebarToggle = document.getElementById('admin-sidebar-toggle');
-
-                    if (shell && window.matchMedia('(min-width: 1024px)').matches) {
-                        shell.dataset.collapsed = window.localStorage.getItem(storageKey) === '1' ? 'true' : 'false';
-                    }
-
-                    if (sidebarToggle && !sidebarToggle.dataset.bound) {
-                        sidebarToggle.dataset.bound = '1';
-                        sidebarToggle.addEventListener('click', () => {
-                            const collapsed = shell?.dataset.collapsed === 'true';
-                            const next = collapsed ? 'false' : 'true';
-                            if (shell) {
-                                shell.dataset.collapsed = next;
-                            }
-                            window.localStorage.setItem(storageKey, next === 'true' ? '1' : '0');
-                        });
-                    }
-
-                    document.querySelectorAll('[data-admin-nav-link]').forEach((link) => {
-                        if (link.dataset.boundCloseNav) {
-                            return;
-                        }
-
-                        link.dataset.boundCloseNav = '1';
-                        link.addEventListener('click', () => {
-                            const mobileNav = document.getElementById('admin-mobile-nav');
-                            if (mobileNav instanceof HTMLInputElement) {
-                                mobileNav.checked = false;
-                            }
-                        });
-                    });
-
-                    document.querySelectorAll('[data-admin-toast-close]').forEach((button) => {
-                        if (button.dataset.boundCloseToast) {
-                            return;
-                        }
-
-                        button.dataset.boundCloseToast = '1';
-                        button.addEventListener('click', () => {
-                            const toast = button.closest('[data-admin-toast]');
-                            if (toast instanceof HTMLElement) {
-                                closeToast(toast);
-                            }
-                        });
-                    });
-
-                    document.querySelectorAll('[data-admin-toast]').forEach((toast) => {
-                        if (toast.dataset.autoClose === '1') {
-                            return;
-                        }
-
-                        toast.dataset.autoClose = '1';
-                        window.setTimeout(() => closeToast(toast), 4200);
-                    });
-
-                    document.querySelectorAll('form[data-disable-on-submit]').forEach((form) => {
-                        if (form.dataset.boundDisableSubmit) {
-                            return;
-                        }
-
-                        form.dataset.boundDisableSubmit = '1';
-                        form.addEventListener('submit', () => {
-                            const submitter = form.querySelector('button[type="submit"]');
-                            if (submitter instanceof HTMLButtonElement) {
-                                submitter.disabled = true;
-                                submitter.classList.add('opacity-60', 'cursor-not-allowed');
-                            }
-                        });
-                    });
-                };
-
-                if (document.readyState === 'loading') {
-                    document.addEventListener('DOMContentLoaded', initAdminLayout, { once: true });
-                } else {
-                    initAdminLayout();
-                }
-
-                document.addEventListener('livewire:navigated', initAdminLayout);
-            })();
-        </script>
     </body>
 </html>

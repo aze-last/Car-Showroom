@@ -2,41 +2,39 @@
     use App\Models\Setting;
 @endphp
 
-<x-layouts.public-showroom :title="Setting::get('shop_name', 'Car Showroom') . ' | About'">
-    <div class="space-y-24 py-12">
-        <!-- Hero Section -->
-        <section class="max-w-3xl mx-auto text-center space-y-6">
-            <h1 class="text-4xl font-black tracking-tighter sm:text-6xl text-zinc-900 uppercase">
-                About Our <span class="text-zinc-400">Showroom</span>
+<x-layouts.public-showroom :title="Setting::get('shop_name', 'The Gallery') . ' | About'">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-32 animate-showroom-fade-up">
+        <!-- Editorial Hero -->
+        <section class="max-w-4xl mx-auto text-center space-y-8">
+            <h1 class="text-6xl sm:text-8xl font-bold tracking-tighter text-black leading-none uppercase">
+                The <span class="text-zinc-300">Curators</span>
             </h1>
-            <p class="text-lg font-bold text-zinc-500 leading-relaxed">
-                We provide the finest selection of premium vehicles, from classic cars to modern motorcycles. Our mission is to deliver excellence in every unit we showcase.
+            <p class="text-xl font-medium text-zinc-500 leading-relaxed max-w-2xl mx-auto">
+                We bridge the gap between architectural excellence and automotive performance. Our gallery serves as a sanctuary for the world's most distinguished vehicles.
             </p>
-            <div class="flex justify-center pt-4">
-                <div class="h-1.5 w-12 bg-zinc-900"></div>
+            <div class="flex justify-center pt-8">
+                <div class="h-[2px] w-24 bg-black"></div>
             </div>
         </section>
 
-        <!-- Main Content -->
-        <div class="grid gap-16 lg:grid-cols-[1.5fr_1fr]">
+        <div class="grid grid-cols-1 lg:grid-cols-[1.5fr_1fr] gap-24">
             <!-- Map Section -->
-            <section class="space-y-8">
-                <header>
-                    <h2 class="text-xs font-black uppercase tracking-[0.4em] text-zinc-900">Our Location</h2>
-                    <p class="mt-2 text-sm font-bold text-zinc-400">{{ Setting::get('shop_address') }}</p>
-                </header>
+            <section class="space-y-12">
+                <div class="space-y-4">
+                    <h2 class="text-[12px] font-bold uppercase tracking-[0.4em] text-black">The Landmark</h2>
+                    <p class="text-lg font-bold text-zinc-400 leading-tight max-w-md">{{ Setting::get('shop_address') }}</p>
+                </div>
                 
                 <div 
                     id="map"
-                    class="aspect-video w-full overflow-hidden rounded-[40px] border border-zinc-100 bg-zinc-50 shadow-2xl shadow-zinc-200/50 z-0"
-                    style="height: 400px;"
+                    class="aspect-video w-full overflow-hidden rounded-[48px] bg-gallery-surface-low border border-gallery-outline/20 ambient-shadow z-0"
+                    style="height: 500px;"
                 ></div>
 
                 <script>
                     (function() {
                         const initMap = () => {
                             if (typeof L === 'undefined') {
-                                console.log('Waiting for Leaflet...');
                                 setTimeout(initMap, 200);
                                 return;
                             }
@@ -46,7 +44,7 @@
 
                             const lat = parseFloat("{{ Setting::get('map_latitude', '14.5995') }}");
                             const lng = parseFloat("{{ Setting::get('map_longitude', '120.9842') }}");
-                            const shopName = "{{ Setting::get('shop_name', 'Our Showroom') }}";
+                            const shopName = "{{ Setting::get('shop_name', 'The Gallery') }}";
 
                             const map = L.map('map').setView([lat, lng], 15);
 
@@ -56,7 +54,7 @@
                             }).addTo(map);
 
                             L.marker([lat, lng]).addTo(map)
-                                .bindPopup('<b>' + shopName + '</b><br>Visit our showroom.')
+                                .bindPopup('<b class="font-bold">' + shopName + '</b><br>Curated Excellence.')
                                 .openPopup();
                             
                             setTimeout(() => {
@@ -76,59 +74,57 @@
             </section>
 
             <!-- Contact & Socials -->
-            <section class="space-y-12 lg:pt-16">
-                <!-- Social Media -->
-                <div class="space-y-8">
-                    <h3 class="text-xs font-black uppercase tracking-[0.4em] text-zinc-900">Connect With Us</h3>
+            <section class="space-y-16 flex flex-col justify-center">
+                <div class="space-y-12">
+                    <h3 class="text-[12px] font-bold uppercase tracking-[0.4em] text-black">Connect With Us</h3>
                     
-                    <div class="grid grid-cols-1 gap-4">
+                    <div class="grid grid-cols-1 gap-6">
                         @if($facebook = Setting::get('facebook_url'))
-                            <a href="{{ $facebook }}" target="_blank" class="group flex items-center gap-6 rounded-3xl border border-zinc-100 bg-white p-6 transition-all hover:-translate-y-1 hover:shadow-xl">
-                                <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-zinc-50 text-zinc-900 transition-colors group-hover:bg-zinc-900 group-hover:text-white">
+                            <a href="{{ $facebook }}" target="_blank" class="group flex items-center gap-8 rounded-[32px] border border-gallery-outline/20 bg-white p-8 transition-all hover:-translate-y-2 ambient-shadow">
+                                <div class="flex h-14 w-14 items-center justify-center rounded-[20px] bg-gallery-surface-low text-black transition-colors group-hover:bg-black group-hover:text-white">
                                     <svg viewBox="0 0 24 24" fill="none" class="h-6 w-6" stroke="currentColor" stroke-width="2"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
                                 </div>
-                                <div>
-                                    <p class="text-xs font-black uppercase tracking-widest text-zinc-900">Facebook</p>
-                                    <p class="text-[10px] font-bold text-zinc-400">Follow our latest news</p>
+                                <div class="space-y-1">
+                                    <p class="text-[12px] font-bold uppercase tracking-widest text-black">Facebook</p>
+                                    <p class="text-[11px] font-medium text-zinc-400">Join the conversation</p>
                                 </div>
                             </a>
                         @endif
 
                         @if($instagram = Setting::get('instagram_url'))
-                            <a href="{{ $instagram }}" target="_blank" class="group flex items-center gap-6 rounded-3xl border border-zinc-100 bg-white p-6 transition-all hover:-translate-y-1 hover:shadow-xl">
-                                <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-zinc-50 text-zinc-900 transition-colors group-hover:bg-zinc-900 group-hover:text-white">
+                            <a href="{{ $instagram }}" target="_blank" class="group flex items-center gap-8 rounded-[32px] border border-gallery-outline/20 bg-white p-8 transition-all hover:-translate-y-2 ambient-shadow">
+                                <div class="flex h-14 w-14 items-center justify-center rounded-[20px] bg-gallery-surface-low text-black transition-colors group-hover:bg-black group-hover:text-white">
                                     <svg viewBox="0 0 24 24" fill="none" class="h-6 w-6" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
                                 </div>
-                                <div>
-                                    <p class="text-xs font-black uppercase tracking-widest text-zinc-900">Instagram</p>
-                                    <p class="text-[10px] font-bold text-zinc-400">See our gallery</p>
+                                <div class="space-y-1">
+                                    <p class="text-[12px] font-bold uppercase tracking-widest text-black">Instagram</p>
+                                    <p class="text-[11px] font-medium text-zinc-400">Visual narratives</p>
                                 </div>
                             </a>
                         @endif
 
                         @if($tiktok = Setting::get('tiktok_url'))
-                            <a href="{{ $tiktok }}" target="_blank" class="group flex items-center gap-6 rounded-3xl border border-zinc-100 bg-white p-6 transition-all hover:-translate-y-1 hover:shadow-xl">
-                                <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-zinc-50 text-zinc-900 transition-colors group-hover:bg-zinc-900 group-hover:text-white">
+                            <a href="{{ $tiktok }}" target="_blank" class="group flex items-center gap-8 rounded-[32px] border border-gallery-outline/20 bg-white p-8 transition-all hover:-translate-y-2 ambient-shadow">
+                                <div class="flex h-14 w-14 items-center justify-center rounded-[20px] bg-gallery-surface-low text-black transition-colors group-hover:bg-black group-hover:text-white">
                                     <svg viewBox="0 0 24 24" fill="none" class="h-6 w-6" stroke="currentColor" stroke-width="2"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"/></svg>
                                 </div>
-                                <div>
-                                    <p class="text-xs font-black uppercase tracking-widest text-zinc-900">TikTok</p>
-                                    <p class="text-[10px] font-bold text-zinc-400">Watch our videos</p>
+                                <div class="space-y-1">
+                                    <p class="text-[12px] font-bold uppercase tracking-widest text-black">TikTok</p>
+                                    <p class="text-[11px] font-medium text-zinc-400">Cinematic motion</p>
                                 </div>
                             </a>
                         @endif
                     </div>
                 </div>
 
-                <!-- Contact Detail -->
-                <div class="space-y-6 pt-8 border-t border-zinc-50">
+                <div class="space-y-10 pt-12 border-t border-gallery-outline/10">
                     <div class="space-y-2">
-                        <p class="text-[10px] font-black uppercase tracking-widest text-zinc-400">Direct Contact</p>
-                        <p class="text-2xl font-black text-zinc-900">{{ Setting::get('shop_phone') }}</p>
+                        <p class="text-[11px] font-bold uppercase tracking-[0.2em] text-zinc-400">Curator Line</p>
+                        <p class="text-4xl font-bold tracking-tight text-black leading-none">{{ Setting::get('shop_phone') }}</p>
                     </div>
                     <div class="space-y-2">
-                        <p class="text-[10px] font-black uppercase tracking-widest text-zinc-400">Email Us</p>
-                        <p class="text-lg font-bold text-zinc-900 underline underline-offset-4">{{ Setting::get('shop_email') }}</p>
+                        <p class="text-[11px] font-bold uppercase tracking-[0.2em] text-zinc-400">Digital Inquiries</p>
+                        <p class="text-xl font-bold text-black underline underline-offset-8 decoration-zinc-200 decoration-2 hover:decoration-black transition-all">{{ Setting::get('shop_email') }}</p>
                     </div>
                 </div>
             </section>

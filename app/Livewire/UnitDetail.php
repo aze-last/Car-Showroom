@@ -5,6 +5,7 @@ namespace App\Livewire;
 use App\Models\Inquiry;
 use App\Models\Unit;
 use Illuminate\Contracts\View\View;
+use Livewire\Attributes\Session;
 use Livewire\Component;
 
 class UnitDetail extends Component
@@ -12,6 +13,9 @@ class UnitDetail extends Component
     public Unit $unit;
 
     public int $currentImageIndex = 0;
+
+    #[Session(key: 'compare_ids')]
+    public array $compareIds = [];
 
     public string $name = '';
 
@@ -29,6 +33,25 @@ class UnitDetail extends Component
             'category',
             'images',
         ]);
+
+        if (!is_array($this->compareIds)) {
+            $this->compareIds = [];
+        }
+
+        if (auth()->check()) {
+            $user = auth()->user();
+            $this->name = $user->name;
+            $this->email = $user->email;
+        }
+    }
+
+    public function toggleCompare(int $id): void
+    {
+        if (in_array($id, $this->compareIds)) {
+            $this->compareIds = array_values(array_diff($this->compareIds, [$id]));
+        } elseif (count($this->compareIds) < 3) {
+            $this->compareIds[] = $id;
+        }
     }
 
     public function submitInquiry(): void

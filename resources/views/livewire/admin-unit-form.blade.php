@@ -256,8 +256,23 @@
                         @endif
 
                         @if ($isEdit && $unit instanceof Unit)
-                            <div class="space-y-2">
-                                <input type="text" wire:model="statusReason" maxlength="255" class="admin-input" placeholder="Optional reason">
+                            <div class="space-y-4">
+                                @if ($unit->isAvailable())
+                                    <div class="space-y-2">
+                                        <label class="block text-xs font-bold text-zinc-400 uppercase tracking-widest px-1">Assign Buyer (Optional)</label>
+                                        <select wire:model="buyer_id" class="admin-input">
+                                            <option value="">Select Collector...</option>
+                                            @foreach($users as $user)
+                                                <option value="{{ $user->id }}">{{ $user->name }} ({{ $user->email }})</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                @endif
+
+                                <div class="space-y-2">
+                                    <label class="block text-xs font-bold text-zinc-400 uppercase tracking-widest px-1">Transition Note</label>
+                                    <input type="text" wire:model="statusReason" maxlength="255" class="admin-input" placeholder="Optional reason">
+                                </div>
                                 @if ($unit->status === Unit::STATUS_AVAILABLE)
                                     <button type="button" x-on:click="$flux.modal('confirm-sold').show()" class="admin-btn-danger w-full">Mark as SOLD</button>
                                 @else

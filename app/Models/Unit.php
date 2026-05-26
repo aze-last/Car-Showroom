@@ -34,6 +34,7 @@ class Unit extends Model
         'source_name',
         'source_external_id',
         'source_url',
+        'buyer_id',
     ];
 
     protected function casts(): array
@@ -93,6 +94,14 @@ class Unit extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
+    }
+
+    /**
+     * @return BelongsTo<User, $this>
+     */
+    public function buyer(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'buyer_id');
     }
 
     /**

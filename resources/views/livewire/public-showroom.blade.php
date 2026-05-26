@@ -3,384 +3,190 @@
     use Illuminate\Support\Facades\Storage;
 @endphp
 
-<section class="space-y-16">
-    <!-- 1. Search & Filter Card (Primary Action) -->
-    <div x-data="{ shown: false }" x-intersect.once="shown = true" :class="shown ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'" class="rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm sm:p-8 transition-all duration-700 ease-out motion-reduce:transition-none motion-reduce:opacity-100 motion-reduce:translate-y-0">
-        <div class="space-y-8">
-            <div class="flex flex-wrap items-center justify-between gap-6">
-                <div>
-                    <span class="mb-2.5 block text-[10px] font-bold uppercase tracking-widest text-zinc-400">Categories</span>
-                    <div class="flex flex-wrap gap-2">
-                        <button
-                            type="button"
-                            wire:click="clearCategoryFilter"
-                            class="rounded-full border px-5 py-2 text-xs font-semibold transition duration-200 {{ $categoryId === null ? 'border-zinc-900 bg-zinc-900 text-white shadow-md' : 'border-zinc-200 bg-white text-zinc-600 hover:border-zinc-300 hover:bg-zinc-50' }}"
-                        >
-                            All
-                        </button>
-
-                        @foreach ($categories as $category)
-                            <button
-                                type="button"
-                                wire:click="$set('categoryId', {{ $category->id }})"
-                                class="rounded-full border px-5 py-2 text-xs font-semibold transition duration-200 {{ $categoryId === $category->id ? 'border-zinc-900 bg-zinc-900 text-white shadow-md' : 'border-zinc-200 bg-white text-zinc-600 hover:border-zinc-300 hover:bg-zinc-50' }}"
-                            >
-                                {{ $category->name }}
-                            </button>
-                        @endforeach
-                    </div>
-                </div>
-
-                <div class="flex flex-1 min-w-[280px] max-w-md items-end">
-                    <label class="block w-full">
-                        <span class="mb-2.5 block text-[10px] font-bold uppercase tracking-widest text-zinc-400">Search Catalog</span>
-                        <div class="relative">
-                            <svg viewBox="0 0 24 24" fill="none" class="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" stroke="currentColor" stroke-width="2">
-                                <circle cx="11" cy="11" r="7"/>
-                                <path d="M20 20L16.65 16.65" stroke-linecap="round"/>
-                            </svg>
-                            <input
-                                type="text"
-                                wire:model.live.debounce.300ms="search"
-                                placeholder="Type vehicle name..."
-                                class="h-12 w-full rounded-xl border border-zinc-200 bg-zinc-50 px-11 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-zinc-900 focus:bg-white focus:outline-none focus:ring-4 focus:ring-zinc-900/5 transition-all"
-                            >
-                        </div>
-                    </label>
-                </div>
-            </div>
-
-            <div class="grid gap-6 border-t border-zinc-100 pt-8 md:grid-cols-[1fr_1.3fr_auto]">
-                <label class="block">
-                    <span class="mb-2.5 block text-[10px] font-bold uppercase tracking-widest text-zinc-400">Sort By</span>
-                    <select wire:model.live="sortBy" class="h-12 w-full appearance-none rounded-xl border border-zinc-200 bg-zinc-50 px-4 text-sm text-zinc-900 focus:border-zinc-900 focus:bg-white focus:outline-none focus:ring-4 focus:ring-zinc-900/5 transition-all">
-                        <option value="newest">Newest Arrivals</option>
-                        <option value="price_asc">Price: Low to High</option>
-                        <option value="price_desc">Price: High to Low</option>
-                    </select>
-                </label>
-
-                <div class="grid grid-cols-2 gap-4">
-                    <label class="block">
-                        <span class="mb-2.5 block text-[10px] font-bold uppercase tracking-widest text-zinc-400">Min Price</span>
-                        <input type="number" wire:model.live.debounce.500ms="minPrice" placeholder="PHP" class="h-12 w-full rounded-xl border border-zinc-200 bg-zinc-50 px-4 text-sm text-zinc-900 focus:border-zinc-900 focus:bg-white focus:outline-none transition-all">
-                    </label>
-                    <label class="block">
-                        <span class="mb-2.5 block text-[10px] font-bold uppercase tracking-widest text-zinc-400">Max Price</span>
-                        <input type="number" wire:model.live.debounce.500ms="maxPrice" placeholder="PHP" class="h-12 w-full rounded-xl border border-zinc-200 bg-zinc-50 px-4 text-sm text-zinc-900 focus:border-zinc-900 focus:bg-white focus:outline-none transition-all">
-                    </label>
-                </div>
-
-                <div class="flex items-end">
-                    <button type="button" wire:click="resetFilters" class="h-12 rounded-xl border border-zinc-200 bg-white px-8 text-xs font-bold text-zinc-600 transition hover:bg-zinc-50 hover:text-zinc-900">
-                        Reset Filters
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- 2. Featured Spotlight (Secondary, Scrollable) -->
+<div class="flex flex-col">
+    <!-- 1. Editorial Hero Section -->
     @if($featuredUnits->isNotEmpty())
-        <div x-data="{ shown: false }" x-intersect.once="shown = true" :class="shown ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'" class="space-y-6 transition-all duration-700 ease-out delay-150 motion-reduce:transition-none motion-reduce:opacity-100 motion-reduce:translate-y-0">
-            <header class="flex items-center justify-between">
-                <div>
-                    <h2 class="text-xs font-black uppercase tracking-[0.4em] text-zinc-900">Featured Spotlight</h2>
-                    <div class="mt-2 h-1 w-8 bg-zinc-900"></div>
-                </div>
-            </header>
-
-            <!-- Horizontal Scroll Slider for better handling of many units -->
-            <div class="relative -mx-4 flex gap-6 overflow-x-auto px-4 pb-4 no-scrollbar scroll-smooth">
-                @foreach($featuredUnits as $fUnit)
-                    <div class="relative w-[280px] shrink-0 sm:w-[360px]" wire:key="featured-container-{{ $fUnit->id }}">
-                        <!-- Comparison Toggle -->
-                        <button 
-                            wire:click.stop="toggleCompare({{ $fUnit->id }})"
-                            class="absolute right-4 top-4 z-40 flex h-10 w-10 items-center justify-center rounded-full border shadow-lg transition-all duration-300 {{ in_array($fUnit->id, $compareIds) ? 'bg-zinc-900 border-zinc-900 text-white' : 'bg-white/90 border-zinc-200 text-zinc-400 backdrop-blur-md hover:bg-white hover:text-zinc-900 hover:border-zinc-300' }}"
-                        >
-                            @if(in_array($fUnit->id, $compareIds))
-                                <svg viewBox="0 0 24 24" fill="none" class="h-4 w-4 animate-showroom-fade-up" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                            @else
-                                <svg viewBox="0 0 24 24" fill="none" class="h-4 w-4" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                            @endif
+        @php $heroUnit = $featuredUnits->first(); @endphp
+        <section class="w-full px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto mt-6 mb-12 animate-showroom-fade-up">
+            <div class="relative w-full h-[600px] min-h-[400px] rounded-[32px] overflow-hidden ambient-shadow group">
+                @if($heroUnit->mainImage)
+                    <img 
+                        src="{{ Storage::url($heroUnit->mainImage->url) }}" 
+                        alt="{{ $heroUnit->name }}" 
+                        class="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
+                    >
+                @endif
+                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+                <div class="absolute bottom-0 left-0 p-8 sm:p-12 flex flex-col gap-2">      
+                    <span class="text-[12px] font-bold text-white uppercase tracking-[0.4em]">Featured Release</span>
+                    <h1 class="text-5xl sm:text-7xl font-bold leading-none text-white tracking-tighter">{{ $heroUnit->name }}</h1>
+                    <p class="text-lg text-white/80 max-w-md mt-4 font-medium">{{ $heroUnit->category?->name }} • {{ $heroUnit->formattedPrice() }}</p>
+                    <div class="mt-8 flex gap-4">
+                        <a href="{{ route('units.show', $heroUnit) }}" wire:navigate class="bg-white text-black font-bold uppercase tracking-widest text-[12px] px-8 py-3 rounded-full hover:bg-zinc-100 transition-colors">View Detail</a>
+                        <button wire:click="toggleCompare({{ $heroUnit->id }})" class="border border-white/30 backdrop-blur-md text-white font-bold uppercase tracking-widest text-[12px] px-8 py-3 rounded-full hover:bg-white/10 transition-colors">
+                            {{ in_array($heroUnit->id, $compareIds) ? 'Selected' : 'Compare' }}
                         </button>
-
-                        <a 
-                            href="{{ route('units.show', $fUnit) }}" 
-                            wire:navigate
-                            class="group relative block aspect-[16/10] overflow-hidden rounded-[32px] bg-zinc-100 shadow-xl shadow-zinc-200/50 transition-all duration-500 hover:-translate-y-1 hover:shadow-2xl hover:shadow-zinc-300/50"
-                            wire:key="featured-{{ $fUnit->id }}"
-                            x-data="{ loaded: false }"
-                        >
-                            <!-- Skeleton Loader -->
-                            <div x-show="!loaded" class="absolute inset-0 animate-pulse bg-zinc-200/50"></div>
-                            
-                            @if($fUnit->mainImage)
-                                <img 
-                                    src="{{ Storage::url($fUnit->mainImage->url) }}" 
-                                    alt="{{ $fUnit->name }}" 
-                                    @load="loaded = true"
-                                    :class="loaded ? 'opacity-100' : 'opacity-0'"
-                                    style="view-transition-name: unit-image-{{ $fUnit->id }}"
-                                    class="h-full w-full object-cover transition-all duration-1000 group-hover:scale-110 motion-safe:transition-all motion-reduce:transition-none"
-                                >
-                            @else
-                               <div x-init="loaded = true" class="absolute inset-0 flex items-center justify-center bg-zinc-100"></div>
-                            @endif
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent"></div>
-                            <div class="absolute bottom-6 left-6 right-6">
-                                <span class="rounded-lg bg-white/20 backdrop-blur-md px-2 py-0.5 text-[9px] font-black uppercase tracking-[0.2em] text-white">
-                                    {{ $fUnit->category?->name ?? 'Vehicle' }}
-                                </span>
-                                <h3 class="mt-2 text-lg font-black tracking-tight text-white">{{ $fUnit->name }}</h3>
-                                <p class="text-xs font-bold text-zinc-300">{{ $fUnit->formattedPrice() }}</p>
-                            </div>
-                        </a>
                     </div>
-                @endforeach
+                </div>
             </div>
-        </div>
+        </section>
     @endif
 
-    <!-- 3. Main Catalog Grid -->
-    <div x-data="{ shown: false }" x-intersect.once.margin.-100px="shown = true" :class="shown ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'" class="space-y-8 transition-all duration-700 ease-out delay-300 motion-reduce:transition-none motion-reduce:opacity-100 motion-reduce:translate-y-0">
-        <div wire:loading wire:target="search,categoryId,clearCategoryFilter" class="flex items-center gap-3 px-2 text-[10px] font-bold uppercase tracking-widest text-zinc-400">
-            <svg class="h-3 w-3 animate-spin text-zinc-300" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-            Refreshing showroom...
-        </div>
-
-        <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-            @forelse ($units as $unit)
-                <div class="relative group" wire:key="unit-container-{{ $unit->id }}">
-                    <!-- Comparison Toggle -->
+    <!-- 2. Catalog Controls (Filters) -->
+    <section class="w-full px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto mb-12 animate-showroom-fade-up" style="animation-delay: 0.1s;">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 bg-white/50 backdrop-blur-sm p-6 rounded-[32px] border border-gallery-outline/20">
+            <div class="flex flex-wrap gap-2">
+                <button 
+                    wire:click="clearCategoryFilter"
+                    class="text-[11px] font-bold uppercase tracking-widest px-6 py-2.5 rounded-full transition-all {{ $categoryId === null ? 'bg-black text-white shadow-lg' : 'bg-gallery-surface-low text-zinc-500 hover:text-black hover:bg-gallery-surface-high' }}"
+                >
+                    All
+                </button>
+                @foreach ($categories as $category)
                     <button 
-                        wire:click.stop="toggleCompare({{ $unit->id }})"
-                        class="absolute right-4 top-4 z-40 flex h-10 w-10 items-center justify-center rounded-full border shadow-lg transition-all duration-300 {{ in_array($unit->id, $compareIds) ? 'bg-zinc-900 border-zinc-900 text-white' : 'bg-white/90 border-zinc-200 text-zinc-400 backdrop-blur-md hover:bg-white hover:text-zinc-900 hover:border-zinc-300' }}"
-                        title="Add to compare"
+                        wire:click="$set('categoryId', {{ $category->id }})"
+                        class="text-[11px] font-bold uppercase tracking-widest px-6 py-2.5 rounded-full transition-all {{ $categoryId === $category->id ? 'bg-black text-white shadow-lg' : 'bg-gallery-surface-low text-zinc-500 hover:text-black hover:bg-gallery-surface-high' }}"
                     >
-                        @if(in_array($unit->id, $compareIds))
-                            <svg viewBox="0 0 24 24" fill="none" class="h-4 w-4 animate-showroom-fade-up" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                        @else
-                            <svg viewBox="0 0 24 24" fill="none" class="h-4 w-4" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                        @endif
+                        {{ $category->name }}
                     </button>
+                @endforeach
+            </div>
 
-                    <a
-                        href="{{ route('units.show', $unit) }}"
-                        wire:navigate
-                        class="flex flex-col overflow-hidden rounded-3xl border border-zinc-100 bg-white shadow-sm transition-all duration-300 group-hover:-translate-y-1.5 group-hover:shadow-xl group-hover:shadow-zinc-200/50"
+            <div class="flex items-center gap-6 w-full md:w-auto">
+                <div class="relative flex-1 md:w-64">
+                    <input 
+                        wire:model.live.debounce.300ms="search"
+                        type="text" 
+                        placeholder="Search models..." 
+                        class="w-full bg-gallery-surface-low border-none rounded-full px-6 py-2.5 text-sm font-medium focus:ring-2 focus:ring-black/5 transition-all"
                     >
-                        <div class="relative aspect-[4/3] overflow-hidden bg-zinc-50">
-                            @if ($unit->mainImage)
-                                <img
-                                    src="{{ Storage::url($unit->mainImage->url) }}"
-                                    alt="{{ $unit->name }}"
-                                    class="h-full w-full object-cover transition duration-700 group-hover:scale-105 {{ $unit->status === Unit::STATUS_SOLD ? 'grayscale opacity-60' : '' }}"
-                                    loading="lazy"
-                                >
-                            @else
-                                <div class="flex h-full w-full items-center justify-center bg-zinc-50 text-[10px] font-bold uppercase tracking-widest text-zinc-300">
-                                    No Image
-                                </div>
-                            @endif
-
-                            <div class="absolute left-4 top-4 z-20 flex flex-wrap items-center gap-2">
-                                @if ($unit->is_featured)
-                                    <span class="rounded-lg bg-zinc-900 px-2.5 py-1 text-[9px] font-black uppercase tracking-widest text-white shadow-lg">
-                                        Featured
-                                    </span>
-                                @endif
-                                <span class="rounded-lg bg-white/90 backdrop-blur-md px-2.5 py-1 text-[9px] font-bold uppercase tracking-widest text-zinc-600 shadow-sm">
-                                    {{ $unit->category?->name ?? 'Vehicle' }}
-                                </span>
-                            </div>
-
-                            <div class="absolute bottom-4 right-4 z-20">
-                                <span class="rounded-lg px-3 py-1.5 text-[10px] font-black uppercase tracking-widest shadow-sm {{ $unit->status === Unit::STATUS_AVAILABLE ? 'bg-emerald-500 text-white' : 'bg-zinc-400 text-white' }}">
-                                    {{ $unit->status === Unit::STATUS_AVAILABLE ? 'Available' : 'Sold' }}
-                                </span>
-                            </div>
-                        </div>
-
-                        <div class="flex flex-1 flex-col p-6">
-                            <div class="flex items-start justify-between gap-4">
-                                <h2 class="text-xl font-bold tracking-tight text-zinc-900 group-hover:text-zinc-600 transition-colors">
-                                    {{ $unit->name }}
-                                </h2>
-                            </div>
-
-                            <div class="mt-4 flex flex-wrap gap-x-4 gap-y-2">
-                                @if($unit->year)
-                                    <span class="text-[10px] font-bold uppercase tracking-widest text-zinc-400">{{ $unit->year }}</span>
-                                @endif
-                                @if($unit->transmission)
-                                    <span class="text-[10px] font-bold uppercase tracking-widest text-zinc-400">{{ $unit->transmission }}</span>
-                                @endif
-                                @if($unit->mileage)
-                                    <span class="text-[10px] font-bold uppercase tracking-widest text-zinc-400">{{ number_format($unit->mileage) }} KM</span>
-                                @endif
-                            </div>
-
-                            <div class="mt-auto pt-6">
-                                <div class="flex items-center justify-between border-t border-zinc-50 pt-5">
-                                    <span class="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Price</span>
-                                    <span class="text-lg font-black tracking-tight text-zinc-900">
-                                        {{ $unit->formattedPrice() }}
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
                 </div>
+                <div class="flex items-center gap-3 text-zinc-400">
+                    <span class="text-[10px] font-bold uppercase tracking-widest">Sort</span>
+                    <select wire:model.live="sortBy" class="bg-transparent border-none text-[12px] font-bold text-black focus:ring-0 p-0 cursor-pointer uppercase tracking-widest">
+                        <option value="newest">Newest</option>    
+                        <option value="price_desc">Price: High</option> 
+                        <option value="price_asc">Price: Low</option> 
+                    </select>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3. Main Vehicle Grid -->
+    <section class="w-full px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto mb-32">   
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"> 
+            @forelse ($units as $unit)
+                <article 
+                    class="bg-gallery-surface-lowest rounded-[32px] border border-gallery-outline/30 overflow-hidden hover-scale ambient-shadow flex flex-col group animate-showroom-fade-up"
+                    wire:key="unit-{{ $unit->id }}"
+                >
+                    <div class="relative h-72 overflow-hidden bg-gallery-surface-low">    
+                        @if($unit->mainImage)
+                            <img 
+                                src="{{ Storage::url($unit->mainImage->url) }}" 
+                                alt="{{ $unit->name }}" 
+                                class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 {{ $unit->status === Unit::STATUS_SOLD ? 'grayscale opacity-60' : '' }}"
+                                loading="lazy"
+                            >
+                        @endif
+                        
+                        <div class="absolute top-4 left-4 flex gap-2">
+                            @if($unit->is_featured)
+                                <span class="bg-black text-white text-[9px] font-bold uppercase tracking-widest px-3 py-1 rounded-full shadow-lg">Featured</span>
+                            @endif
+                            <span class="bg-white/90 backdrop-blur-md text-zinc-900 text-[9px] font-bold uppercase tracking-widest px-3 py-1 rounded-full shadow-sm">{{ $unit->category?->name }}</span>
+                        </div>
+
+                        <div class="absolute top-4 right-4">
+                            <span class="text-[9px] font-bold uppercase tracking-widest px-3 py-1 rounded-full shadow-sm {{ $unit->status === Unit::STATUS_AVAILABLE ? 'bg-emerald-500 text-white' : 'bg-zinc-400 text-white' }}">
+                                {{ $unit->status === Unit::STATUS_AVAILABLE ? 'Available' : 'Sold' }}
+                            </span>
+                        </div>      
+                    </div>
+
+                    <div class="p-8 flex flex-col flex-grow">
+                        <h3 class="text-2xl font-bold text-black mb-1 tracking-tight group-hover:text-zinc-600 transition-colors">{{ $unit->name }}</h3>
+                        <div class="flex gap-4 mt-1">
+                             @if($unit->year)
+                                <span class="text-[10px] font-bold uppercase tracking-widest text-zinc-400">{{ $unit->year }}</span>
+                            @endif
+                            @if($unit->transmission)
+                                <span class="text-[10px] font-bold uppercase tracking-widest text-zinc-400">{{ $unit->transmission }}</span>
+                            @endif
+                        </div>
+
+                        <div class="flex justify-between items-end mt-8 border-t border-gallery-outline/10 pt-6">
+                            <div class="flex flex-col">
+                                <span class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1">Price</span>
+                                <span class="text-xl font-bold text-black tracking-tight">{{ $unit->formattedPrice() }}</span>
+                            </div>
+                            <div class="flex gap-2">
+                                <button 
+                                    wire:click="toggleSave({{ $unit->id }})"
+                                    class="w-10 h-10 rounded-full border border-gallery-outline/30 flex items-center justify-center transition-all duration-300 {{ auth()->check() && auth()->user()->savedUnits()->where('unit_id', $unit->id)->exists() ? 'bg-red-50 border-red-100 text-red-600' : 'text-zinc-400 hover:border-black hover:text-black' }}"
+                                    title="Save to Gallery"
+                                >
+                                    <svg viewBox="0 0 24 24" fill="{{ auth()->check() && auth()->user()->savedUnits()->where('unit_id', $unit->id)->exists() ? 'currentColor' : 'none' }}" class="h-4 w-4" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                                </button>
+                                <button 
+                                    wire:click="toggleCompare({{ $unit->id }})"
+                                    class="w-10 h-10 rounded-full border border-gallery-outline/30 flex items-center justify-center transition-all duration-300 {{ in_array($unit->id, $compareIds) ? 'bg-black border-black text-white' : 'text-zinc-400 hover:border-black hover:text-black' }}"
+                                    title="Add to Compare"
+                                >
+                                    @if(in_array($unit->id, $compareIds))
+                                        <svg viewBox="0 0 24 24" fill="none" class="h-4 w-4" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                    @else
+                                        <svg viewBox="0 0 24 24" fill="none" class="h-4 w-4" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                                    @endif
+                                </button>
+                                <a href="{{ route('units.show', $unit) }}" wire:navigate class="w-10 h-10 rounded-full bg-black flex items-center justify-center text-white hover:opacity-80 transition-opacity">
+                                    <svg viewBox="0 0 24 24" fill="none" class="h-4 w-4" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </article>
             @empty
-                <div class="rounded-3xl border-2 border-dashed border-zinc-100 bg-zinc-50/50 p-16 text-center sm:col-span-2 lg:col-span-3">
-                    <p class="text-sm font-bold uppercase tracking-widest text-zinc-400">No vehicles match your criteria</p>
-                    <button wire:click="resetFilters" class="mt-4 text-xs font-bold text-zinc-900 underline underline-offset-4">Clear all filters</button>
+                <div class="col-span-full py-32 text-center">
+                    <span class="text-[12px] font-bold uppercase tracking-[0.4em] text-zinc-300">No vehicles found matching your criteria</span>
+                    <button wire:click="resetFilters" class="mt-4 block mx-auto text-[10px] font-bold uppercase tracking-widest text-black underline underline-offset-4">Reset all filters</button>
                 </div>
             @endforelse
         </div>
 
-        <div class="pt-8">
+        <div class="mt-16">
             {{ $units->links() }}
         </div>
-    </div>
+    </section>
 
-    <!-- 4. Comparison Floating Tray -->
+    <!-- 4. Comparison Floating Tray (Pill Design) -->
     @if(count($compareIds) > 0)
-        <div 
-            class="fixed bottom-8 left-1/2 z-50 -translate-x-1/2 animate-showroom-fade-up"
-            x-data
-        >
-            <div class="flex items-center gap-6 rounded-full border border-zinc-800 bg-zinc-900 px-6 py-3 shadow-2xl shadow-zinc-900/40 backdrop-blur-md">
-                <div class="flex -space-x-3 overflow-hidden">
-                    @foreach($this->selectedUnits as $sUnit)
-                        <div class="h-10 w-10 overflow-hidden rounded-full border-2 border-zinc-900 bg-zinc-800 shadow-sm" wire:key="tray-{{ $sUnit->id }}">
-                            @if($sUnit->mainImage)
-                                <img src="{{ Storage::url($sUnit->mainImage->url) }}" alt="" class="h-full w-full object-cover">
-                            @endif
-                        </div>
-                    @endforeach
+        <div class="fixed bottom-10 left-1/2 -translate-x-1/2 z-50 animate-showroom-fade-up">
+            <div class="bg-black text-white rounded-full px-8 py-4 ambient-shadow flex items-center gap-8 border border-white/10 backdrop-blur-md">
+                <div class="flex items-center gap-4">
+                    <div class="flex -space-x-3">
+                        @foreach($this->selectedUnits as $sUnit)
+                            <div class="h-10 w-10 rounded-full border-2 border-black bg-zinc-800 overflow-hidden shadow-sm" wire:key="tray-{{ $sUnit->id }}">
+                                @if($sUnit->mainImage)
+                                    <img src="{{ Storage::url($sUnit->mainImage->url) }}" alt="" class="h-full w-full object-cover">
+                                @endif
+                            </div>
+                        @endforeach
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="text-[10px] font-bold uppercase tracking-widest text-white/60">Compare</span>
+                        <span class="text-[12px] font-bold">{{ count($compareIds) }} selected</span>
+                    </div>
                 </div>
 
-                <div class="h-6 w-px bg-zinc-800"></div>
+                <div class="w-px h-8 bg-white/20"></div>
 
                 <div class="flex items-center gap-4">
-                    <flux:modal.trigger name="vehicle-compare">
-                        <button 
-                            class="text-[10px] font-black uppercase tracking-widest text-white hover:text-zinc-300 transition-colors"
-                        >
-                            Compare Now ({{ count($compareIds) }}/3)
-                        </button>
-                    </flux:modal.trigger>
-                    
-                    <button 
-                        wire:click="clearCompare"
-                        class="group flex h-6 w-6 items-center justify-center rounded-full bg-zinc-800 text-zinc-400 hover:bg-zinc-700 hover:text-white transition-all"
-                        title="Clear all"
-                    >
-                        <svg viewBox="0 0 24 24" fill="none" class="h-3 w-3" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                    </button>
+                    <button wire:click="clearCompare" class="text-[10px] font-bold uppercase tracking-widest text-white/60 hover:text-white transition-colors">Clear</button>
+                    <a href="{{ route('comparison') }}" wire:navigate class="bg-white text-black text-[11px] font-bold uppercase tracking-widest px-6 py-2 rounded-full hover:bg-zinc-100 transition-all hover:scale-105">Launch Gallery</a>
                 </div>
             </div>
         </div>
     @endif
-
-    <!-- 5. Comparison Modal -->
-    <flux:modal name="vehicle-compare" class="max-w-7xl !p-0">
-        <div class="flex h-full flex-col bg-white">
-            <header class="flex items-center justify-between border-b border-zinc-100 p-8">
-                <div>
-                    <h2 class="text-xs font-black uppercase tracking-[0.4em] text-zinc-900">Vehicle Comparison</h2>
-                    <p class="mt-1 text-[10px] font-bold uppercase tracking-widest text-zinc-400">Side-by-side neutral breakdown</p>
-                </div>
-                <flux:modal.close>
-                    <button class="rounded-xl border border-zinc-200 bg-white p-2.5 text-zinc-400 hover:bg-zinc-50 hover:text-zinc-900 transition-all">
-                        <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                    </button>
-                </flux:modal.close>
-            </header>
-
-            <div class="flex-1 overflow-y-auto p-8">
-                <div class="grid grid-cols-3 gap-8">
-                    @php 
-                        $selected = $this->selectedUnits;
-                        $slots = 3;
-                    @endphp
-
-                    @for($i = 0; $i < $slots; $i++)
-                        @php $unit = $selected->values()[$i] ?? null; @endphp
-                        
-                        <div class="flex flex-col space-y-8">
-                            @if($unit)
-                                <!-- Unit Slot -->
-                                <div class="space-y-6">
-                                    <div class="relative aspect-[16/10] overflow-hidden rounded-3xl bg-zinc-50 border border-zinc-100">
-                                        @if($unit->mainImage)
-                                            <img src="{{ Storage::url($unit->mainImage->url) }}" alt="" class="h-full w-full object-cover">
-                                        @endif
-                                        <button 
-                                            wire:click="toggleCompare({{ $unit->id }})"
-                                            class="absolute right-4 top-4 rounded-full bg-white/90 p-2 text-zinc-400 hover:text-red-600 backdrop-blur-sm transition-colors shadow-sm"
-                                        >
-                                            <svg viewBox="0 0 24 24" fill="none" class="h-4 w-4" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18m-2 0v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6m3 0V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg>
-                                        </button>
-                                    </div>
-
-                                    <div>
-                                        <h3 class="text-xl font-bold tracking-tight text-zinc-900">{{ $unit->name }}</h3>
-                                        <p class="text-sm font-black text-zinc-900 mt-1">{{ $unit->formattedPrice() }}</p>
-                                    </div>
-                                </div>
-
-                                <div class="space-y-6 divide-y divide-zinc-50 pt-4">
-                                    <div class="flex flex-col gap-1.5 pt-4">
-                                        <span class="text-[9px] font-bold uppercase tracking-widest text-zinc-400">Year</span>
-                                        <span class="text-sm font-bold text-zinc-900">{{ $unit->year ?? 'N/A' }}</span>
-                                    </div>
-                                    <div class="flex flex-col gap-1.5 pt-4">
-                                        <span class="text-[9px] font-bold uppercase tracking-widest text-zinc-400">Mileage</span>
-                                        <span class="text-sm font-bold text-zinc-900">{{ $unit->mileage ? number_format($unit->mileage) . ' KM' : 'N/A' }}</span>
-                                    </div>
-                                    <div class="flex flex-col gap-1.5 pt-4">
-                                        <span class="text-[9px] font-bold uppercase tracking-widest text-zinc-400">Transmission</span>
-                                        <span class="text-sm font-bold text-zinc-900">{{ $unit->transmission ?? 'N/A' }}</span>
-                                    </div>
-                                    <div class="flex flex-col gap-1.5 pt-4">
-                                        <span class="text-[9px] font-bold uppercase tracking-widest text-zinc-400">Fuel Type</span>
-                                        <span class="text-sm font-bold text-zinc-900">{{ $unit->fuel_type ?? 'N/A' }}</span>
-                                    </div>
-                                    <div class="flex flex-col gap-1.5 pt-4">
-                                        <span class="text-[9px] font-bold uppercase tracking-widest text-zinc-400">Category</span>
-                                        <span class="text-sm font-bold text-zinc-900">{{ $unit->category?->name ?? 'N/A' }}</span>
-                                    </div>
-                                </div>
-                                
-                                <div class="pt-8">
-                                    <a href="{{ route('units.show', $unit) }}" wire:navigate class="flex h-12 w-full items-center justify-center rounded-xl bg-zinc-900 text-xs font-black uppercase tracking-widest text-white hover:bg-zinc-800 transition-colors">
-                                        View Full Details
-                                    </a>
-                                </div>
-                            @else
-                                <!-- Empty Slot (Plus Button) -->
-                                <flux:modal.close>
-                                    <button 
-                                        class="group flex flex-1 flex-col items-center justify-center rounded-[40px] border-2 border-dashed border-zinc-100 bg-zinc-50/50 p-12 transition-all hover:border-zinc-300 hover:bg-zinc-100/50"
-                                    >
-                                        <div class="flex h-16 w-16 items-center justify-center rounded-full bg-white text-zinc-300 shadow-sm transition-all group-hover:scale-110 group-hover:text-zinc-900">
-                                            <svg viewBox="0 0 24 24" fill="none" class="h-8 w-8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                                        </div>
-                                        <span class="mt-6 text-[10px] font-black uppercase tracking-widest text-zinc-400 transition-colors group-hover:text-zinc-900">Add more to compare</span>
-                                    </button>
-                                </flux:modal.close>
-                            @endif
-                        </div>
-                    @endfor
-                </div>
-            </div>
-        </div>
-    </flux:modal>
-</section>
+</div>

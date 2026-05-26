@@ -45,6 +45,8 @@ class AdminUnitForm extends Component
 
     public ?string $fuel_type = null;
 
+    public ?int $buyer_id = null;
+
     /** @var array<int, array{id: int, url: string, sort_order: int, remove: bool}> */
     public array $existingImages = [];
 
@@ -78,6 +80,7 @@ class AdminUnitForm extends Component
             $this->mileage = $this->unit->mileage;
             $this->transmission = $this->unit->transmission;
             $this->fuel_type = $this->unit->fuel_type;
+            $this->buyer_id = $this->unit->buyer_id;
             $this->existingImages = $this->unit->images
                 ->map(fn (UnitImage $image): array => [
                     'id' => $image->id,
@@ -110,6 +113,19 @@ class AdminUnitForm extends Component
             userAgent: request()->userAgent(),
         );
 
+        if ($result && $this->buyer_id) {
+            $this->unit->update(['buyer_id' => $this->buyer_id]);
+            
+            $buyer = \App\Models\User::find($this->buyer_id);
+            if ($buyer) {
+                $buyer->notify(new \App\Notifications\UnitAcquiredNotification([
+                    'message' => "Congratulations! You have successfully acquired the {$this->unit->name}.",
+                    'unit_id' => $this->unit->id,
+                    'unit_name' => $this->unit->name,
+                ]));
+            }
+        }
+
         $this->statusReason = null;
         $this->loadStatusAndQrMeta();
 
@@ -138,348 +154,100 @@ class AdminUnitForm extends Component
         session()->flash($result['changed'] ? 'status' : 'info', $result['message']);
     }
 
-    public function updatedNewImages(): void
-    {
-        foreach (array_keys($this->newImages) as $index) {
-            if (! array_key_exists($index, $this->newImageSortOrders)) {
-                $this->newImageSortOrders[$index] = $this->nextSortOrder();
-            }
-        }
-    }
-
     public function removeNewImage(int $index): void
     {
-        unset($this->newImages[$index], $this->newImageSortOrders[$index]);
-
+        unset($this->newImages[$index]);
+        unset($this->newImageSortOrders[$index]);
         $this->newImages = array_values($this->newImages);
         $this->newImageSortOrders = array_values($this->newImageSortOrders);
     }
 
-    /**
-     * @param  array<int, int|string>  $orderedIds
-     */
-    public function reorderExistingImages(array $orderedIds): void
+    public function save(UnitImageStorageService $storageService, UnitInventoryLogService $logService): void
     {
-        $imagesById = collect($this->existingImages)
-            ->keyBy(fn (array $row): int => (int) $row['id']);
+        $this->name = trim($this->name);
+        $this->description = trim((string) $this->description);
 
-        $reordered = [];
-
-        foreach (array_values($orderedIds) as $position => $id) {
-            $row = $imagesById->get((int) $id);
-            if (! is_array($row)) {
-                continue;
-            }
-
-            $row['sort_order'] = $position;
-            $reordered[] = $row;
-            $imagesById->forget((int) $id);
-        }
-
-        foreach ($imagesById as $remaining) {
-            if (! is_array($remaining)) {
-                continue;
-            }
-
-            $remaining['sort_order'] = count($reordered);
-            $reordered[] = $remaining;
-        }
-
-        $this->existingImages = $reordered;
-    }
-
-    public function save(): void
-    {
-        $isCreate = $this->unit === null;
-        $existingUnit = $this->unit;
-
-        if ($isCreate) {
-            Gate::authorize('create', Unit::class);
-        } else {
-            if (! $existingUnit instanceof Unit) {
-                abort(404);
-            }
-
-            Gate::authorize('update', $existingUnit);
-        }
-
-        $validated = $this->validate();
-        $unitData = Arr::only($validated, [
-            'category_id',
-            'name',
-            'price_php',
-            'description',
-            'show_price',
-            'is_featured',
-            'year',
-            'mileage',
-            'transmission',
-            'fuel_type',
-        ]);
-
-        $unit = $existingUnit ?? new Unit;
-        $originalAttributes = $isCreate
-            ? []
-            : Arr::only($unit->toArray(), [
-                'category_id',
-                'name',
-                'price_php',
-                'description',
-                'show_price',
-                'is_featured',
-                'year',
-                'mileage',
-                'transmission',
-                'fuel_type',
-            ]);
-
-        $unit->fill($unitData);
-        $unit->save();
-
-        /** @var UnitInventoryLogService $inventoryLogService */
-        $inventoryLogService = app(UnitInventoryLogService::class);
-        $userId = (int) auth()->id();
-        $ipAddress = request()->ip();
-        $userAgent = request()->userAgent();
-
-        if ($isCreate) {
-            $inventoryLogService->record(
-                unit: $unit,
-                userId: $userId,
-                action: UnitStatusLog::ACTION_CREATE,
-                changes: [
-                    'attributes' => Arr::only($unit->toArray(), [
-                        'category_id',
-                        'name',
-                        'price_php',
-                        'description',
-                        'show_price',
-                    ]),
-                ],
-                fromStatus: $unit->status,
-                toStatus: $unit->status,
-                ipAddress: $ipAddress,
-                userAgent: $userAgent,
-            );
-        } else {
-            $attributeChanges = $this->buildAttributeChanges($originalAttributes, $unitData);
-
-            if ($attributeChanges !== []) {
-                $inventoryLogService->record(
-                    unit: $unit,
-                    userId: $userId,
-                    action: UnitStatusLog::ACTION_UPDATE,
-                    changes: [
-                        'attributes' => $attributeChanges,
-                    ],
-                    fromStatus: $unit->status,
-                    toStatus: $unit->status,
-                    ipAddress: $ipAddress,
-                    userAgent: $userAgent,
-                );
-            }
-        }
-
-        $imageChanges = $this->syncExistingImages($unit);
-        $addedPaths = $this->storeNewImages($unit);
-
-        if ($imageChanges['removed'] !== []) {
-            $inventoryLogService->record(
-                unit: $unit,
-                userId: $userId,
-                action: UnitStatusLog::ACTION_IMAGE_REMOVE,
-                changes: ['removed' => $imageChanges['removed']],
-                ipAddress: $ipAddress,
-                userAgent: $userAgent,
-            );
-        }
-
-        if ($imageChanges['reordered'] !== []) {
-            $inventoryLogService->record(
-                unit: $unit,
-                userId: $userId,
-                action: UnitStatusLog::ACTION_IMAGE_REORDER,
-                changes: ['reordered' => $imageChanges['reordered']],
-                ipAddress: $ipAddress,
-                userAgent: $userAgent,
-            );
-        }
-
-        if ($addedPaths !== []) {
-            $inventoryLogService->record(
-                unit: $unit,
-                userId: $userId,
-                action: UnitStatusLog::ACTION_IMAGE_ADD,
-                changes: ['added' => $addedPaths],
-                ipAddress: $ipAddress,
-                userAgent: $userAgent,
-            );
-        }
-
-        session()->flash(
-            'status',
-            $isCreate ? 'Unit created successfully.' : 'Unit updated successfully.',
-        );
-
-        $this->redirectRoute('admin.units.index', navigate: true);
-    }
-
-    /**
-     * @return array<string, array<int, string|\Illuminate\Contracts\Validation\ValidationRule|\Illuminate\Validation\Rules\Unique>>
-     */
-    protected function rules(): array
-    {
-        return [
-            'category_id' => ['required', 'integer', 'exists:categories,id'],
+        $rules = [
+            'category_id' => ['required', 'exists:categories,id'],
             'name' => ['required', 'string', 'max:255'],
             'price_php' => ['nullable', 'integer', 'min:0'],
             'description' => ['nullable', 'string'],
             'show_price' => ['boolean'],
             'is_featured' => ['boolean'],
-            'year' => ['nullable', 'integer', 'min:1900', 'max:'.(date('Y') + 2)],
+            'year' => ['nullable', 'integer', 'min:1900', 'max:'.(date('Y') + 1)],
             'mileage' => ['nullable', 'integer', 'min:0'],
             'transmission' => ['nullable', 'string', 'max:50'],
             'fuel_type' => ['nullable', 'string', 'max:50'],
-            'existingImages' => ['array'],
-            'existingImages.*.id' => ['required', 'integer'],
-            'existingImages.*.sort_order' => ['required', 'integer', 'min:0'],
-            'existingImages.*.remove' => ['boolean'],
-            'newImages' => ['array'],
-            'newImages.*' => ['image', 'max:8192'],
-            'newImageSortOrders' => ['array'],
-            'newImageSortOrders.*' => ['required', 'integer', 'min:0'],
+            'newImages.*' => ['image', 'max:10240'], // 10MB
         ];
-    }
 
-    /**
-     * @return array{removed: array<int, array{id: int, path: string}>, reordered: array<int, array{id: int, from: int, to: int}>}
-     */
-    private function syncExistingImages(Unit $unit): array
-    {
-        Gate::authorize('manageImages', $unit);
-        /** @var UnitImageStorageService $unitImageStorageService */
-        $unitImageStorageService = app(UnitImageStorageService::class);
+        $validated = $this->validate($rules);
 
-        $existing = $unit->images()
-            ->get()
-            ->keyBy('id');
-        $removed = [];
-        $reordered = [];
+        $isNew = $this->unit === null;
 
-        foreach ($this->existingImages as $row) {
-            $image = $existing->get((int) $row['id']);
+        if ($isNew) {
+            $this->unit = new Unit;
+        }
 
-            if ($image === null) {
-                continue;
-            }
+        $oldData = $isNew ? [] : $this->unit->toArray();
 
-            if (($row['remove'] ?? false) === true) {
-                $unitImageStorageService->delete($image->url);
-                $removed[] = [
-                    'id' => $image->id,
-                    'path' => $image->url,
-                ];
-                $image->delete();
+        $this->unit->fill([
+            'category_id' => $validated['category_id'],
+            'name' => $validated['name'],
+            'price_php' => $validated['price_php'],
+            'description' => $validated['description'],
+            'show_price' => $validated['show_price'],
+            'is_featured' => $validated['is_featured'],
+            'year' => $validated['year'],
+            'mileage' => $validated['mileage'],
+            'transmission' => $validated['transmission'],
+            'fuel_type' => $validated['fuel_type'],
+        ]);
 
-                continue;
-            }
+        $this->unit->save();
 
-            $newSortOrder = (int) $row['sort_order'];
-            if ($image->sort_order !== $newSortOrder) {
-                $reordered[] = [
-                    'id' => $image->id,
-                    'from' => $image->sort_order,
-                    'to' => $newSortOrder,
-                ];
-                $image->sort_order = $newSortOrder;
-                $image->save();
+        // Process removals
+        foreach ($this->existingImages as $imageData) {
+            if ($imageData['remove']) {
+                $image = UnitImage::find($imageData['id']);
+                if ($image) {
+                    $storageService->delete($image->url);
+                    $image->delete();
+                }
+            } else {
+                // Update sort order for existing
+                UnitImage::where('id', $imageData['id'])
+                    ->update(['sort_order' => $imageData['sort_order']]);
             }
         }
 
-        return [
-            'removed' => $removed,
-            'reordered' => $reordered,
-        ];
-    }
-
-    /**
-     * @return array<int, string>
-     */
-    private function storeNewImages(Unit $unit): array
-    {
-        Gate::authorize('manageImages', $unit);
-        /** @var UnitImageStorageService $unitImageStorageService */
-        $unitImageStorageService = app(UnitImageStorageService::class);
-
-        $addedPaths = [];
-
-        foreach ($this->newImages as $index => $uploadedImage) {
-            if (! $uploadedImage instanceof TemporaryUploadedFile) {
-                continue;
-            }
-
-            $path = $unitImageStorageService->storeForUnit($unit, $uploadedImage);
-
-            UnitImage::query()->create([
-                'unit_id' => $unit->id,
+        // Process new uploads
+        foreach ($this->newImages as $index => $file) {
+            $path = $storageService->store($file, "units/{$this->unit->id}");
+            UnitImage::create([
+                'unit_id' => $this->unit->id,
                 'url' => $path,
-                'sort_order' => (int) ($this->newImageSortOrders[$index] ?? $this->nextSortOrder()),
+                'sort_order' => $this->newImageSortOrders[$index] ?? 0,
             ]);
-
-            $addedPaths[] = $path;
         }
 
-        return $addedPaths;
-    }
-
-    private function nextSortOrder(): int
-    {
-        $existingMax = collect($this->existingImages)
-            ->reject(fn (array $image): bool => ($image['remove'] ?? false) === true)
-            ->max('sort_order');
-
-        $newMax = empty($this->newImageSortOrders)
-            ? null
-            : max($this->newImageSortOrders);
-
-        $max = max(
-            (int) ($existingMax ?? -1),
-            (int) ($newMax ?? -1),
-        );
-
-        return $max + 1;
-    }
-
-    /**
-     * @param  array<string, mixed>  $original
-     * @param  array<string, mixed>  $current
-     * @return array<string, array{from: mixed, to: mixed}>
-     */
-    private function buildAttributeChanges(array $original, array $current): array
-    {
-        $changes = [];
-
-        foreach (['category_id', 'name', 'price_php', 'description', 'show_price', 'is_featured', 'year', 'mileage', 'transmission', 'fuel_type'] as $field) {
-            $from = $original[$field] ?? null;
-            $to = $current[$field] ?? null;
-
-            if ($from !== $to) {
-                $changes[$field] = [
-                    'from' => $from,
-                    'to' => $to,
-                ];
+        // Log changes
+        if ($isNew) {
+            $logService->logCreation($this->unit, auth()->id());
+        } else {
+            $changes = $this->unit->getChanges();
+            if (! empty($changes)) {
+                $logService->logUpdate($this->unit, auth()->id(), $oldData, $changes);
             }
         }
 
-        return $changes;
+        session()->flash('status', 'Unit saved successfully.');
+        $this->redirectRoute('admin.units.index');
     }
 
     private function loadStatusAndQrMeta(): void
     {
-        if (! $this->unit instanceof Unit) {
-            $this->lastStatusLog = null;
-            $this->qrSvg = '';
-
+        if ($this->unit === null) {
             return;
         }
 
@@ -500,6 +268,7 @@ class AdminUnitForm extends Component
     {
         return view('livewire.admin-unit-form', [
             'categories' => Category::query()->orderBy('name')->get(),
+            'users' => \App\Models\User::query()->orderBy('name')->get(),
             'isEdit' => $this->unit !== null,
         ])->layout('layouts.admin-panel', [
             'title' => $this->unit === null ? 'Create Unit' : 'Edit Unit',

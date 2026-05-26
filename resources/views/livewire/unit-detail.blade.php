@@ -3,223 +3,240 @@
     use Illuminate\Support\Facades\Storage;
 @endphp
 
-<section class="space-y-8">
-    <a href="{{ route('home') }}" class="inline-flex items-center gap-2 rounded-full border border-zinc-200 bg-white px-5 py-2 text-xs font-bold uppercase tracking-widest text-zinc-600 transition hover:bg-zinc-50 hover:text-zinc-900 shadow-sm">
-        <svg viewBox="0 0 24 24" fill="none" class="h-3 w-3" stroke="currentColor" stroke-width="2.5">
-            <path d="M19 12H5M12 19L5 12L12 5" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        Back to showroom
-    </a>
-
-    <div class="relative rounded-[40px] border border-zinc-100 bg-white p-6 shadow-xl shadow-zinc-200/40 showroom-fade-in sm:p-10">
-        <div class="relative grid gap-10 lg:grid-cols-[1.5fr_1fr]">
-            <div class="space-y-6">
-                <div class="relative overflow-hidden rounded-[32px] bg-zinc-50 border border-zinc-100 shadow-inner">
-                    <div class="aspect-[4/3] bg-zinc-100" x-data="{ loaded: false }">
-                        <!-- Skeleton Loader -->
-                        <div x-show="!loaded" class="absolute inset-0 animate-pulse bg-zinc-200/50"></div>
-
-                        @if ($activeImage)
-                            <img
-                                src="{{ Storage::url($activeImage->url) }}"
-                                alt="{{ $unit->name }}"
-                                @load="loaded = true"
-                                :class="loaded ? 'opacity-100' : 'opacity-0'"
-                                style="view-transition-name: unit-image-{{ $unit->id }}"
-                                class="h-full w-full object-cover transition-all duration-700 motion-reduce:transition-none {{ $unit->status === Unit::STATUS_SOLD ? 'grayscale opacity-60' : '' }}"
-                            >
-                        @else
-                            <div x-init="loaded = true" class="flex h-full w-full items-center justify-center text-[10px] font-bold uppercase tracking-widest text-zinc-300">
-                                No images available
-                            </div>
-                        @endif
-                    </div>
-
-                    @if ($unit->images->count() > 1)
-                        <div class="absolute inset-y-0 left-0 flex items-center px-4">
-                            <button
-                                type="button"
-                                wire:click="previousImage"
-                                class="flex h-12 w-12 items-center justify-center rounded-full bg-white/90 backdrop-blur-md text-zinc-900 shadow-lg transition hover:scale-110 active:scale-95 border border-zinc-100"
-                            >
-                                <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="2.5">
-                                    <path d="M15 18L9 12L15 6" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
-                            </button>
+<main class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 flex flex-col lg:flex-row gap-16 relative animate-showroom-fade-up">
+    <!-- Main Content Column -->
+    <div class="flex-1 flex flex-col gap-12 min-w-0">
+        <!-- Hero Carousel Area -->
+        <section class="w-full relative rounded-[32px] overflow-hidden border border-gallery-outline/20 ambient-shadow bg-gallery-surface-lowest group">
+            <div class="aspect-[16/9] w-full relative">
+                @if ($activeImage)
+                    <img 
+                        src="{{ Storage::url($activeImage->url) }}" 
+                        alt="{{ $unit->name }}" 
+                        class="w-full h-full object-cover object-center absolute inset-0 transition-transform duration-1000 group-hover:scale-105 {{ $unit->status === Unit::STATUS_SOLD ? 'grayscale opacity-60' : '' }}"
+                    >
+                @endif
+                
+                <!-- Carousel Controls -->
+                @if($unit->images->count() > 1)
+                    <div class="absolute bottom-6 left-0 right-0 flex justify-center items-center gap-4 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <button wire:click="previousImage" class="w-10 h-10 rounded-full bg-white/80 backdrop-blur text-black flex items-center justify-center hover:bg-white transition-colors border border-gallery-outline/20">   
+                            <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="2.5"><path d="M15 18L9 12L15 6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </button>
+                        <div class="flex gap-2">
+                            @foreach($unit->images as $index => $img)
+                                <div class="w-2 h-2 rounded-full {{ $currentImageIndex === $index ? 'bg-black' : 'bg-black/20' }}"></div>
+                            @endforeach
                         </div>
-                        <div class="absolute inset-y-0 right-0 flex items-center px-4">
-                            <button
-                                type="button"
-                                wire:click="nextImage"
-                                class="flex h-12 w-12 items-center justify-center rounded-full bg-white/90 backdrop-blur-md text-zinc-900 shadow-lg transition hover:scale-110 active:scale-95 border border-zinc-100"
-                            >
-                                <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="2.5">
-                                    <path d="M9 18L15 12L9 6" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
-                            </button>
-                        </div>
-
-                        <div class="absolute bottom-6 left-1/2 -translate-x-1/2 rounded-full bg-black/80 px-4 py-1.5 text-[10px] font-black uppercase tracking-widest text-white backdrop-blur-sm">
-                            {{ $currentImageIndex + 1 }} / {{ $unit->images->count() }}
-                        </div>
-                    @endif
-                </div>
-
-                @if ($unit->images->count() > 1)
-                    <div class="grid grid-cols-4 gap-3 sm:grid-cols-6 lg:grid-cols-8">
-                        @foreach ($unit->images as $index => $image)
-                            <button
-                                type="button"
-                                wire:click="$set('currentImageIndex', {{ $index }})"
-                                class="group relative aspect-square overflow-hidden rounded-2xl border-2 transition-all duration-300 {{ $currentImageIndex === $index ? 'border-zinc-900 shadow-md ring-2 ring-zinc-900/10' : 'border-transparent opacity-60 hover:opacity-100 hover:border-zinc-200' }}"
-                            >
-                                <img
-                                    src="{{ Storage::url($image->url) }}"
-                                    alt="Thumbnail {{ $index + 1 }}"
-                                    class="h-full w-full object-cover"
-                                >
-                            </button>
-                        @endforeach
+                        <button wire:click="nextImage" class="w-10 h-10 rounded-full bg-white/80 backdrop-blur text-black flex items-center justify-center hover:bg-white transition-colors border border-gallery-outline/20">   
+                            <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="2.5"><path d="M9 18L15 12L9 6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </button>
                     </div>
                 @endif
-            </div>
 
-            <div class="flex flex-col space-y-8 py-2">
-                <div class="space-y-4">
-                    <div class="flex flex-wrap items-center gap-3">
-                        <span class="rounded-lg bg-zinc-100 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-zinc-600">
-                            {{ $unit->category?->name ?? 'Vehicle' }}
-                        </span>
-                        <span class="rounded-lg px-3 py-1 text-[10px] font-black uppercase tracking-widest {{ $unit->status === Unit::STATUS_AVAILABLE ? 'bg-emerald-500 text-white' : 'bg-zinc-400 text-white' }}">
-                            {{ $unit->status }}
-                        </span>
-                    </div>
-
-                    <h1 class="text-4xl font-black tracking-tight text-zinc-900 sm:text-5xl">
-                        {{ $unit->name }}
-                    </h1>
-
-                    <div class="flex items-center gap-4">
-                        <span class="text-3xl font-black tracking-tight text-zinc-900">
-                            {{ $unit->formattedPrice() }}
-                        </span>
-                        @if($unit->status === Unit::STATUS_AVAILABLE)
-                            <span class="h-2 w-2 animate-pulse rounded-full bg-emerald-500"></span>
-                            <span class="text-[10px] font-bold uppercase tracking-widest text-emerald-600">Ready for release</span>
-                        @endif
-                    </div>
-                </div>
-
-                <div x-data="{ shown: false }" x-intersect.once="shown = true" :class="shown ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'" class="grid grid-cols-2 gap-4 border-y border-zinc-100 py-8 transition-all duration-700 ease-out delay-150 motion-reduce:transition-none motion-reduce:opacity-100 motion-reduce:translate-y-0">
+                <!-- Floating Tags -->
+                <div class="absolute top-6 left-6 flex gap-2">
+                    <span class="px-4 py-2 rounded-full bg-white/80 backdrop-blur font-bold text-[10px] uppercase tracking-widest text-black border border-gallery-outline/20 shadow-sm">
+                        {{ $unit->status === Unit::STATUS_AVAILABLE ? 'In Stock' : 'Archived' }}
+                    </span>
                     @if($unit->year)
-                        <div class="space-y-1">
-                            <span class="text-[9px] font-black uppercase tracking-[0.2em] text-zinc-400">Year Model</span>
-                            <p class="text-base font-bold text-zinc-900">{{ $unit->year }}</p>
-                        </div>
-                    @endif
-                    @if($unit->mileage)
-                        <div class="space-y-1">
-                            <span class="text-[9px] font-black uppercase tracking-[0.2em] text-zinc-400">Mileage</span>
-                            <p class="text-base font-bold text-zinc-900">{{ number_format($unit->mileage) }} KM</p>
-                        </div>
-                    @endif
-                    @if($unit->transmission)
-                        <div class="space-y-1">
-                            <span class="text-[9px] font-black uppercase tracking-[0.2em] text-zinc-400">Transmission</span>
-                            <p class="text-base font-bold text-zinc-900">{{ $unit->transmission }}</p>
-                        </div>
-                    @endif
-                    @if($unit->fuel_type)
-                        <div class="space-y-1">
-                            <span class="text-[9px] font-black uppercase tracking-[0.2em] text-zinc-400">Fuel Type</span>
-                            <p class="text-base font-bold text-zinc-900">{{ $unit->fuel_type }}</p>
-                        </div>
+                        <span class="px-4 py-2 rounded-full bg-white/80 backdrop-blur font-bold text-[10px] uppercase tracking-widest text-black border border-gallery-outline/20 shadow-sm">{{ $unit->year }}</span>
                     @endif
                 </div>
-
-                <div class="space-y-4">
-                    <h2 class="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400">About this unit</h2>
-                    <p class="text-sm leading-relaxed text-zinc-600">
-                        {{ $unit->description ?: 'Premium selected vehicle with verified quality standards and professional inspection completed.' }}
-                    </p>
+            </div>
+            
+            <!-- Thumbnails -->
+            @if($unit->images->count() > 1)
+                <div class="p-4 flex gap-4 overflow-x-auto bg-gallery-surface-lowest border-t border-gallery-outline/10 hide-scrollbar">
+                    @foreach ($unit->images as $index => $image)
+                        <button
+                            wire:click="$set('currentImageIndex', {{ $index }})"
+                            class="w-32 h-20 rounded-2xl overflow-hidden flex-shrink-0 border-2 transition-all duration-300 {{ $currentImageIndex === $index ? 'border-black shadow-lg scale-95' : 'border-transparent opacity-50 hover:opacity-100' }}"
+                        >
+                            <img src="{{ Storage::url($image->url) }}" alt="" class="h-full w-full object-cover">
+                        </button>
+                    @endforeach
                 </div>
+            @endif
+        </section>
 
-                <div class="pt-6">
-                    @if ($submitted)
-                        <div class="rounded-3xl bg-zinc-900 p-8 text-center text-white shadow-2xl">
-                            <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-emerald-500 text-white mb-4">
-                                <svg viewBox="0 0 24 24" fill="none" class="h-6 w-6" stroke="currentColor" stroke-width="3">
-                                    <path d="M20 6L9 17L4 12" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
-                            </div>
-                            <h3 class="text-lg font-bold">Inquiry Sent!</h3>
-                            <p class="mt-2 text-sm text-zinc-400">Our sales representative will contact you within 24 hours.</p>
-                            <button type="button" wire:click="$set('submitted', false)" class="mt-6 text-xs font-bold uppercase tracking-widest text-zinc-300 underline">Send another message</button>
-                        </div>
-                    @else
-                        <div class="rounded-3xl border border-zinc-100 bg-zinc-50/50 p-6 sm:p-8">
-                            <h3 class="text-lg font-bold text-zinc-900">Interested?</h3>
-                            <p class="mt-1 text-sm text-zinc-500">Send us a message and we'll get back to you.</p>
-
-                            <form wire:submit="submitInquiry" class="mt-8 space-y-4">
-                                <div class="space-y-4">
-                                    <div class="grid gap-4 sm:grid-cols-2">
-                                        <input type="text" wire:model="name" placeholder="Name" class="h-12 w-full rounded-xl border border-zinc-200 bg-white px-4 text-sm focus:border-zinc-900 focus:ring-0 transition-all">
-                                        <input type="email" wire:model="email" placeholder="Email" class="h-12 w-full rounded-xl border border-zinc-200 bg-white px-4 text-sm focus:border-zinc-900 focus:ring-0 transition-all">
-                                    </div>
-                                    <input type="text" wire:model="phone" placeholder="Phone Number (Optional)" class="h-12 w-full rounded-xl border border-zinc-200 bg-white px-4 text-sm focus:border-zinc-900 focus:ring-0 transition-all">
-                                    <textarea wire:model="message" rows="3" placeholder="I'm interested in this unit..." class="w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-sm focus:border-zinc-900 focus:ring-0 transition-all"></textarea>
-                                </div>
-
-                                <button type="submit" wire:loading.attr="disabled" class="w-full rounded-xl bg-zinc-900 py-4 text-xs font-black uppercase tracking-[0.2em] text-white shadow-xl transition-all hover:bg-zinc-800 active:scale-95 disabled:opacity-50">
-                                    <span wire:loading.remove wire:target="submitInquiry">Send Message</span>
-                                    <span wire:loading wire:target="submitInquiry">Processing...</span>
-                                </button>
-                            </form>
-                        </div>
-                    @endif
+        <!-- Vehicle Header Info -->
+        <div class="flex flex-col gap-4">
+            <div class="flex flex-col md:flex-row justify-between items-start gap-4">
+                <div>
+                    <h1 class="text-5xl sm:text-7xl font-bold tracking-tighter text-black leading-tight">{{ $unit->name }}</h1>
+                    <p class="text-xl font-medium text-zinc-400 mt-2">{{ $unit->category?->name }} • {{ $unit->transmission }}</p>
+                </div>
+                <div class="text-left md:text-right">
+                    <p class="text-4xl font-bold tracking-tight text-black">{{ $unit->formattedPrice() }}</p>
+                    <p class="text-[11px] font-bold uppercase tracking-widest text-zinc-400 mt-2">Curated Premium Listing</p>
                 </div>
             </div>
         </div>
+
+        <!-- Key Highlights Bento Grid -->
+        <section class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-gallery-surface-lowest rounded-[32px] p-8 border border-gallery-outline/20 ambient-shadow hover-lift flex flex-col justify-between aspect-square">
+                <div class="w-12 h-12 rounded-full bg-gallery-surface-low flex items-center justify-center mb-6 text-black">
+                    <svg viewBox="0 0 24 24" fill="none" class="h-6 w-6" stroke="currentColor" stroke-width="2"><path d="M12 8v4l3 3m6-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </div>
+                <div>
+                    <h3 class="text-[10px] font-bold text-zinc-400 mb-2 uppercase tracking-[0.3em]">Era</h3>
+                    <p class="text-4xl font-bold text-black mb-1">{{ $unit->year ?? 'N/A' }}</p>
+                    <p class="text-[13px] font-medium text-zinc-500">Architectural Integrity</p>
+                </div>
+            </div>
+            
+            <div class="bg-gallery-surface-lowest rounded-[32px] p-8 border border-gallery-outline/20 ambient-shadow hover-lift flex flex-col justify-between aspect-square">
+                <div class="w-12 h-12 rounded-full bg-gallery-surface-low flex items-center justify-center mb-6 text-black">
+                    <svg viewBox="0 0 24 24" fill="none" class="h-6 w-6" stroke="currentColor" stroke-width="2"><path d="M13 10V3L4 14h7v7l9-11h-7z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </div>
+                <div>
+                    <h3 class="text-[10px] font-bold text-zinc-400 mb-2 uppercase tracking-[0.3em]">Distance</h3>
+                    <p class="text-4xl font-bold text-black mb-1">{{ $unit->mileage ? number_format($unit->mileage) : 'N/A' }}</p>
+                    <p class="text-[13px] font-medium text-zinc-500">Documented KM</p>
+                </div>
+            </div>
+
+            <div class="bg-gallery-surface-lowest rounded-[32px] p-8 border border-gallery-outline/20 ambient-shadow hover-lift flex flex-col justify-between aspect-square">
+                <div class="w-12 h-12 rounded-full bg-gallery-surface-low flex items-center justify-center mb-6 text-black">
+                    <svg viewBox="0 0 24 24" fill="none" class="h-6 w-6" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0 1 12 2.944a11.955 11.955 0 0 1-7.618 3.04A12.02 12.02 0 0 0 3 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </div>
+                <div>
+                    <h3 class="text-[10px] font-bold text-zinc-400 mb-2 uppercase tracking-[0.3em]">Transmission</h3>
+                    <p class="text-4xl font-bold text-black mb-1 tracking-tight">{{ $unit->transmission ?? 'N/A' }}</p>
+                    <p class="text-[13px] font-medium text-zinc-500">Precision Engineering</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Technical Specifications Grid -->
+        <section class="bg-gallery-surface-lowest rounded-[32px] border border-gallery-outline/20 ambient-shadow p-10">
+            <div class="flex items-center justify-between mb-8 border-b border-gallery-outline/10 pb-6">
+                <h2 class="text-xl font-bold text-black">Technical Specifications</h2>
+                <div class="h-px flex-1 mx-8 bg-gallery-outline/10 hidden md:block"></div>
+                <span class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Verified Data</span>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-y-6 gap-x-12">
+                <div class="flex justify-between items-center py-3 border-b border-gallery-outline/10">
+                    <span class="text-sm font-medium text-zinc-500">Fuel Type</span>
+                    <span class="text-[14px] font-bold text-black">{{ $unit->fuel_type ?? 'N/A' }}</span>
+                </div>
+                <div class="flex justify-between items-center py-3 border-b border-gallery-outline/10">
+                    <span class="text-sm font-medium text-zinc-500">Transmission</span>
+                    <span class="text-[14px] font-bold text-black">{{ $unit->transmission ?? 'N/A' }}</span>
+                </div>
+                <div class="flex justify-between items-center py-3 border-b border-gallery-outline/10">
+                    <span class="text-sm font-medium text-zinc-500">Year</span>
+                    <span class="text-[14px] font-bold text-black">{{ $unit->year ?? 'N/A' }}</span>
+                </div>
+                <div class="flex justify-between items-center py-3 border-b border-gallery-outline/10">
+                    <span class="text-sm font-medium text-zinc-500">Class</span>
+                    <span class="text-[14px] font-bold text-black">{{ $unit->category?->name ?? 'N/A' }}</span>
+                </div>
+                <div class="flex justify-between items-center py-3 border-b border-gallery-outline/10">
+                    <span class="text-sm font-medium text-zinc-500">Status</span>
+                    <span class="text-[11px] font-bold uppercase tracking-widest {{ $unit->status === Unit::STATUS_AVAILABLE ? 'text-emerald-500' : 'text-zinc-400' }}">
+                        {{ $unit->status }}
+                    </span>
+                </div>
+                <div class="flex justify-between items-center py-3 border-b border-gallery-outline/10">
+                    <span class="text-sm font-medium text-zinc-500">Ref ID</span>
+                    <span class="text-[12px] font-bold text-black font-mono">#{{ substr($unit->public_id, -8) }}</span>
+                </div>
+            </div>
+
+            <div class="mt-12">
+                <h3 class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-4">Curator's Note</h3>
+                <p class="text-base leading-relaxed text-zinc-600 font-medium">
+                    {{ $unit->description ?: 'This premium selection represents the pinnacle of its class, offering uncompromising quality and exceptional performance. Meticulously inspected to meet our highest standards of excellence.' }}
+                </p>
+            </div>
+        </section>
+
+        <!-- Similar Units (Acquaintances) -->
+        @if($similarUnits->isNotEmpty())
+            <div class="mt-12 space-y-8">
+                <h2 class="text-[12px] font-bold uppercase tracking-[0.4em] text-black">Acquaintances</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    @foreach ($similarUnits as $sUnit)
+                        <a href="{{ route('units.show', $sUnit) }}" wire:navigate class="group flex flex-col gap-6" wire:key="similar-{{ $sUnit->id }}">
+                            <div class="relative aspect-video rounded-3xl overflow-hidden bg-gallery-surface-low border border-gallery-outline/10 ambient-shadow transition-transform duration-500 group-hover:-translate-y-2">
+                                @if ($sUnit->mainImage)
+                                    <img src="{{ Storage::url($sUnit->mainImage->url) }}" alt="{{ $sUnit->name }}" class="h-full w-full object-cover transition-transform duration-1000 group-hover:scale-105">
+                                @endif
+                            </div>
+                            <div class="flex flex-col gap-1">
+                                <h3 class="text-lg font-bold text-black group-hover:text-zinc-500 transition-colors">{{ $sUnit->name }}</h3>
+                                <span class="text-base font-bold text-black opacity-60">{{ $sUnit->formattedPrice() }}</span>
+                            </div>
+                        </a>
+                    @endforeach
+                </div>
+            </div>
+        @endif
     </div>
 
-    @if($similarUnits->isNotEmpty())
-        <div x-data="{ shown: false }" x-intersect.once.margin.-100px="shown = true" :class="shown ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'" class="pt-16 space-y-8 transition-all duration-700 ease-out motion-reduce:transition-none motion-reduce:opacity-100 motion-reduce:translate-y-0">
-            <h2 class="text-2xl font-black tracking-tight text-zinc-900">Similar Vehicles</h2>
-            <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-                @foreach ($similarUnits as $sUnit)
-                    <a
-                        href="{{ route('units.show', $sUnit) }}"
-                        wire:navigate
-                        class="group flex flex-col overflow-hidden rounded-3xl border border-zinc-100 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:shadow-lg"
-                        wire:key="similar-unit-{{ $sUnit->id }}"
-                    >
-                        <div class="relative aspect-video overflow-hidden bg-zinc-50" x-data="{ loaded: false }">
-                             <!-- Skeleton Loader -->
-                            <div x-show="!loaded" class="absolute inset-0 animate-pulse bg-zinc-200/50"></div>
+    <!-- Sticky Action Sidebar -->
+    <aside class="w-full lg:w-[400px] flex-shrink-0 relative">
+        <div class="sticky top-28 flex flex-col gap-8">
+            <!-- Pricing & Action Card -->
+            <div class="bg-gallery-surface-lowest rounded-[32px] border border-gallery-outline/20 ambient-shadow p-8 flex flex-col">
+                <div class="mb-10">
+                    <h2 class="text-4xl font-bold tracking-tight text-black mb-2">{{ $unit->formattedPrice() }}</h2>
+                    <p class="text-sm font-medium text-zinc-400 leading-snug">Exclusive of taxes and registration fees. Contact a curator for a full quote.</p>
+                </div>
+                
+                <div class="flex flex-col gap-4">
+                    <button wire:click="$set('showInquiryForm', true)" class="w-full bg-black text-white font-bold uppercase tracking-widest text-[11px] py-4 rounded-full hover:opacity-90 transition-all duration-300 shadow-xl hover:shadow-2xl">
+                        Request Information
+                    </button>
+                    <button wire:click="toggleCompare({{ $unit->id }})" class="w-full bg-transparent border-2 border-gallery-outline/20 text-black font-bold uppercase tracking-widest text-[11px] py-4 rounded-full hover:border-black transition-all duration-300 flex items-center justify-center gap-2">
+                        <svg viewBox="0 0 24 24" fill="none" class="h-4 w-4" stroke="currentColor" stroke-width="2.5"><path d="M7 16V4M7 4L3 8M7 4L11 8M17 8V20M17 20L13 16M17 20L21 16" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        <span>{{ in_array($unit->id, $compareIds) ? 'Selected' : 'Compare' }}</span>
+                    </button>
+                </div>
 
-                            @if ($sUnit->mainImage)
-                                <img
-                                    src="{{ Storage::url($sUnit->mainImage->url) }}"
-                                    alt="{{ $sUnit->name }}"
-                                    @load="loaded = true"
-                                    :class="loaded ? 'opacity-100' : 'opacity-0'"
-                                    style="view-transition-name: unit-image-{{ $sUnit->id }}"
-                                    class="h-full w-full object-cover transition-all duration-700 group-hover:scale-110 motion-safe:transition-all motion-reduce:transition-none"
-                                >
-                            @else
-                                <div x-init="loaded = true" class="flex h-full w-full items-center justify-center bg-zinc-50 text-[10px] font-bold uppercase tracking-widest text-zinc-300">
-                                    No Image
-                                </div>
-                            @endif
+                <div class="mt-10 pt-8 border-t border-gallery-outline/10 flex flex-col gap-6">
+                    <div class="flex items-center gap-4 text-zinc-500">
+                        <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0 1 12 2.944a11.955 11.955 0 0 1-7.618 3.04A12.02 12.02 0 0 0 3 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        <span class="text-[13px] font-medium">Gallery Certified Unit</span>
+                    </div>
+                    <div class="flex items-center gap-4 text-zinc-500">
+                        <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="2"><path d="M12 8v4l3 3m6-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        <span class="text-[13px] font-medium">Nationwide Delivery</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Inquiry Form Panel (Trustworthy & Conversion Focused) -->
+            <div class="bg-gallery-surface-lowest rounded-[32px] border border-gallery-outline/20 ambient-shadow p-8 overflow-hidden">
+                <h3 class="text-xl font-bold text-black mb-6">Private Inquiry</h3>
+                
+                @if ($submitted)
+                    <div class="py-8 text-center animate-showroom-fade-up">
+                        <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500 text-white mb-6">
+                            <svg viewBox="0 0 24 24" fill="none" class="h-8 w-8" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17L4 12" stroke-linecap="round" stroke-linejoin="round"/></svg>
                         </div>
-                        <div class="p-6">
-                            <h3 class="font-bold text-zinc-900 group-hover:text-zinc-600 transition-colors">{{ $sUnit->name }}</h3>
-                            <p class="mt-2 text-base font-black text-zinc-900">{{ $sUnit->formattedPrice() }}</p>
-                        </div>
-                    </a>
-                @endforeach
+                        <h3 class="text-lg font-bold text-black">Inquiry Received</h3>
+                        <p class="mt-2 text-zinc-500 font-medium">A curator will contact you shortly.</p>
+                        <button type="button" wire:click="$set('submitted', false)" class="mt-8 text-[10px] font-bold uppercase tracking-widest text-black underline underline-offset-4 opacity-60 hover:opacity-100 transition-opacity">New Request</button>
+                    </div>
+                @else
+                    <form wire:submit="submitInquiry" class="flex flex-col gap-4">
+                        <input type="text" wire:model="name" placeholder="Name" class="w-full h-12 rounded-2xl border-none bg-gallery-surface-low px-6 text-sm font-medium focus:ring-2 focus:ring-black/5 transition-all">
+                        <input type="email" wire:model="email" placeholder="Email" class="w-full h-12 rounded-2xl border-none bg-gallery-surface-low px-6 text-sm font-medium focus:ring-2 focus:ring-black/5 transition-all">
+                        <input type="text" wire:model="phone" placeholder="Phone (Optional)" class="w-full h-12 rounded-2xl border-none bg-gallery-surface-low px-6 text-sm font-medium focus:ring-2 focus:ring-black/5 transition-all">
+                        <textarea wire:model="message" rows="3" placeholder="Message..." class="w-full rounded-2xl border-none bg-gallery-surface-low px-6 py-4 text-sm font-medium focus:ring-2 focus:ring-black/5 transition-all resize-none"></textarea>
+                        
+                        <button type="submit" wire:loading.attr="disabled" class="mt-2 w-full bg-gallery-surface-highest text-black font-bold uppercase tracking-widest text-[10px] py-4 rounded-full hover:bg-gallery-surface-high transition-colors duration-200">
+                            <span wire:loading.remove wire:target="submitInquiry">Send Request</span>
+                            <span wire:loading wire:target="submitInquiry">Processing...</span>
+                        </button>
+                        <p class="text-[10px] text-zinc-400 mt-2 text-center font-medium leading-relaxed">Your information is handled with absolute discretion by our gallery staff.</p>
+                    </form>
+                @endif
             </div>
         </div>
-    @endif
-</section>
+    </aside>
+</main>

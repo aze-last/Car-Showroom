@@ -5,25 +5,47 @@ use App\Livewire\AdminDashboard;
 use App\Livewire\AdminEmployees;
 use App\Livewire\AdminInquiriesIndex;
 use App\Livewire\AdminLogs;
+use App\Livewire\AdminShopSettings;
 use App\Livewire\AdminUnitForm;
 use App\Livewire\AdminUnitQrAction;
 use App\Livewire\AdminUnitsIndex;
 use App\Livewire\PublicShowroom;
+use App\Livewire\Public\VehicleComparison;
 use App\Livewire\UnitDetail;
 use App\Models\Unit;
 use App\Models\UnitStatusLog;
 use Illuminate\Support\Facades\Route;
 
+/**
+ * Public Routes
+ */
+Route::get('/register', \App\Livewire\Auth\Register::class)->name('register');
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/garage', \App\Livewire\Public\MyGarage::class)->name('garage');
+});
+
+use App\Livewire\Public\AuctionHall;
+use App\Livewire\Public\AuctionRoom;
+
 Route::get('/', PublicShowroom::class)->name('home');
 Route::get('/units/{unit}', UnitDetail::class)->name('units.show');
+Route::get('/comparison', VehicleComparison::class)->name('comparison');
+Route::get('/auction', AuctionHall::class)->name('auction.hall');
+Route::get('/auction/{auction}', AuctionRoom::class)->name('auction.room');
+
 Route::get('/about', function () {
     return view('pages.about');
 })->name('about');
 
+/**
+ * Admin & Staff Routes
+ */
 Route::middleware(['auth', 'verified'])
     ->prefix('admin')
     ->name('admin.')
     ->group(function (): void {
+        // Inventory Management (Shared by Staff/Admin)
         Route::get('/units', AdminUnitsIndex::class)
             ->middleware('can:viewAny,'.Unit::class)
             ->name('units.index');
@@ -36,22 +58,26 @@ Route::middleware(['auth', 'verified'])
         Route::get('/units/{unit}/qr', AdminUnitQrAction::class)
             ->middleware(['staff', 'signed', 'can:viewQr,unit'])
             ->name('units.qr');
+
+        // Management & Analytics (Admin Only)
+        Route::middleware(['admin'])->group(function (): void {
+            Route::get('/', AdminDashboard::class)->name('dashboard');
+            Route::get('/categories', AdminCategories::class)->name('categories.index');
+            Route::get('/employees', AdminEmployees::class)->name('employees.index');
+            Route::get('/inquiries', AdminInquiriesIndex::class)->name('inquiries.index');
+            Route::get('/auctions', \App\Livewire\AdminAuctionsIndex::class)->name('auctions.index');
+            Route::get('/auctions/create', \App\Livewire\AdminAuctionForm::class)->name('auctions.create');
+            Route::get('/auctions/{auction}/edit', \App\Livewire\AdminAuctionForm::class)->name('auctions.edit');
+            Route::get('/logs', AdminLogs::class)
+                ->middleware('can:viewAny,'.UnitStatusLog::class)
+                ->name('logs.index');
+            Route::get('/settings/shop', AdminShopSettings::class)->name('settings.shop');
+        });
     });
 
-Route::middleware(['auth', 'verified', 'admin'])
-    ->prefix('admin')
-    ->name('admin.')
-    ->group(function (): void {
-        Route::get('/', AdminDashboard::class)->name('dashboard');
-        Route::get('/categories', AdminCategories::class)->name('categories.index');
-        Route::get('/employees', AdminEmployees::class)->name('employees.index');
-        Route::get('/inquiries', AdminInquiriesIndex::class)->name('inquiries.index');
-        Route::get('/logs', AdminLogs::class)
-            ->middleware('can:viewAny,'.UnitStatusLog::class)
-            ->name('logs.index');
-        Route::get('/settings/shop', \App\Livewire\AdminShopSettings::class)->name('settings.shop');
-    });
-
+/**
+ * Unified Dashboard Redirector
+ */
 Route::get('dashboard', function () {
     $user = auth()->user();
 
@@ -63,55 +89,8 @@ Route::get('dashboard', function () {
         return redirect()->route('admin.units.index');
     }
 
-    $canViewInventory = (bool) ($user?->is_admin ?? false);
-
-    if (! $canViewInventory) {
-        return view('dashboard', [
-            'canViewInventory' => false,
-            'searchQuery' => '',
-            'totalUnits' => 0,
-            'availableUnits' => 0,
-            'soldUnits' => 0,
-            'addedThisWeek' => 0,
-            'recentLogs' => collect(),
-        ]);
-    }
-
-    $searchQuery = trim((string) request()->query('q', ''));
-
-    $unitsQuery = Unit::query()
-        ->when(
-            $searchQuery !== '',
-            fn ($query) => $query->where('name', 'like', '%'.$searchQuery.'%'),
-        );
-
-    $totalUnits = (clone $unitsQuery)->count();
-    $availableUnits = (clone $unitsQuery)->where('status', Unit::STATUS_AVAILABLE)->count();
-    $soldUnits = (clone $unitsQuery)->where('status', Unit::STATUS_SOLD)->count();
-    $addedThisWeek = (clone $unitsQuery)->where('created_at', '>=', now()->startOfWeek())->count();
-
-    $recentLogs = UnitStatusLog::query()
-        ->with(['unit', 'user'])
-        ->when(
-            $searchQuery !== '',
-            fn ($query) => $query->whereHas(
-                'unit',
-                fn ($unitQuery) => $unitQuery->where('name', 'like', '%'.$searchQuery.'%'),
-            ),
-        )
-        ->latest()
-        ->limit(10)
-        ->get();
-
-    return view('dashboard', [
-        'canViewInventory' => true,
-        'searchQuery' => $searchQuery,
-        'totalUnits' => $totalUnits,
-        'availableUnits' => $availableUnits,
-        'soldUnits' => $soldUnits,
-        'addedThisWeek' => $addedThisWeek,
-        'recentLogs' => $recentLogs,
-    ]);
+    // Default portal for verified collectors
+    return redirect()->route('garage');
 })
     ->middleware(['auth', 'verified'])
     ->name('dashboard');

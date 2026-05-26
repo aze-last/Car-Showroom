@@ -77,4 +77,12 @@ class User extends Authenticatable
     {
         return $this->is_admin || $this->is_employee;
     }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<Unit, $this>
+     */
+    public function savedUnits(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
+        return $this->belongsToMany(Unit::class, 'saved_units')->withTimestamps();
+    }
 }

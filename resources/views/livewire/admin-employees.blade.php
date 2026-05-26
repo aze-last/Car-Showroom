@@ -1,116 +1,120 @@
-<section class="space-y-6">
-    <article class="admin-card">
-        <div class="admin-card-header">
-            <h2 class="text-base font-semibold text-slate-900">Create Employee Account</h2>
-            <button type="submit" form="employee-create-form" wire:loading.attr="disabled" wire:target="create" class="admin-btn-primary">
-                Create Account
-            </button>
+<section class="space-y-8">
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
+        <div>
+            <p class="text-[12px] font-bold text-zinc-400 uppercase tracking-widest mb-1">Human Resources</p>
+            <h2 class="text-3xl font-bold text-black">Staff Management</h2>
         </div>
-        <div class="admin-card-body">
-            <form id="employee-create-form" wire:submit="create" class="grid gap-4 lg:grid-cols-2">
-                <label class="block">
-                    <span class="mb-2 block text-sm font-medium text-slate-700">Full Name</span>
-                    <input type="text" wire:model="name" class="admin-input" placeholder="Employee name">
-                    @error('name') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
-                </label>
+    </div>
 
-                <label class="block">
-                    <span class="mb-2 block text-sm font-medium text-slate-700">Email</span>
-                    <input type="email" wire:model="email" class="admin-input" placeholder="employee@example.com">
-                    @error('email') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
-                </label>
+    @if (session('status'))
+        <div class="bg-emerald-50 border border-emerald-100 text-emerald-700 px-6 py-4 rounded-2xl text-sm font-bold flex items-center gap-3 animate-showroom-fade-up">
+            <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17L4 12" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            {{ session('status') }}
+        </div>
+    @endif
 
-                <label class="block">
-                    <span class="mb-2 block text-sm font-medium text-slate-700">Password</span>
-                    <input type="password" wire:model="password" class="admin-input" placeholder="Minimum 8 characters">
-                    @error('password') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
-                </label>
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+        <!-- Create Form -->
+        <article class="lg:col-span-1 bg-white rounded-[32px] border border-zinc-100 shadow-sm p-8 space-y-6 sticky top-28">
+            <h3 class="text-sm font-bold text-black uppercase tracking-widest">New Staff Account</h3>
+            
+            <form wire:submit="create" class="space-y-4">
+                <div class="space-y-2">
+                    <label class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest px-2">Full Name</label>
+                    <input type="text" wire:model="name" class="w-full bg-zinc-50 border-none rounded-2xl py-3 px-5 font-bold text-sm focus:ring-2 focus:ring-black transition-all" placeholder="John Doe">
+                    @error('name') <p class="text-[10px] text-red-600 font-bold px-2">{{ $message }}</p> @enderror
+                </div>
 
-                <label class="block">
-                    <span class="mb-2 block text-sm font-medium text-slate-700">Confirm Password</span>
-                    <input type="password" wire:model="password_confirmation" class="admin-input" placeholder="Retype password">
-                </label>
+                <div class="space-y-2">
+                    <label class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest px-2">Email Address</label>
+                    <input type="email" wire:model="email" class="w-full bg-zinc-50 border-none rounded-2xl py-3 px-5 font-bold text-sm focus:ring-2 focus:ring-black transition-all" placeholder="john@thegallery.com">
+                    @error('email') <p class="text-[10px] text-red-600 font-bold px-2">{{ $message }}</p> @enderror
+                </div>
 
-                <label class="block">
-                    <span class="mb-2 block text-sm font-medium text-slate-700">Job Title</span>
-                    <input type="text" wire:model="job_title" class="admin-input" placeholder="Showroom Staff">
-                    @error('job_title') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
-                </label>
+                <div class="space-y-2">
+                    <label class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest px-2">Job Title</label>
+                    <input type="text" wire:model="job_title" class="w-full bg-zinc-50 border-none rounded-2xl py-3 px-5 font-bold text-sm focus:ring-2 focus:ring-black transition-all" placeholder="Senior Curator">
+                    @error('job_title') <p class="text-[10px] text-red-600 font-bold px-2">{{ $message }}</p> @enderror
+                </div>
 
-                <label class="block">
-                    <span class="mb-2 block text-sm font-medium text-slate-700">Phone</span>
-                    <input type="text" wire:model="phone" class="admin-input" placeholder="+63...">
-                    @error('phone') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
-                </label>
+                <div class="space-y-2">
+                    <label class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest px-2">Password</label>
+                    <input type="password" wire:model="password" class="w-full bg-zinc-50 border-none rounded-2xl py-3 px-5 font-bold text-sm focus:ring-2 focus:ring-black transition-all" placeholder="••••••••">
+                    @error('password') <p class="text-[10px] text-red-600 font-bold px-2">{{ $message }}</p> @enderror
+                </div>
 
-                <label class="block">
-                    <span class="mb-2 block text-sm font-medium text-slate-700">Default Locale</span>
-                    <input type="text" wire:model="preferred_locale" class="admin-input" placeholder="en_PH">
-                    @error('preferred_locale') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
-                </label>
+                <div class="space-y-2">
+                    <label class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest px-2">Confirm Password</label>
+                    <input type="password" wire:model="password_confirmation" class="w-full bg-zinc-50 border-none rounded-2xl py-3 px-5 font-bold text-sm focus:ring-2 focus:ring-black transition-all" placeholder="••••••••">
+                </div>
 
-                <label class="block">
-                    <span class="mb-2 block text-sm font-medium text-slate-700">Default Timezone</span>
-                    <input type="text" wire:model="preferred_timezone" class="admin-input" placeholder="Asia/Manila">
-                    @error('preferred_timezone') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
-                </label>
+                <button type="submit" class="w-full bg-black text-white font-bold text-[11px] uppercase tracking-widest py-4 rounded-2xl hover:opacity-90 transition-all ambient-shadow mt-4">
+                    Register Staff
+                </button>
             </form>
-        </div>
-    </article>
+        </article>
 
-    <article class="admin-card overflow-hidden">
-        <div class="admin-card-header">
-            <h2 class="text-base font-semibold text-slate-900">Employees</h2>
-            <p class="text-xs text-slate-500">Verified staff accounts allowed for QR status workflows.</p>
-        </div>
-        <div class="overflow-x-auto">
-            <table class="min-w-full text-sm">
-                <thead class="bg-slate-50 text-left text-xs uppercase tracking-wide text-slate-500">
-                    <tr>
-                        <th scope="col" class="px-4 py-3 sm:px-5">Name</th>
-                        <th scope="col" class="px-4 py-3">Email</th>
-                        <th scope="col" class="px-4 py-3">Job Title</th>
-                        <th scope="col" class="px-4 py-3">Locale</th>
-                        <th scope="col" class="px-4 py-3">Timezone</th>
-                        <th scope="col" class="px-4 py-3 sm:px-5">Created</th>
-                        <th scope="col" class="px-4 py-3 text-right sm:px-5">Actions</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-slate-100">
-                    @forelse ($employees as $employee)
-                        <tr wire:key="employee-row-{{ $employee->id }}" class="odd:bg-white even:bg-slate-50/40 hover:bg-slate-100/70">
-                            <td class="px-4 py-3 font-medium text-slate-900 sm:px-5">{{ $employee->name }}</td>
-                            <td class="px-4 py-3 text-slate-700">{{ $employee->email }}</td>
-                            <td class="px-4 py-3 text-slate-700">{{ $employee->job_title }}</td>
-                            <td class="px-4 py-3 text-slate-600">{{ $employee->preferred_locale }}</td>
-                            <td class="px-4 py-3 text-slate-600">{{ $employee->preferred_timezone }}</td>
-                            <td class="px-4 py-3 text-slate-600 sm:px-5">{{ $employee->created_at?->format('Y-m-d H:i') }}</td>
-                            <td class="px-4 py-3 text-right sm:px-5">
-                                <button
-                                    type="button"
-                                    wire:click="delete({{ $employee->id }})"
-                                    wire:confirm="Delete this employee account? This action cannot be undone."
-                                    wire:loading.attr="disabled"
-                                    wire:target="delete"
-                                    class="inline-flex items-center rounded-md border border-red-200 bg-red-50 px-3 py-1.5 text-xs font-medium text-red-700 transition hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-60"
-                                >
-                                    Delete
-                                </button>
-                            </td>
+        <!-- Staff List -->
+        <article class="lg:col-span-2 bg-white rounded-[32px] border border-zinc-100 shadow-sm overflow-hidden">
+            <div class="px-8 py-6 border-b border-zinc-50 flex justify-between items-center">
+                <h3 class="text-sm font-bold text-black uppercase tracking-widest">Active Curators</h3>
+                <p class="text-[10px] text-zinc-400 font-bold uppercase tracking-widest">{{ $employees->total() }} Total Accounts</p>
+            </div>
+            
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead>
+                        <tr class="bg-zinc-50/50">
+                            <th class="px-8 py-4 text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Curator</th>
+                            <th class="px-8 py-4 text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Job Title</th>
+                            <th class="px-8 py-4 text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Registry Date</th>
+                            <th class="px-8 py-4 text-[10px] font-bold text-zinc-400 uppercase tracking-widest text-right">Actions</th>
                         </tr>
-                    @empty
-                        <tr>
-                            <td colspan="7" class="px-4 py-10 text-center text-sm text-slate-500">
-                                No employee accounts yet.
-                            </td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
-    </article>
-
-    <div class="flex justify-end">
-        {{ $employees->links() }}
+                    </thead>
+                    <tbody class="divide-y divide-zinc-50">
+                        @forelse ($employees as $employee)
+                            <tr class="hover:bg-zinc-50/30 transition-colors group">
+                                <td class="px-8 py-5">
+                                    <div class="flex items-center gap-3">
+                                        <div class="h-10 w-10 rounded-full bg-black text-white flex items-center justify-center font-bold text-xs">
+                                            {{ strtoupper(substr($employee->name, 0, 2)) }}
+                                        </div>
+                                        <div>
+                                            <p class="text-sm font-bold text-black">{{ $employee->name }}</p>
+                                            <p class="text-[10px] text-zinc-400 font-bold">{{ $employee->email }}</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-8 py-5">
+                                    <span class="text-xs font-bold text-black bg-zinc-100 px-3 py-1 rounded-full uppercase tracking-wider">{{ $employee->job_title }}</span>
+                                </td>
+                                <td class="px-8 py-5 text-[11px] font-bold text-zinc-400">
+                                    {{ $employee->created_at?->format('M d, Y') }}
+                                </td>
+                                <td class="px-8 py-5 text-right">
+                                    <button 
+                                        wire:click="delete({{ $employee->id }})" 
+                                        wire:confirm="Revoke all access for this staff member? This action is permanent."
+                                        class="h-9 w-9 rounded-xl bg-red-50 text-red-400 hover:text-red-600 hover:bg-white hover:ambient-shadow transition-all border border-red-100 inline-flex items-center justify-center"
+                                    >
+                                        <svg viewBox="0 0 24 24" fill="none" class="h-4 w-4" stroke="currentColor" stroke-width="2.5"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M10 11v6M14 11v6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                    </button>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="4" class="px-8 py-20 text-center">
+                                    <p class="text-[10px] text-zinc-300 font-bold uppercase tracking-widest">No curatorial staff registered</p>
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="px-8 py-6 border-t border-zinc-50">
+                {{ $employees->links() }}
+            </div>
+        </article>
     </div>
 </section>

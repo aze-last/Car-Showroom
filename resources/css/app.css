@@ -10,6 +10,7 @@
 
 @theme {
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-hanken: 'Hanken Grotesk', ui-sans-serif, system-ui, sans-serif;
 
     --color-zinc-50: #fafafa;
     --color-zinc-100: #f5f5f5;
@@ -26,6 +27,18 @@
     --color-accent: var(--color-neutral-800);
     --color-accent-content: var(--color-neutral-800);
     --color-accent-foreground: var(--color-white);
+
+    /* Stitch Gallery Tokens */
+    --color-gallery-background: #fcf8fa;
+    --color-gallery-surface: #fcf8fa;
+    --color-gallery-surface-low: #f6f3f5;
+    --color-gallery-surface-high: #eae7e9;
+    --color-gallery-surface-highest: #e4e2e4;
+    --color-gallery-surface-lowest: #ffffff;
+    --color-gallery-outline: #c6c6cd;
+
+    --shadow-ambient: 0 10px 30px -10px rgba(24, 24, 27, 0.05);
+    --shadow-lift: 0 20px 40px -15px rgba(24, 24, 27, 0.08);
 }
 
 @layer theme {
@@ -66,6 +79,27 @@ select:focus[data-flux-control] {
 } */
 
 @layer components {
+    .ambient-shadow {
+        box-shadow: var(--shadow-ambient);
+    }
+
+    .hover-lift {
+        transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+
+    .hover-lift:hover {
+        transform: translateY(-2px) scale(1.005);
+        box-shadow: var(--shadow-lift);
+    }
+
+    .hover-scale {
+        transition: transform 300ms cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+
+    .hover-scale:hover {
+        transform: scale(1.005);
+    }
+
     .admin-card {
         @apply rounded-[32px] border border-zinc-100 bg-white shadow-xl shadow-zinc-200/40;
     }
