@@ -15,7 +15,7 @@
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
         <!-- Create Form -->
-        <article class="lg:col-span-1 bg-white rounded-[32px] border border-zinc-100 shadow-sm p-8 space-y-6 sticky top-28">
+        <article class="lg:col-span-1 bg-white rounded-[32px] border border-zinc-100 shadow-sm p-8 space-y-6 sticky top-28 z-10">
             <h3 class="text-sm font-bold text-black uppercase tracking-widest">New Staff Account</h3>
             
             <form wire:submit="create" class="space-y-4">
@@ -55,65 +55,96 @@
         </article>
 
         <!-- Staff List -->
-        <article class="lg:col-span-2 bg-white rounded-[32px] border border-zinc-100 shadow-sm overflow-hidden">
-            <div class="px-8 py-6 border-b border-zinc-50 flex justify-between items-center">
-                <h3 class="text-sm font-bold text-black uppercase tracking-widest">Active Curators</h3>
-                <p class="text-[10px] text-zinc-400 font-bold uppercase tracking-widest">{{ $employees->total() }} Total Accounts</p>
-            </div>
-            
-            <div class="overflow-x-auto">
-                <table class="w-full text-left">
-                    <thead>
-                        <tr class="bg-zinc-50/50">
-                            <th class="px-8 py-4 text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Curator</th>
-                            <th class="px-8 py-4 text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Job Title</th>
-                            <th class="px-8 py-4 text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Registry Date</th>
-                            <th class="px-8 py-4 text-[10px] font-bold text-zinc-400 uppercase tracking-widest text-right">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-zinc-50">
-                        @forelse ($employees as $employee)
-                            <tr class="hover:bg-zinc-50/30 transition-colors group">
-                                <td class="px-8 py-5">
-                                    <div class="flex items-center gap-3">
-                                        <div class="h-10 w-10 rounded-full bg-black text-white flex items-center justify-center font-bold text-xs">
-                                            {{ strtoupper(substr($employee->name, 0, 2)) }}
-                                        </div>
-                                        <div>
-                                            <p class="text-sm font-bold text-black">{{ $employee->name }}</p>
-                                            <p class="text-[10px] text-zinc-400 font-bold">{{ $employee->email }}</p>
-                                        </div>
+        <article class="lg:col-span-2 space-y-6">
+            <div class="bg-white rounded-[32px] border border-zinc-100 shadow-sm overflow-hidden">
+                <div class="px-8 py-6 border-b border-zinc-50 flex justify-between items-center">
+                    <h3 class="text-sm font-bold text-black uppercase tracking-widest">Active Curators</h3>
+                    <p class="text-[10px] text-zinc-400 font-bold uppercase tracking-widest">{{ $employees->total() }} Total Accounts</p>
+                </div>
+                
+                <!-- Mobile Card View -->
+                <div class="grid grid-cols-1 gap-1 md:hidden">
+                    @forelse ($employees as $employee)
+                        <div wire:key="admin-employee-card-{{ $employee->id }}" class="p-6 bg-white flex flex-col gap-4 border-b border-zinc-50 last:border-none">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <div class="h-10 w-10 rounded-full bg-black text-white flex items-center justify-center font-bold text-xs shrink-0">
+                                        {{ strtoupper(substr($employee->name, 0, 2)) }}
                                     </div>
-                                </td>
-                                <td class="px-8 py-5">
-                                    <span class="text-xs font-bold text-black bg-zinc-100 px-3 py-1 rounded-full uppercase tracking-wider">{{ $employee->job_title }}</span>
-                                </td>
-                                <td class="px-8 py-5 text-[11px] font-bold text-zinc-400">
-                                    {{ $employee->created_at?->format('M d, Y') }}
-                                </td>
-                                <td class="px-8 py-5 text-right">
-                                    <button 
-                                        wire:click="delete({{ $employee->id }})" 
-                                        wire:confirm="Revoke all access for this staff member? This action is permanent."
-                                        class="h-9 w-9 rounded-xl bg-red-50 text-red-400 hover:text-red-600 hover:bg-white hover:ambient-shadow transition-all border border-red-100 inline-flex items-center justify-center"
-                                    >
-                                        <svg viewBox="0 0 24 24" fill="none" class="h-4 w-4" stroke="currentColor" stroke-width="2.5"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M10 11v6M14 11v6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                                    </button>
-                                </td>
+                                    <div class="min-w-0">
+                                        <p class="text-sm font-bold text-black truncate">{{ $employee->name }}</p>
+                                        <p class="text-[10px] text-zinc-400 font-bold truncate">{{ $employee->email }}</p>
+                                    </div>
+                                </div>
+                                <button 
+                                    wire:click="delete({{ $employee->id }})" 
+                                    wire:confirm="Revoke all access for this staff member? This action is permanent."
+                                    class="h-10 w-10 rounded-xl bg-red-50 text-red-400 hover:text-red-600 transition-all border border-red-100 flex items-center justify-center shrink-0"
+                                >
+                                    <svg viewBox="0 0 24 24" fill="none" class="h-4 w-4" stroke="currentColor" stroke-width="2.5"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M10 11v6M14 11v6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                </button>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-[9px] font-bold text-black bg-zinc-100 px-3 py-1 rounded-full uppercase tracking-wider">{{ $employee->job_title }}</span>
+                                <span class="text-[9px] font-bold text-zinc-300 uppercase tracking-widest">{{ $employee->created_at?->format('M d, Y') }}</span>
+                            </div>
+                        </div>
+                    @empty
+                        <div class="p-12 text-center">
+                            <p class="text-[10px] text-zinc-300 font-bold uppercase tracking-widest">No staff registered</p>
+                        </div>
+                    @endforelse
+                </div>
+
+                <!-- Desktop Table View -->
+                <div class="hidden md:block overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead>
+                            <tr class="bg-zinc-50/50">
+                                <th class="px-8 py-4 text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Curator</th>
+                                <th class="px-8 py-4 text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Job Title</th>
+                                <th class="px-8 py-4 text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Registry Date</th>
+                                <th class="px-8 py-4 text-[10px] font-bold text-zinc-400 uppercase tracking-widest text-right">Actions</th>
                             </tr>
-                        @empty
-                            <tr>
-                                <td colspan="4" class="px-8 py-20 text-center">
-                                    <p class="text-[10px] text-zinc-300 font-bold uppercase tracking-widest">No curatorial staff registered</p>
-                                </td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-            
-            <div class="px-8 py-6 border-t border-zinc-50">
-                {{ $employees->links() }}
+                        </thead>
+                        <tbody class="divide-y divide-zinc-50">
+                            @foreach ($employees as $employee)
+                                <tr class="hover:bg-zinc-50/30 transition-colors group">
+                                    <td class="px-8 py-5">
+                                        <div class="flex items-center gap-3">
+                                            <div class="h-10 w-10 rounded-full bg-black text-white flex items-center justify-center font-bold text-xs">
+                                                {{ strtoupper(substr($employee->name, 0, 2)) }}
+                                            </div>
+                                            <div>
+                                                <p class="text-sm font-bold text-black">{{ $employee->name }}</p>
+                                                <p class="text-[10px] text-zinc-400 font-bold">{{ $employee->email }}</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-8 py-5">
+                                        <span class="text-xs font-bold text-black bg-zinc-100 px-3 py-1 rounded-full uppercase tracking-wider">{{ $employee->job_title }}</span>
+                                    </td>
+                                    <td class="px-8 py-5 text-[11px] font-bold text-zinc-400">
+                                        {{ $employee->created_at?->format('M d, Y') }}
+                                    </td>
+                                    <td class="px-8 py-5 text-right">
+                                        <button 
+                                            wire:click="delete({{ $employee->id }})" 
+                                            wire:confirm="Revoke all access for this staff member? This action is permanent."
+                                            class="h-9 w-9 rounded-xl bg-red-50 text-red-400 hover:text-red-600 hover:bg-white hover:ambient-shadow transition-all border border-red-100 inline-flex items-center justify-center"
+                                        >
+                                            <svg viewBox="0 0 24 24" fill="none" class="h-4 w-4" stroke="currentColor" stroke-width="2.5"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M10 11v6M14 11v6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                        </button>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="px-8 py-6 border-t border-zinc-50">
+                    {{ $employees->links() }}
+                </div>
             </div>
         </article>
     </div>

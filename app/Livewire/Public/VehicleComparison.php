@@ -15,7 +15,7 @@ class VehicleComparison extends Component
     public function removeFromComparison(int $id): void
     {
         $this->compareIds = array_values(array_diff($this->compareIds, [$id]));
-        
+
         if (empty($this->compareIds)) {
             $this->redirect(route('units.index'), navigate: true);
         }

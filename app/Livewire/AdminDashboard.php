@@ -2,9 +2,9 @@
 
 namespace App\Livewire;
 
+use App\Models\Inquiry;
 use App\Models\Unit;
 use App\Models\UnitStatusLog;
-use App\Models\Inquiry;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Gate;
 use Livewire\Component;
@@ -22,11 +22,11 @@ class AdminDashboard extends Component
         $soldUnits = Unit::query()
             ->where('status', Unit::STATUS_SOLD)
             ->count();
-        
+
         $portfolioValue = Unit::query()
             ->where('status', Unit::STATUS_AVAILABLE)
             ->sum('price_php');
-        
+
         $totalSales = Unit::query()
             ->where('status', Unit::STATUS_SOLD)
             ->sum('price_php');

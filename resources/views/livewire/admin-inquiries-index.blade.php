@@ -3,9 +3,9 @@
     use Illuminate\Support\Facades\Storage;
 @endphp
 
-<div class="h-[calc(100vh-160px)] -m-8 flex overflow-hidden animate-showroom-fade-up">
+<div class="h-[calc(100vh-160px)] -m-8 flex flex-col md:flex-row overflow-hidden animate-showroom-fade-up">
     <!-- Left Pane: Lead Pipeline -->
-    <aside class="w-full max-w-[400px] border-r border-gallery-outline/10 bg-gallery-surface-low/30 flex flex-col overflow-hidden">
+    <aside class="w-full md:max-w-[400px] border-r border-gallery-outline/10 bg-gallery-surface-low/30 flex flex-col overflow-hidden {{ $selectedInquiryId ? 'hidden md:flex' : 'flex' }}">
         <!-- List Header -->
         <div class="p-8 border-b border-gallery-outline/10 bg-white/50 backdrop-blur-md flex justify-between items-center shrink-0">
             <div>
@@ -71,9 +71,15 @@
     </aside>
 
     <!-- Right Pane: Inquiry Detailed Inspection -->
-    <main class="flex-1 bg-white overflow-y-auto relative">
+    <main class="flex-1 bg-white overflow-y-auto relative {{ $selectedInquiryId ? 'flex' : 'hidden md:flex' }} flex-col">
         @if ($selectedInquiry)
-            <div class="max-w-4xl mx-auto p-12 space-y-16 pb-32">    
+            <div class="max-w-4xl mx-auto p-6 md:p-12 space-y-12 md:space-y-16 pb-32 w-full">    
+                <!-- Mobile Back Button -->
+                <button wire:click="unselectInquiry" class="md:hidden flex items-center gap-2 text-zinc-400 hover:text-black transition-colors font-bold text-[10px] uppercase tracking-widest mb-4">
+                    <svg viewBox="0 0 24 24" fill="none" class="h-4 w-4" stroke="currentColor" stroke-width="3"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                    Back to Pipeline
+                </button>
+
                 <!-- Detail Header -->    
                 <div class="flex flex-col md:flex-row items-start md:items-end justify-between border-b border-gallery-outline/10 pb-10 gap-6">
                     <div>
@@ -81,7 +87,7 @@
                             <span class="px-3 py-1 rounded-full bg-black text-white font-bold text-[9px] uppercase tracking-widest">Active Lead</span>
                             <span class="text-zinc-300 font-bold text-[10px] uppercase tracking-widest">ID: INQ-{{ str_pad($selectedInquiry->id, 4, '0', STR_PAD_LEFT) }}</span>  
                         </div>
-                        <h2 class="text-5xl font-bold text-black tracking-tighter leading-none mb-6">{{ $selectedInquiry->name }}</h2>
+                        <h2 class="text-3xl md:text-5xl font-bold text-black tracking-tighter leading-none mb-6">{{ $selectedInquiry->name }}</h2>
                         <div class="flex flex-wrap items-center gap-6 text-zinc-500">
                             <div class="flex items-center gap-2">
                                 <svg viewBox="0 0 24 24" fill="none" class="h-4 w-4" stroke="currentColor" stroke-width="2.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
@@ -93,33 +99,33 @@
                             </div>
                         </div>
                     </div>
-                    <div class="flex gap-3">  
-                        <button wire:click="delete({{ $selectedInquiry->id }})" wire:confirm="Archive this lead?" class="px-6 py-3 rounded-2xl border border-gallery-outline/30 text-zinc-300 hover:text-red-600 hover:border-red-100 font-bold text-[10px] uppercase tracking-widest transition-all"> 
+                    <div class="flex gap-3 w-full md:w-auto">  
+                        <button wire:click="delete({{ $selectedInquiry->id }})" wire:confirm="Archive this lead?" class="flex-1 md:flex-none px-6 py-3 rounded-2xl border border-gallery-outline/30 text-zinc-300 hover:text-red-600 hover:border-red-100 font-bold text-[10px] uppercase tracking-widest transition-all"> 
                             Archive
                         </button>
                     </div>
                 </div>
 
                 <!-- Split Content: Asset vs Timeline -->
-                <div class="grid grid-cols-12 gap-12">
+                <div class="grid grid-cols-12 gap-8 md:gap-12">
                     <!-- Linked Unit Card -->
-                    <div class="col-span-12 xl:col-span-7 space-y-6">
+                    <div class="col-span-12 lg:col-span-7 space-y-6">
                         <h3 class="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.4em]">Asset of Interest</h3>
                         @if ($selectedInquiry->unit)
                             <a href="{{ route('units.show', $selectedInquiry->unit) }}" target="_blank" class="block rounded-[32px] border border-gallery-outline/10 bg-white overflow-hidden ambient-shadow hover-lift transition-all group">
-                                <div class="h-64 bg-gallery-surface-low relative overflow-hidden">
+                                <div class="h-48 md:h-64 bg-gallery-surface-low relative overflow-hidden">
                                     @if($selectedInquiry->unit->mainImage)
                                         <img src="{{ Storage::url($selectedInquiry->unit->mainImage->url) }}" alt="" class="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105">
                                     @endif
-                                    <div class="absolute top-6 right-6 bg-black text-white px-4 py-2 rounded-full font-bold text-xs shadow-xl">    
+                                    <div class="absolute top-4 md:top-6 right-4 md:right-6 bg-black text-white px-4 py-2 rounded-full font-bold text-xs shadow-xl">    
                                         {{ $selectedInquiry->unit->formattedPrice() }}
                                     </div>
                                 </div>
-                                <div class="p-8">
+                                <div class="p-6 md:p-8">
                                     <div class="flex justify-between items-start"> 
                                         <div>
                                             <p class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-2">{{ $selectedInquiry->unit->year ?? 'Catalog' }} • {{ $selectedInquiry->unit->category?->name ?? 'Premium' }}</p>
-                                            <h4 class="text-3xl font-bold text-black tracking-tight group-hover:text-zinc-500 transition-colors">{{ $selectedInquiry->unit->name }}</h4>
+                                            <h4 class="text-xl md:text-3xl font-bold text-black tracking-tight group-hover:text-zinc-500 transition-colors">{{ $selectedInquiry->unit->name }}</h4>
                                         </div>
                                         <svg viewBox="0 0 24 24" fill="none" class="h-6 w-6 text-zinc-300 group-hover:text-black transition-colors" stroke="currentColor" stroke-width="2.5"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
                                     </div>
@@ -133,7 +139,7 @@
                     </div>
 
                     <!-- Timeline -->
-                    <div class="col-span-12 xl:col-span-5 space-y-6">
+                    <div class="col-span-12 lg:col-span-5 space-y-6">
                         <h3 class="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.4em]">Engagement History</h3>
                         <div class="relative space-y-8 before:absolute before:left-5 before:top-2 before:bottom-2 before:w-px before:bg-gallery-outline/10">
                             <!-- Initial Inquiry -->
@@ -171,14 +177,14 @@
 
                 <!-- Floating Action Console -->
                 @if($selectedInquiry->status !== 'closed')
-                    <div class="fixed bottom-8 right-12 bg-black text-white rounded-full shadow-2xl px-8 py-5 flex items-center gap-10 z-50 animate-showroom-fade-up">
-                        <div class="flex flex-col">
+                    <div class="fixed bottom-6 md:bottom-8 left-6 right-6 md:left-auto md:right-12 bg-black text-white rounded-3xl md:rounded-full shadow-2xl p-6 md:px-8 md:py-5 flex flex-col md:flex-row items-center gap-6 md:gap-10 z-50 animate-showroom-fade-up">
+                        <div class="flex flex-col text-center md:text-left">
                             <span class="text-[9px] font-bold text-zinc-500 uppercase tracking-[0.2em]">Next Step Required</span>
                             <span class="text-[11px] font-bold uppercase tracking-widest">Progress Lifecycle</span>
                         </div>
-                        <div class="h-8 w-px bg-zinc-800"></div>  
+                        <div class="hidden md:block h-8 w-px bg-zinc-800"></div>  
                         
-                        <div class="flex gap-6">
+                        <div class="flex flex-wrap justify-center gap-4 md:gap-6">
                             <button wire:click="setStatus({{ $selectedInquiry->id }}, 'contacted')" class="flex items-center gap-2 font-bold text-[10px] uppercase tracking-widest {{ $selectedInquiry->status === 'contacted' ? 'text-emerald-500' : 'text-zinc-400 hover:text-white' }} transition-colors">
                                 <svg viewBox="0 0 24 24" fill="none" class="h-4 w-4" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
                                 Contacted

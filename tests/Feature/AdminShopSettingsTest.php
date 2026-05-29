@@ -13,20 +13,20 @@ it('can update shop settings', function () {
 
     Livewire::actingAs($admin)
         ->test(AdminShopSettings::class)
-        ->set('shop_name', 'New Shop Name')
-        ->set('shop_phone', '09991234567')
+        ->set('dba_name', 'New Shop Name')
+        ->set('sales_inquiry_email', 'new@example.com')
         ->call('save')
         ->assertStatus(200);
 
-    expect(Setting::get('shop_name'))->toBe('New Shop Name');
-    expect(Setting::get('shop_phone'))->toBe('09991234567');
+    expect(Setting::get('dba_name'))->toBe('New Shop Name');
+    expect(Setting::get('sales_inquiry_email'))->toBe('new@example.com');
 });
 
 it('loads settings on mount', function () {
     $admin = User::factory()->create(['is_admin' => true]);
-    Setting::set('shop_name', 'Existing Shop');
+    Setting::set('dba_name', 'Existing Shop');
 
     Livewire::actingAs($admin)
         ->test(AdminShopSettings::class)
-        ->assertSet('shop_name', 'Existing Shop');
+        ->assertSet('dba_name', 'Existing Shop');
 });

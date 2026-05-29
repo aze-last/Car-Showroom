@@ -2,16 +2,15 @@
 
 namespace App\Services;
 
-use App\Models\Unit;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
 class UnitImageStorageService
 {
-    public function storeForUnit(Unit $unit, TemporaryUploadedFile $file): string
+    public function store(TemporaryUploadedFile $file, string $directory): string
     {
         return $file->store(
-            'units/'.$unit->id,
+            $directory,
             $this->diskName(),
         );
     }

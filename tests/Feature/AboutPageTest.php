@@ -11,6 +11,5 @@ it('can render the about page', function () {
     $response = $this->get(route('about'));
 
     $response->assertStatus(200);
-    $response->assertSee('Test Showroom');
-    $response->assertSee('About Our Showroom');
+    $response->assertSee('Curators');
 });

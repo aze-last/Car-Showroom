@@ -34,7 +34,7 @@ class UnitDetail extends Component
             'images',
         ]);
 
-        if (!is_array($this->compareIds)) {
+        if (! is_array($this->compareIds)) {
             $this->compareIds = [];
         }
 
@@ -64,9 +64,10 @@ class UnitDetail extends Component
         ]);
 
         // Rate limiting: 5 inquiries per minute per IP
-        $rateLimitKey = 'inquiry:' . request()->ip();
+        $rateLimitKey = 'inquiry:'.request()->ip();
         if (\Illuminate\Support\Facades\RateLimiter::tooManyAttempts($rateLimitKey, 5)) {
             $this->addError('message', 'Too many requests. Please try again in a minute.');
+
             return;
         }
         \Illuminate\Support\Facades\RateLimiter::hit($rateLimitKey, 60);

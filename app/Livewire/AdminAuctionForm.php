@@ -11,14 +11,21 @@ use Livewire\Component;
 class AdminAuctionForm extends Component
 {
     public ?Auction $auction = null;
+
     public bool $isEdit = false;
 
     public int $unit_id;
+
     public string $lot_number = '';
+
     public string $start_at = '';
+
     public string $end_at = '';
+
     public int $reserve_price_php = 0;
+
     public int $starting_bid_php = 0;
+
     public string $status = 'scheduled';
 
     public function mount(?Auction $auction = null): void
@@ -54,7 +61,7 @@ class AdminAuctionForm extends Component
 
         $validated = $this->validate([
             'unit_id' => ['required', 'exists:units,id'],
-            'lot_number' => ['required', 'string', 'max:20', $this->isEdit ? 'unique:auctions,lot_number,' . $this->auction->id : 'unique:auctions,lot_number'],
+            'lot_number' => ['required', 'string', 'max:20', $this->isEdit ? 'unique:auctions,lot_number,'.$this->auction->id : 'unique:auctions,lot_number'],
             'start_at' => ['required', 'date'],
             'end_at' => ['required', 'date', 'after:start_at'],
             'reserve_price_php' => ['required', 'integer', 'min:0'],

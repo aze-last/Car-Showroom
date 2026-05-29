@@ -22,12 +22,12 @@ class NotificationBell extends Component
 
     public function render()
     {
-        $notifications = auth()->check() 
-            ? auth()->user()->notifications()->latest()->take(10)->get() 
+        $notifications = auth()->check()
+            ? auth()->user()->notifications()->latest()->take(10)->get()
             : collect();
 
-        $unreadCount = auth()->check() 
-            ? auth()->user()->unreadNotifications->count() 
+        $unreadCount = auth()->check()
+            ? auth()->user()->unreadNotifications->count()
             : 0;
 
         return view('livewire.public.notification-bell', [

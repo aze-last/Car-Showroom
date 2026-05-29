@@ -58,7 +58,7 @@
 
         <!-- Right: Bidding Console -->
         <div class="space-y-8">
-            <div class="bg-white rounded-[40px] border border-zinc-100 shadow-xl p-8 sticky top-28">
+            <div class="bg-white rounded-[40px] border border-zinc-100 shadow-xl p-8 sticky top-28 z-10">
                 <div class="space-y-6">
                     <div class="flex justify-between items-start">
                         <div>

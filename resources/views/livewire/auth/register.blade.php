@@ -30,7 +30,7 @@
                 <input wire:model="password_confirmation" id="password_confirmation" type="password" required class="w-full h-12 bg-gallery-surface-low border-none rounded-2xl px-6 text-sm font-medium focus:ring-2 focus:ring-black/5 transition-all">
             </div>
 
-            <button type="submit" class="w-full h-14 bg-black text-white font-bold uppercase tracking-widest text-[11px] rounded-full hover:opacity-90 transition-all duration-300 shadow-xl hover:shadow-2xl mt-4">
+            <button type="submit" class="w-full h-14 bg-black text-white font-bold uppercase tracking-widest text-[11px] rounded-xl hover:opacity-90 transition-all duration-300 shadow-xl hover:shadow-2xl mt-4">
                 Enter The Gallery
             </button>
 

@@ -31,27 +31,29 @@ class AdminInquiriesIndex extends Component
     public function selectInquiry(int $id): void
     {
         $this->selectedInquiryId = $id;
-        
-        // Auto-mark as contacted if it was new when selected? 
-        // For now just select it.
+    }
+
+    public function unselectInquiry(): void
+    {
+        $this->selectedInquiryId = null;
     }
 
     public function setStatus(int $id, string $status): void
     {
         $inquiry = Inquiry::query()->findOrFail($id);
         $inquiry->update(['status' => $status]);
-        
-        session()->flash('status', 'Inquiry status updated to ' . ucfirst($status));
+
+        session()->flash('status', 'Inquiry status updated to '.ucfirst($status));
     }
 
     public function delete(int $id): void
     {
         Inquiry::query()->findOrFail($id)->delete();
-        
+
         if ($this->selectedInquiryId === $id) {
             $this->selectedInquiryId = Inquiry::query()->latest()->first()?->id;
         }
-        
+
         session()->flash('status', 'Inquiry deleted.');
     }
 
@@ -69,8 +71,8 @@ class AdminInquiriesIndex extends Component
             ->latest()
             ->paginate(20);
 
-        $selectedInquiry = $this->selectedInquiryId 
-            ? Inquiry::query()->with(['unit', 'unit.mainImage'])->find($this->selectedInquiryId) 
+        $selectedInquiry = $this->selectedInquiryId
+            ? Inquiry::query()->with(['unit', 'unit.mainImage'])->find($this->selectedInquiryId)
             : null;
 
         return view('livewire.admin-inquiries-index', [

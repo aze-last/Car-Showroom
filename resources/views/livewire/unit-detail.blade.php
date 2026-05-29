@@ -179,7 +179,7 @@
 
     <!-- Sticky Action Sidebar -->
     <aside class="w-full lg:w-[400px] flex-shrink-0 relative">
-        <div class="sticky top-28 flex flex-col gap-8">
+        <div class="sticky top-28 flex flex-col gap-8 z-10">
             <!-- Pricing & Action Card -->
             <div class="bg-gallery-surface-lowest rounded-[32px] border border-gallery-outline/20 ambient-shadow p-8 flex flex-col">
                 <div class="mb-10">
@@ -188,10 +188,10 @@
                 </div>
                 
                 <div class="flex flex-col gap-4">
-                    <button wire:click="$set('showInquiryForm', true)" class="w-full bg-black text-white font-bold uppercase tracking-widest text-[11px] py-4 rounded-full hover:opacity-90 transition-all duration-300 shadow-xl hover:shadow-2xl">
+                    <button wire:click="$set('showInquiryForm', true)" class="w-full bg-black text-white font-bold uppercase tracking-widest text-[11px] py-4 rounded-xl hover:opacity-90 transition-all duration-300 shadow-xl hover:shadow-2xl">
                         Request Information
                     </button>
-                    <button wire:click="toggleCompare({{ $unit->id }})" class="w-full bg-transparent border-2 border-gallery-outline/20 text-black font-bold uppercase tracking-widest text-[11px] py-4 rounded-full hover:border-black transition-all duration-300 flex items-center justify-center gap-2">
+                    <button wire:click="toggleCompare({{ $unit->id }})" class="w-full bg-transparent border-2 border-gallery-outline/20 text-black font-bold uppercase tracking-widest text-[11px] py-4 rounded-xl hover:border-black transition-all duration-300 flex items-center justify-center gap-2">
                         <svg viewBox="0 0 24 24" fill="none" class="h-4 w-4" stroke="currentColor" stroke-width="2.5"><path d="M7 16V4M7 4L3 8M7 4L11 8M17 8V20M17 20L13 16M17 20L21 16" stroke-linecap="round" stroke-linejoin="round"/></svg>
                         <span>{{ in_array($unit->id, $compareIds) ? 'Selected' : 'Compare' }}</span>
                     </button>
@@ -229,7 +229,7 @@
                         <input type="text" wire:model="phone" placeholder="Phone (Optional)" class="w-full h-12 rounded-2xl border-none bg-gallery-surface-low px-6 text-sm font-medium focus:ring-2 focus:ring-black/5 transition-all">
                         <textarea wire:model="message" rows="3" placeholder="Message..." class="w-full rounded-2xl border-none bg-gallery-surface-low px-6 py-4 text-sm font-medium focus:ring-2 focus:ring-black/5 transition-all resize-none"></textarea>
                         
-                        <button type="submit" wire:loading.attr="disabled" class="mt-2 w-full bg-gallery-surface-highest text-black font-bold uppercase tracking-widest text-[10px] py-4 rounded-full hover:bg-gallery-surface-high transition-colors duration-200">
+                        <button type="submit" wire:loading.attr="disabled" class="mt-2 w-full bg-gallery-surface-highest text-black font-bold uppercase tracking-widest text-[10px] py-4 rounded-xl hover:bg-gallery-surface-high transition-colors duration-200">
                             <span wire:loading.remove wire:target="submitInquiry">Send Request</span>
                             <span wire:loading wire:target="submitInquiry">Processing...</span>
                         </button>

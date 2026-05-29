@@ -11,8 +11,11 @@ use Livewire\Component;
 class AuctionRoom extends Component
 {
     public Auction $auction;
+
     public ?int $bidAmount = null;
+
     public string $message = '';
+
     public ?string $activeImage = null;
 
     public function mount(Auction $auction): void
@@ -29,27 +32,30 @@ class AuctionRoom extends Component
 
     public function placeBid(): void
     {
-        if (!auth()->check()) {
+        if (! auth()->check()) {
             $this->redirectRoute('login');
+
             return;
         }
 
         // Logic Reviewer Guard: What if sold?
         if ($this->auction->unit->isSold()) {
             $this->message = 'This vehicle has been sold externally. Bidding is now closed.';
+
             return;
         }
 
         $minBid = ($this->auction->current_bid_php ?: $this->auction->starting_bid_php) + 10000;
 
         $validated = $this->validate([
-            'bidAmount' => ['required', 'integer', 'min:' . $minBid],
+            'bidAmount' => ['required', 'integer', 'min:'.$minBid],
         ]);
 
         // Rate limiting: 10 bids per minute per user/IP
-        $rateLimitKey = 'bidding:' . (auth()->id() ?: request()->ip());
+        $rateLimitKey = 'bidding:'.(auth()->id() ?: request()->ip());
         if (\Illuminate\Support\Facades\RateLimiter::tooManyAttempts($rateLimitKey, 10)) {
             $this->addError('bidAmount', 'You are bidding too fast. Please wait a moment.');
+
             return;
         }
         \Illuminate\Support\Facades\RateLimiter::hit($rateLimitKey, 60);
@@ -60,16 +66,19 @@ class AuctionRoom extends Component
 
             if ($auction->status !== 'live') {
                 $this->addError('bidAmount', 'This auction is no longer accepting bids.');
+
                 return;
             }
 
             if (now()->greaterThan($auction->end_at)) {
                 $this->addError('bidAmount', 'Auction has already ended.');
+
                 return;
             }
 
             if ($this->bidAmount <= $auction->current_bid_php) {
                 $this->addError('bidAmount', 'Someone else placed a higher bid. Please increase your bid.');
+
                 return;
             }
 
@@ -93,7 +102,7 @@ class AuctionRoom extends Component
                 $user = \App\Models\User::find($bidderId);
                 if ($user) {
                     $user->notify(new \App\Notifications\BidPlacedNotification([
-                        'message' => "New bid placed on {$auction->unit->name}: ₱" . number_format($this->bidAmount),
+                        'message' => "New bid placed on {$auction->unit->name}: ₱".number_format($this->bidAmount),
                         'auction_id' => $auction->id,
                         'unit_name' => $auction->unit->name,
                         'amount' => $this->bidAmount,
@@ -118,7 +127,7 @@ class AuctionRoom extends Component
     {
         return view('livewire.public.auction-room')
             ->layout('components.layouts.public-showroom', [
-                'title' => 'Lot ' . $this->auction->lot_number . ' | ' . $this->auction->unit->name,
+                'title' => 'Lot '.$this->auction->lot_number.' | '.$this->auction->unit->name,
             ]);
     }
 }

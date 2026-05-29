@@ -12,27 +12,39 @@ class AdminShopSettings extends Component
     use WithFileUploads;
 
     public string $legal_name = '';
+
     public string $dba_name = '';
+
     public string $shop_address = '';
+
     public string $shop_city = '';
+
     public string $shop_state = '';
+
     public string $shop_postal_code = '';
 
     public string $s3_bucket = '';
+
     public string $s3_region = '';
 
     public string $primary_color = '#000000';
+
     public string $accent_tone = '#565e74';
 
     public string $sales_inquiry_email = '';
+
     public string $service_inquiry_email = '';
+
     public string $legal_inquiry_email = '';
 
     public string $facebook_url = '';
+
     public string $instagram_url = '';
+
     public string $tiktok_url = '';
 
     public $logo;
+
     public ?string $current_logo_url = null;
 
     public function mount(): void

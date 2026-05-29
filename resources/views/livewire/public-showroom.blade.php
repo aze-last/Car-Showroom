@@ -22,8 +22,8 @@
                     <h1 class="text-5xl sm:text-7xl font-bold leading-none text-white tracking-tighter">{{ $heroUnit->name }}</h1>
                     <p class="text-lg text-white/80 max-w-md mt-4 font-medium">{{ $heroUnit->category?->name }} • {{ $heroUnit->formattedPrice() }}</p>
                     <div class="mt-8 flex gap-4">
-                        <a href="{{ route('units.show', $heroUnit) }}" wire:navigate class="bg-white text-black font-bold uppercase tracking-widest text-[12px] px-8 py-3 rounded-full hover:bg-zinc-100 transition-colors">View Detail</a>
-                        <button wire:click="toggleCompare({{ $heroUnit->id }})" class="border border-white/30 backdrop-blur-md text-white font-bold uppercase tracking-widest text-[12px] px-8 py-3 rounded-full hover:bg-white/10 transition-colors">
+                        <a href="{{ route('units.show', $heroUnit) }}" wire:navigate class="bg-white text-black font-bold uppercase tracking-widest text-[12px] px-8 py-3 rounded-xl hover:bg-zinc-100 transition-colors">View Detail</a>
+                        <button wire:click="toggleCompare({{ $heroUnit->id }})" class="border border-white/30 backdrop-blur-md text-white font-bold uppercase tracking-widest text-[12px] px-8 py-3 rounded-xl hover:bg-white/10 transition-colors">
                             {{ in_array($heroUnit->id, $compareIds) ? 'Selected' : 'Compare' }}
                         </button>
                     </div>

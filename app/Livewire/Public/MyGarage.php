@@ -18,7 +18,7 @@ class MyGarage extends Component
     {
         $user = Auth::user();
         $savedUnits = $user->savedUnits()->with('mainImage', 'category')->get();
-        
+
         $acquiredUnits = \App\Models\Unit::query()
             ->with(['mainImage', 'category'])
             ->where('buyer_id', $user->id)

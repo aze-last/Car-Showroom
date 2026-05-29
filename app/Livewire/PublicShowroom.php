@@ -44,7 +44,7 @@ class PublicShowroom extends Component
 
     public function toggleSave(int $id)
     {
-        if (!auth()->check()) {
+        if (! auth()->check()) {
             return redirect()->route('register');
         }
 

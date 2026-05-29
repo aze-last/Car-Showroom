@@ -1,6 +1,6 @@
 <div class="relative" x-data="{ open: false }">
     <button @click="open = !open" class="relative p-2 rounded-full hover:bg-zinc-100 transition-colors group">
-        <span class="material-symbols-outlined text-zinc-500 group-hover:text-black">notifications</span>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5 text-zinc-500 group-hover:text-black transition-colors"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
         @if($unreadCount > 0)
             <span class="absolute top-2 right-2 flex h-2 w-2">
                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
@@ -32,16 +32,16 @@
                 >
                     <div class="h-10 w-10 rounded-full bg-zinc-100 flex items-center justify-center shrink-0">
                         @if($notification->type === 'App\Notifications\BidPlacedNotification')
-                            <span class="material-symbols-outlined text-[20px] text-black">gavel</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-black"><path d="m14.5 12.5-8 8a2.11 2.11 0 1 1-3-3l8-8"/><path d="m16 16 2 2"/><path d="m19 13 2 2"/><path d="m5 5 2 2"/><path d="m2 2 2 2"/><path d="M22 22 2 2"/></svg>
                         @elseif($notification->type === 'App\Notifications\UnitAcquiredNotification')
-                            <span class="material-symbols-outlined text-[20px] text-emerald-600">verified</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-emerald-600"><path d="M20 6 9 17l-5-5"/></svg>
                         @else
-                            <span class="material-symbols-outlined text-[20px] text-zinc-400">info</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-zinc-400"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
                         @endif
                     </div>
                     <div>
                         <p class="text-xs font-bold text-black leading-snug">
-                            {{ $notification->data['message'] ?? 'Notification' }}
+                            {{ $notification->data['message'] ?? 'System Alert' }}
                         </p>
                         <p class="text-[10px] text-zinc-400 font-bold uppercase tracking-widest mt-1">
                             {{ $notification->created_at->diffForHumans() }}
@@ -50,7 +50,7 @@
                 </div>
             @empty
                 <div class="p-12 text-center">
-                    <span class="material-symbols-outlined text-zinc-100 text-6xl mb-4">notifications_off</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="mx-auto text-zinc-100 mb-4"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/><line x1="2" y1="2" x2="22" y2="22"/></svg>
                     <p class="text-[10px] font-bold text-zinc-300 uppercase tracking-[0.4em]">Silence in the Hall</p>
                 </div>
             @endforelse

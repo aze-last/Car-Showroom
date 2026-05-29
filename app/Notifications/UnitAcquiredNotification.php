@@ -9,9 +9,7 @@ class UnitAcquiredNotification extends Notification
 {
     use Queueable;
 
-    public function __construct(public array $data)
-    {
-    }
+    public function __construct(public array $data) {}
 
     public function via(object $notifiable): array
     {

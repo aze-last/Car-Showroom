@@ -11,8 +11,11 @@ use Livewire\Component;
 class Register extends Component
 {
     public string $name = '';
+
     public string $email = '';
+
     public string $password = '';
+
     public string $password_confirmation = '';
 
     public function register()
@@ -24,9 +27,10 @@ class Register extends Component
         ]);
 
         // Rate limiting: 3 registrations per hour per IP
-        $rateLimitKey = 'register:' . request()->ip();
+        $rateLimitKey = 'register:'.request()->ip();
         if (\Illuminate\Support\Facades\RateLimiter::tooManyAttempts($rateLimitKey, 3)) {
             $this->addError('email', 'Too many registration attempts. Please try again later.');
+
             return;
         }
         \Illuminate\Support\Facades\RateLimiter::hit($rateLimitKey, 3600);

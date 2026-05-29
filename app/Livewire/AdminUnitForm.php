@@ -13,7 +13,6 @@ use BaconQrCode\Renderer\ImageRenderer;
 use BaconQrCode\Renderer\RendererStyle\RendererStyle;
 use BaconQrCode\Writer;
 use Illuminate\Contracts\View\View;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Gate;
 use Livewire\Component;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
@@ -115,7 +114,7 @@ class AdminUnitForm extends Component
 
         if ($result && $this->buyer_id) {
             $this->unit->update(['buyer_id' => $this->buyer_id]);
-            
+
             $buyer = \App\Models\User::find($this->buyer_id);
             if ($buyer) {
                 $buyer->notify(new \App\Notifications\UnitAcquiredNotification([

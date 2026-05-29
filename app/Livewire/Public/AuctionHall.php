@@ -3,7 +3,6 @@
 namespace App\Livewire\Public;
 
 use App\Models\Auction;
-use App\Models\Unit;
 use Illuminate\Contracts\View\View;
 use Livewire\Component;
 use Livewire\WithPagination;

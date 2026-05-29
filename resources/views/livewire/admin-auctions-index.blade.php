@@ -17,8 +17,70 @@
         </div>
     @endif
 
-    <div class="bg-white rounded-[32px] border border-zinc-100 shadow-sm overflow-hidden">
-        <div class="overflow-x-auto">
+    <div class="bg-transparent md:bg-white rounded-[32px] md:border md:border-zinc-100 md:shadow-sm overflow-hidden">
+        <!-- Mobile Card View -->
+        <div class="grid grid-cols-1 gap-6 md:hidden">
+            @forelse ($auctions as $auction)
+                <div wire:key="admin-auction-card-{{ $auction->id }}" class="bg-white rounded-[32px] border border-gallery-outline/20 ambient-shadow p-6 flex flex-col gap-6">
+                    <div class="flex items-center gap-4">
+                        <div class="h-14 w-20 rounded-2xl overflow-hidden bg-zinc-100 border border-gallery-outline/10 shadow-sm shrink-0">
+                            @if($auction->unit->mainImage)
+                                <img src="{{ Storage::url($auction->unit->mainImage->url) }}" class="w-full h-full object-cover">
+                            @endif
+                        </div>
+                        <div class="min-w-0">
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="text-[10px] font-bold text-zinc-400">Lot #{{ $auction->lot_number }}</span>
+                                @php
+                                    $statusClasses = [
+                                        'live' => 'bg-red-50 text-red-600 border-red-100',
+                                        'scheduled' => 'bg-zinc-50 text-zinc-600 border-zinc-100',
+                                        'completed' => 'bg-emerald-50 text-emerald-600 border-emerald-100',
+                                        'cancelled' => 'bg-orange-50 text-orange-600 border-orange-100',
+                                    ];
+                                @endphp
+                                <span class="px-2 py-0.5 rounded-full text-[8px] font-bold uppercase tracking-widest border {{ $statusClasses[$auction->status] ?? $statusClasses['scheduled'] }}">
+                                    {{ $auction->status }}
+                                </span>
+                            </div>
+                            <h3 class="font-bold text-black text-lg tracking-tight truncate">{{ $auction->unit->name }}</h3>
+                            <p class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">{{ $auction->unit->year }} • {{ $auction->unit->category->name }}</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4 py-4 border-y border-gallery-outline/5">
+                        <div>
+                            <span class="text-[9px] font-bold text-zinc-400 uppercase tracking-widest block mb-1">Current Bid</span>
+                            <span class="text-sm font-bold text-black">₱{{ number_format($auction->current_bid_php ?: $auction->starting_bid_php) }}</span>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-[9px] font-bold text-zinc-400 uppercase tracking-widest block mb-1">Ends At</span>
+                            <span class="text-sm font-bold text-black">{{ $auction->end_at->format('M d, H:i') }}</span>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-end gap-3">
+                        <a href="{{ route('admin.auctions.edit', $auction->id) }}" class="flex h-12 px-6 items-center justify-center rounded-xl border border-gallery-outline/30 text-black font-bold text-[10px] uppercase tracking-widest hover:bg-zinc-50 transition-all">
+                            Edit Lot
+                        </a>
+                        <button 
+                            wire:click="delete({{ $auction->id }})" 
+                            wire:confirm="Permanentely delete this auction lot? This action cannot be undone."
+                            class="flex h-12 w-12 items-center justify-center rounded-xl bg-red-50 text-red-400 hover:text-red-600 transition-all border border-red-100"
+                        >
+                            <svg viewBox="0 0 24 24" fill="none" class="h-4 w-4" stroke="currentColor" stroke-width="2.5"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M10 11v6M14 11v6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </button>
+                    </div>
+                </div>
+            @empty
+                <div class="py-20 text-center bg-white rounded-[32px] border border-gallery-outline/20">
+                    <p class="text-sm font-bold text-zinc-400 uppercase tracking-widest">No auction lots registered</p>
+                </div>
+            @endforelse
+        </div>
+
+        <!-- Desktop Table View -->
+        <div class="hidden md:block overflow-x-auto">
             <table class="w-full text-left border-collapse">
                 <thead>
                     <tr class="bg-zinc-50/50">
@@ -31,7 +93,7 @@
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-zinc-50">
-                    @forelse ($auctions as $auction)
+                    @foreach ($auctions as $auction)
                         <tr class="hover:bg-zinc-50/30 transition-colors group">
                             <td class="px-6 py-5 text-sm font-bold text-black">#{{ $auction->lot_number }}</td>
                             <td class="px-6 py-5">
@@ -81,13 +143,7 @@
                                 </button>
                             </td>
                         </tr>
-                    @empty
-                        <tr>
-                            <td colspan="6" class="px-6 py-24 text-center">
-                                <p class="text-sm font-bold text-zinc-400 uppercase tracking-widest">No auction lots registered</p>
-                            </td>
-                        </tr>
-                    @endforelse
+                    @endforeach
                 </tbody>
             </table>
         </div>
