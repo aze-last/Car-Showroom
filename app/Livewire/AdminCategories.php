@@ -8,8 +8,12 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Validation\Rule;
 use Livewire\Component;
 
+use Livewire\WithPagination;
+
 class AdminCategories extends Component
 {
+    use WithPagination;
+
     public string $name = '';
 
     public ?int $editingCategoryId = null;
@@ -92,7 +96,7 @@ class AdminCategories extends Component
             'categories' => Category::query()
                 ->withCount('allUnits')
                 ->orderBy('name')
-                ->get(),
+                ->paginate(10),
         ])->layout('layouts.admin-panel', [
             'title' => 'Manage Categories',
         ]);

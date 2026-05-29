@@ -137,10 +137,9 @@ class PublicShowroom extends Component
                 $this->maxPrice !== null,
                 fn ($query) => $query->where('price_php', '<=', $this->maxPrice),
             )
-            ->orderByDesc('is_featured')
             ->when($this->sortBy === 'price_asc', fn ($q) => $q->orderBy('price_php', 'asc'))
             ->when($this->sortBy === 'price_desc', fn ($q) => $q->orderBy('price_php', 'desc'))
-            ->when($this->sortBy === 'newest', fn ($q) => $q->latest('updated_at'))
+            ->when($this->sortBy === 'newest', fn ($q) => $q->orderByDesc('is_featured')->latest('updated_at'))
             ->paginate(12);
 
         $featuredUnits = Unit::query()

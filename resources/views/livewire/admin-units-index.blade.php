@@ -11,19 +11,6 @@
             <h2 class="text-5xl font-bold tracking-tighter text-black mb-2">Inventory Registry</h2>
             <p class="text-sm font-medium text-zinc-400">Oversee your collection and track vehicle life-cycles with precision.</p>
         </div>
-        <div class="flex gap-3">
-             @if ($canManageTrash)
-                <button 
-                    type="button" 
-                    wire:click="runImporter" 
-                    wire:loading.attr="disabled"
-                    class="px-6 py-3 border border-gallery-outline/30 rounded-2xl font-bold text-[11px] uppercase tracking-widest text-zinc-500 hover:text-black hover:bg-gallery-surface-low transition-all duration-300"
-                >
-                    <span wire:loading.remove wire:target="runImporter">Sync External</span>
-                    <span wire:loading wire:target="runImporter">Syncing...</span>
-                </button>
-            @endif
-        </div>
     </header>
 
     <!-- Control Bar (Filters & Search) -->
@@ -210,10 +197,10 @@
                     <span class="text-[12px] font-bold uppercase tracking-[0.4em] text-zinc-200">Inventory Empty</span>
                 </div>
             @endif
+        </div>
 
-            <div class="p-8 border-t border-gallery-outline/10 bg-gallery-surface-low/30">
-                {{ $units->links() }}
-            </div>
+        <div class="mt-8 px-8 py-6 bg-white rounded-[32px] border border-gallery-outline/20 ambient-shadow">
+            {{ $units->links() }}
         </div>
     </section>
 

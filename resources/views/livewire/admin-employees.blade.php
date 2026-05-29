@@ -1,9 +1,13 @@
-<section class="space-y-8">
+<section x-data="{ showForm: false }" x-on:employee-created.window="showForm = false" class="space-y-8">
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
         <div>
             <p class="text-[12px] font-bold text-zinc-400 uppercase tracking-widest mb-1">Human Resources</p>
             <h2 class="text-3xl font-bold text-black">Staff Management</h2>
         </div>
+        <button @click="showForm = true" class="lg:hidden w-full md:w-auto bg-black text-white font-bold text-[11px] uppercase tracking-widest py-4 px-8 rounded-2xl hover:opacity-90 transition-all flex items-center justify-center gap-2 ambient-shadow">
+            <svg viewBox="0 0 24 24" fill="none" class="h-4 w-4" stroke="currentColor" stroke-width="3"><path d="M12 5v14M5 12h14" stroke-linecap="round"/></svg>
+            Add New Staff
+        </button>
     </div>
 
     @if (session('status'))
@@ -14,45 +18,66 @@
     @endif
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-        <!-- Create Form -->
-        <article class="lg:col-span-1 bg-white rounded-[32px] border border-zinc-100 shadow-sm p-8 space-y-6 sticky top-28 z-10">
-            <h3 class="text-sm font-bold text-black uppercase tracking-widest">New Staff Account</h3>
-            
-            <form wire:submit="create" class="space-y-4">
-                <div class="space-y-2">
-                    <label class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest px-2">Full Name</label>
-                    <input type="text" wire:model="name" class="w-full bg-zinc-50 border-none rounded-2xl py-3 px-5 font-bold text-sm focus:ring-2 focus:ring-black transition-all" placeholder="John Doe">
-                    @error('name') <p class="text-[10px] text-red-600 font-bold px-2">{{ $message }}</p> @enderror
-                </div>
+        <!-- Mobile Drawer Overlay -->
+        <div x-show="showForm" 
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="transition ease-in duration-200"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0"
+             class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[80] lg:hidden"
+             @click="showForm = false">
+        </div>
 
-                <div class="space-y-2">
-                    <label class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest px-2">Email Address</label>
-                    <input type="email" wire:model="email" class="w-full bg-zinc-50 border-none rounded-2xl py-3 px-5 font-bold text-sm focus:ring-2 focus:ring-black transition-all" placeholder="john@thegallery.com">
-                    @error('email') <p class="text-[10px] text-red-600 font-bold px-2">{{ $message }}</p> @enderror
+        <aside 
+            :class="showForm ? 'fixed inset-x-0 bottom-0 z-[110] translate-y-0' : 'hidden lg:block lg:col-span-1 lg:sticky lg:top-28 lg:z-10'"
+            class="transition-transform duration-500 ease-out"
+        >
+            <div :class="showForm ? 'bg-white rounded-t-[40px] shadow-[0_-20px_50px_-12px_rgba(0,0,0,0.3)] p-8 max-h-[95vh] overflow-y-auto' : 'bg-white rounded-[32px] border border-zinc-100 shadow-sm p-8 space-y-6'">
+                <div class="flex justify-between items-center mb-8 lg:mb-6">
+                    <h3 class="text-sm font-bold text-black uppercase tracking-widest">New Staff Account</h3>
+                    <button @click="showForm = false" class="lg:hidden h-10 w-10 rounded-full bg-zinc-50 flex items-center justify-center text-zinc-400">
+                        <svg viewBox="0 0 24 24" fill="none" class="h-6 w-6" stroke="currentColor" stroke-width="2"><path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </button>
                 </div>
+                
+                <form wire:submit="create" class="space-y-4">
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest px-2">Full Name</label>
+                        <input type="text" wire:model="name" class="w-full bg-zinc-50 border-none rounded-2xl py-3 px-5 font-bold text-sm focus:ring-2 focus:ring-black transition-all" placeholder="John Doe">
+                        @error('name') <p class="text-[10px] text-red-600 font-bold px-2">{{ $message }}</p> @enderror
+                    </div>
 
-                <div class="space-y-2">
-                    <label class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest px-2">Job Title</label>
-                    <input type="text" wire:model="job_title" class="w-full bg-zinc-50 border-none rounded-2xl py-3 px-5 font-bold text-sm focus:ring-2 focus:ring-black transition-all" placeholder="Senior Curator">
-                    @error('job_title') <p class="text-[10px] text-red-600 font-bold px-2">{{ $message }}</p> @enderror
-                </div>
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest px-2">Email Address</label>
+                        <input type="email" wire:model="email" class="w-full bg-zinc-50 border-none rounded-2xl py-3 px-5 font-bold text-sm focus:ring-2 focus:ring-black transition-all" placeholder="john@thegallery.com">
+                        @error('email') <p class="text-[10px] text-red-600 font-bold px-2">{{ $message }}</p> @enderror
+                    </div>
 
-                <div class="space-y-2">
-                    <label class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest px-2">Password</label>
-                    <input type="password" wire:model="password" class="w-full bg-zinc-50 border-none rounded-2xl py-3 px-5 font-bold text-sm focus:ring-2 focus:ring-black transition-all" placeholder="••••••••">
-                    @error('password') <p class="text-[10px] text-red-600 font-bold px-2">{{ $message }}</p> @enderror
-                </div>
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest px-2">Job Title</label>
+                        <input type="text" wire:model="job_title" class="w-full bg-zinc-50 border-none rounded-2xl py-3 px-5 font-bold text-sm focus:ring-2 focus:ring-black transition-all" placeholder="Senior Curator">
+                        @error('job_title') <p class="text-[10px] text-red-600 font-bold px-2">{{ $message }}</p> @enderror
+                    </div>
 
-                <div class="space-y-2">
-                    <label class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest px-2">Confirm Password</label>
-                    <input type="password" wire:model="password_confirmation" class="w-full bg-zinc-50 border-none rounded-2xl py-3 px-5 font-bold text-sm focus:ring-2 focus:ring-black transition-all" placeholder="••••••••">
-                </div>
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest px-2">Password</label>
+                        <input type="password" wire:model="password" class="w-full bg-zinc-50 border-none rounded-2xl py-3 px-5 font-bold text-sm focus:ring-2 focus:ring-black transition-all" placeholder="••••••••">
+                        @error('password') <p class="text-[10px] text-red-600 font-bold px-2">{{ $message }}</p> @enderror
+                    </div>
 
-                <button type="submit" class="w-full bg-black text-white font-bold text-[11px] uppercase tracking-widest py-4 rounded-2xl hover:opacity-90 transition-all ambient-shadow mt-4">
-                    Register Staff
-                </button>
-            </form>
-        </article>
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest px-2">Confirm Password</label>
+                        <input type="password" wire:model="password_confirmation" class="w-full bg-zinc-50 border-none rounded-2xl py-3 px-5 font-bold text-sm focus:ring-2 focus:ring-black transition-all" placeholder="••••••••">
+                    </div>
+
+                    <button type="submit" class="w-full bg-black text-white font-bold text-[11px] uppercase tracking-widest py-4 rounded-2xl hover:opacity-90 transition-all ambient-shadow mt-4">
+                        Register Staff
+                    </button>
+                </form>
+            </div>
+        </aside>
 
         <!-- Staff List -->
         <article class="lg:col-span-2 space-y-6">

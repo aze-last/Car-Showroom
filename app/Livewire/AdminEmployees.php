@@ -73,6 +73,8 @@ class AdminEmployees extends Component
         ]);
         $employee->save();
 
+        $this->dispatch('employee-created');
+
         $this->reset(['name', 'email', 'password', 'password_confirmation', 'phone']);
         $this->applyDefaults();
         $this->resetPage();
