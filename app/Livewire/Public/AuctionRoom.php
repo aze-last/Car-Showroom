@@ -46,9 +46,22 @@ class AuctionRoom extends Component
             'bidAmount' => ['required', 'integer', 'min:' . $minBid],
         ]);
 
+        // Rate limiting: 10 bids per minute per user/IP
+        $rateLimitKey = 'bidding:' . (auth()->id() ?: request()->ip());
+        if (\Illuminate\Support\Facades\RateLimiter::tooManyAttempts($rateLimitKey, 10)) {
+            $this->addError('bidAmount', 'You are bidding too fast. Please wait a moment.');
+            return;
+        }
+        \Illuminate\Support\Facades\RateLimiter::hit($rateLimitKey, 60);
+
         DB::transaction(function () {
             // Lock the auction for update to prevent race conditions
             $auction = Auction::where('id', $this->auction->id)->lockForUpdate()->first();
+
+            if ($auction->status !== 'live') {
+                $this->addError('bidAmount', 'This auction is no longer accepting bids.');
+                return;
+            }
 
             if (now()->greaterThan($auction->end_at)) {
                 $this->addError('bidAmount', 'Auction has already ended.');

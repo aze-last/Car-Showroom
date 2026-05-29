@@ -56,12 +56,20 @@ class UnitDetail extends Component
 
     public function submitInquiry(): void
     {
-        $validated = $this->validate([
+        $this->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255'],
             'phone' => ['nullable', 'string', 'max:50'],
             'message' => ['required', 'string', 'max:2000'],
         ]);
+
+        // Rate limiting: 5 inquiries per minute per IP
+        $rateLimitKey = 'inquiry:' . request()->ip();
+        if (\Illuminate\Support\Facades\RateLimiter::tooManyAttempts($rateLimitKey, 5)) {
+            $this->addError('message', 'Too many requests. Please try again in a minute.');
+            return;
+        }
+        \Illuminate\Support\Facades\RateLimiter::hit($rateLimitKey, 60);
 
         Inquiry::query()->create([
             'unit_id' => $this->unit->id,

@@ -23,6 +23,14 @@ class Register extends Component
             'password' => 'required|string|min:8|confirmed',
         ]);
 
+        // Rate limiting: 3 registrations per hour per IP
+        $rateLimitKey = 'register:' . request()->ip();
+        if (\Illuminate\Support\Facades\RateLimiter::tooManyAttempts($rateLimitKey, 3)) {
+            $this->addError('email', 'Too many registration attempts. Please try again later.');
+            return;
+        }
+        \Illuminate\Support\Facades\RateLimiter::hit($rateLimitKey, 3600);
+
         $user = User::create([
             'name' => $this->name,
             'email' => $this->email,
