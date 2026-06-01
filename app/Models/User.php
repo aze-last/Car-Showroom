@@ -85,4 +85,19 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Unit::class, 'saved_units')->withTimestamps();
     }
+
+    public function bids(): HasMany
+    {
+        return $this->hasMany(Bid::class);
+    }
+
+    public function bidDeposits(): HasMany
+    {
+        return $this->hasMany(BidDeposit::class);
+    }
+
+    public function auctionStrike(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(UserAuctionStrike::class);
+    }
 }

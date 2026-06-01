@@ -18,4 +18,53 @@ return [
         'preferred_locale' => (string) env('EMPLOYEE_DEFAULT_LOCALE', 'en_PH'),
         'preferred_timezone' => (string) env('EMPLOYEE_DEFAULT_TIMEZONE', 'Asia/Manila'),
     ],
+
+    'design' => [
+        'palettes' => [
+            'emerald' => [
+                'name' => 'Emerald (Default)',
+                'primary' => '#10b981',
+                'primary_light' => '#34d399',
+                'primary_dark' => '#059669',
+            ],
+            'cobalt' => [
+                'name' => 'Cobalt',
+                'primary' => '#2563eb',
+                'primary_light' => '#60a5fa',
+                'primary_dark' => '#1d4ed8',
+            ],
+            'obsidian' => [
+                'name' => 'Obsidian',
+                'primary' => '#18181b',
+                'primary_light' => '#3f3f46',
+                'primary_dark' => '#09090b',
+            ],
+            'violet' => [
+                'name' => 'Violet',
+                'primary' => '#7c3aed',
+                'primary_light' => '#a78bfa',
+                'primary_dark' => '#5b21b6',
+            ],
+            'rose' => [
+                'name' => 'Rose',
+                'primary' => '#e11d48',
+                'primary_light' => '#fb7185',
+                'primary_dark' => '#be123c',
+            ],
+        ],
+        'layouts' => [
+            'cinema' => [
+                'name' => 'The Cinema',
+                'description' => 'Visual-heavy parallax focus.',
+            ],
+            'marketplace' => [
+                'name' => 'The Marketplace',
+                'description' => 'Activity and inventory browsing.',
+            ],
+            'minimalist' => [
+                'name' => 'The Minimalist',
+                'description' => 'Lean, efficient inventory grid.',
+            ],
+        ],
+    ],
 ];

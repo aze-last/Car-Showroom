@@ -38,16 +38,57 @@
                     @error('status') <p class="mt-2 text-xs text-red-600 font-bold">{{ $message }}</p> @enderror
                 </div>
 
+                <!-- Featured Toggle -->
+                <div class="flex items-center gap-4 bg-zinc-50 p-6 rounded-2xl md:col-span-2">
+                    <div class="flex-grow">
+                        <p class="text-sm font-bold text-black">Feature this Auction</p>
+                        <p class="text-[10px] text-zinc-400 font-medium uppercase tracking-widest mt-1">Highlighted on the public Auction Hall hero</p>
+                    </div>
+                    <input type="checkbox" wire:model="is_featured" class="h-6 w-6 rounded-lg border-zinc-200 text-black focus:ring-black">
+                </div>
+
                 <!-- Pricing -->
                 <div>
                     <label class="block text-[11px] font-bold text-zinc-400 uppercase tracking-widest mb-2">Starting Bid (₱)</label>
-                    <input type="number" wire:model="starting_bid_php" class="w-full bg-zinc-50 border-none rounded-2xl py-4 px-6 font-bold text-sm focus:ring-2 focus:ring-black transition-all">
+                    <input 
+                        type="text" 
+                        x-data="{ 
+                            raw: @entangle('starting_bid_php'),
+                            format(val) {
+                                if (val === null || val === '') return '';
+                                return val.toString().replace(/\D/g, '').replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+                            }
+                        }" 
+                        x-on:input="
+                            let clean = $event.target.value.replace(/,/g, '').replace(/\D/g, '');
+                            raw = clean === '' ? 0 : parseInt(clean);
+                            $event.target.value = format(clean);
+                        "
+                        x-init="$el.value = format(raw)"
+                        class="w-full bg-zinc-50 border-none rounded-2xl py-4 px-6 font-bold text-sm focus:ring-2 focus:ring-black transition-all"
+                    >
                     @error('starting_bid_php') <p class="mt-2 text-xs text-red-600 font-bold">{{ $message }}</p> @enderror
                 </div>
 
                 <div>
                     <label class="block text-[11px] font-bold text-zinc-400 uppercase tracking-widest mb-2">Reserve Price (₱)</label>
-                    <input type="number" wire:model="reserve_price_php" class="w-full bg-zinc-50 border-none rounded-2xl py-4 px-6 font-bold text-sm focus:ring-2 focus:ring-black transition-all">
+                    <input 
+                        type="text" 
+                        x-data="{ 
+                            raw: @entangle('reserve_price_php'),
+                            format(val) {
+                                if (val === null || val === '') return '';
+                                return val.toString().replace(/\D/g, '').replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+                            }
+                        }" 
+                        x-on:input="
+                            let clean = $event.target.value.replace(/,/g, '').replace(/\D/g, '');
+                            raw = clean === '' ? 0 : parseInt(clean);
+                            $event.target.value = format(clean);
+                        "
+                        x-init="$el.value = format(raw)"
+                        class="w-full bg-zinc-50 border-none rounded-2xl py-4 px-6 font-bold text-sm focus:ring-2 focus:ring-black transition-all"
+                    >
                     @error('reserve_price_php') <p class="mt-2 text-xs text-red-600 font-bold">{{ $message }}</p> @enderror
                 </div>
 

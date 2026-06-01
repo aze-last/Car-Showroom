@@ -40,7 +40,24 @@
                     <div class="grid gap-4 md:grid-cols-2">
                         <label class="block">
                             <span class="mb-2 block text-sm font-medium text-slate-700">Price (PHP)</span>
-                            <input type="number" min="0" wire:model="price_php" class="admin-input" placeholder="e.g. 1250000">
+                            <input 
+                                type="text" 
+                                x-data="{ 
+                                    raw: @entangle('price_php'),
+                                    format(val) {
+                                        if (val === null || val === '') return '';
+                                        return val.toString().replace(/\D/g, '').replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+                                    }
+                                }" 
+                                x-on:input="
+                                    let clean = $event.target.value.replace(/,/g, '').replace(/\D/g, '');
+                                    raw = clean === '' ? null : parseInt(clean);
+                                    $event.target.value = format(clean);
+                                "
+                                x-init="$el.value = format(raw)"
+                                class="admin-input" 
+                                placeholder="e.g. 1,250,000"
+                            >
                             @error('price_php') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                         </label>
 

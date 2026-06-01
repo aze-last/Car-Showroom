@@ -142,10 +142,15 @@ class PublicShowroom extends Component
             ->when($this->sortBy === 'newest', fn ($q) => $q->orderByDesc('is_featured')->latest('updated_at'))
             ->paginate(12);
 
+        // Fetch Design Tokens
+        $designLayout = \App\Models\Setting::get('design_layout', 'cinema');
+        $heroUnitId = \App\Models\Setting::get('design_hero_unit_id');
+        
         $featuredUnits = Unit::query()
             ->with(['category', 'mainImage'])
-            ->where('is_featured', true)
             ->where('status', Unit::STATUS_AVAILABLE)
+            ->when($heroUnitId, fn($q) => $q->where('id', $heroUnitId))
+            ->when(!$heroUnitId, fn($q) => $q->where('is_featured', true))
             ->latest()
             ->limit(5)
             ->get();
@@ -154,6 +159,14 @@ class PublicShowroom extends Component
             'categories' => $categories,
             'units' => $units,
             'featuredUnits' => $featuredUnits,
+            'designLayout' => $designLayout,
+            'designSettings' => [
+                'headline' => \App\Models\Setting::get('design_hero_headline', 'Automotive Excellence'),
+                'subtitle' => \App\Models\Setting::get('design_hero_subtitle', 'Curated collection.'),
+                'showAuctions' => \App\Models\Setting::get('design_show_auctions', true),
+                'showComparison' => \App\Models\Setting::get('design_show_comparison', true),
+                'showInquiries' => \App\Models\Setting::get('design_show_inquiries', true),
+            ]
         ])->layout('components.layouts.public-showroom', [
             'title' => 'Vehicle Showroom',
         ]);

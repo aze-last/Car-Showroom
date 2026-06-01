@@ -20,9 +20,15 @@
         <div class="grid grid-cols-1 lg:grid-cols-[1.5fr_1fr] gap-24">
             <!-- Map Section -->
             <section class="space-y-12">
-                <div class="space-y-4">
-                    <h2 class="text-[12px] font-bold uppercase tracking-[0.4em] text-black">The Landmark</h2>
-                    <p class="text-lg font-bold text-zinc-400 leading-tight max-w-md">{{ Setting::get('shop_address') }}</p>
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
+                    <div class="space-y-4">
+                        <h2 class="text-[12px] font-bold uppercase tracking-[0.4em] text-black">The Landmark</h2>
+                        <p class="text-lg font-bold text-zinc-400 leading-tight max-w-md">{{ Setting::get('shop_address') }}</p>
+                    </div>
+                    <a href="https://www.google.com/maps/dir/?api=1&destination={{ Setting::get('map_latitude', '14.5995') }},{{ Setting::get('map_longitude', '120.9842') }}" target="_blank" class="px-8 py-4 bg-black text-white rounded-full font-bold text-[11px] uppercase tracking-widest hover:scale-105 transition-all shadow-xl flex items-center gap-3">
+                        <svg viewBox="0 0 24 24" fill="none" class="h-4 w-4" stroke="currentColor" stroke-width="3"><path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z"/><circle cx="12" cy="10" r="3"/></svg>
+                        Get Directions
+                    </a>
                 </div>
                 
                 <div 

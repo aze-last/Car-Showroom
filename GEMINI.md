@@ -1,94 +1,75 @@
 # Car Showroom Project
 
-A production-ready Laravel application for a public vehicle showroom with a hidden admin panel.
+A production-ready Laravel application for a public vehicle showroom and premium auction house with a specialized admin command center.
 
 ## Agent Team (Source of Truth)
 This project utilizes a specialized **Agent Team** for architectural orchestration, logic verification, and UI/UX auditing.
 - **Location:** `.agent-team/`
-- **Mandate:** The agent profiles in this folder are the **primary source of truth** for any AI coding assistant or developer working on this project. All changes must align with the objectives and rules defined in the agent files.
+- **Mandate:** The agent profiles in this folder are the **primary source of truth**. All changes must align with the objectives and rules defined in the agent files.
 - **Coordination:** The `Coordinator` agent orchestrates all tasks and ensures end-to-end integration (Database -> Model -> UI) for every feature.
 
-## Design System (LOCKED)
-The application follows a **"Premium White"** aesthetic. All new UI must adhere to these tokens:
-- **Palette:** Pure White backgrounds, `zinc-50` for secondary areas, and `zinc-900` for primary typography/actions.
-- **Accents:** No Amber/Gold. Use `emerald-500` for success/available states and `red-600` for critical actions.
-- **Typography:** Professional tracking-widest on headers and bold, high-contrast labels.
-- **Components:** Rounded-3xl corners for cards, rounded-xl for inputs/buttons. Use Flux UI components idiomatically.
-- **Motion:** Staggered `animate-showroom-fade-up` (cubic-bezier) for all grid entrances and list items.
-
-## Project Overview
+## Architecture & Logic (LATEST)
 - **Technology Stack:** Laravel 12, Livewire 4, Flux UI (Pro), Tailwind CSS 4, Pest (Testing).
-- **Architecture:** Monolithic Laravel app using Livewire for interactive components.
-- **Core Models:** `Unit` (Vehicles), `Category`, `UnitImage`, `UnitStatusLog`, `Inquiry`, `Setting`, `User`.
-- **Key Features:**
-    - Public showroom with category filters and search.
-    - **Vehicle Comparison:** Side-by-side neutral breakdown for up to 3 vehicles.
-    - Admin panel for managing units, categories, and viewing logs.
-    - **Inquiry System:** Lead capture and management for potential buyers.
-    - **Global Settings:** Centralized shop configuration (Name, Currency, Contact).
-    - QR code workflow for quick unit status updates (Available <-> Sold).
-    - Status change logging with concurrency protection (DB locking).
-    - Cloud-ready storage implementation (Local/S3).
+- **Core Models:** 
+    - `Unit`: Vehicles with technical specs, status tracking, and public-facing ULIDs.
+    - `Auction`: Timed events for units with bidding logic and reserve prices.
+    - `Bid` & `BidDeposit`: Financial layer for auctions with admin verification workflow.
+    - `Category`: Dynamic vehicle classification.
+    - `Inquiry`: Lead generation system.
+    - `Setting`: Global K-V store for shop and design configuration.
+    - `User`: Roles: `Admin` (Full control), `Staff` (Inventory/QR), `User` (Collector/Garage).
 
-## Building and Running
+## Design System (LOCKED)
+The application follows a **"Premium White"** aesthetic with high-contrast elements.
+- **Palette:** 
+    - Primary: Pure White (`#ffffff`) backgrounds.
+    - Secondary: `zinc-50` surfaces, `zinc-100` borders.
+    - Text: `zinc-900` for primary typography.
+    - Accents: `emerald-500` (Success/Available), `red-600` (Critical/Danger).
+- **Typography:** Professional tracking-widest on headers (Instrument Sans / Hanken Grotesk).
+- **Components:** 
+    - Rounded-3xl (40px) corners for cards and main containers.
+    - Rounded-xl for inputs and buttons.
+    - **Pills:** Horizontal scrolling category pills on mobile with `no-scrollbar`.
+- **Motion:** Staggered `animate-showroom-fade-up` (cubic-bezier) for list/grid entries.
 
-### Prerequisites
-- PHP 8.2+
-- Node.js & NPM
-- Composer
-- SQLite (or other supported DB)
+## Key Features
+- **Public Showroom:** Advanced filtering (Categories, Search, Sort) with multiple layout presets:
+    - `Cinema`: High-impact hero with parallax and dynamic bento grid.
+    - `Marketplace`: Utility-focused grid for large inventories.
+    - `Minimalist`: Clean, editorial-style presentation.
+- **Auction House:** Real-time bidding, Bid Deposit verification (admin-verified proof of payment), and "My Garage" for winning bids.
+- **Vehicle Comparison:** Neutral side-by-side breakdown for up to 3 vehicles with a persistent tray.
+- **Admin Command Center:**
+    - **Inventory:** Full CRUD with QR code generation for quick status updates.
+    - **Auctions:** Lot management, bid monitoring, and deposit approval.
+    - **Customization:** Live toggle for layouts, palettes, and hero features.
+    - **Security:** Signed URLs for QR actions, Concurrency protection (DB locking).
 
-### Setup Commands
+## Project Workflow
+- **ULIDs:** `Unit` uses ULIDs for public routes (`/units/{ulid}`) to prevent ID scraping.
+- **Status Changes:** Mandatory use of explicit state logic (`STATUS_AVAILABLE`, `STATUS_SOLD`). Changes are logged with request context.
+- **Storage:** Relative paths only. Use `Storage::url($path)`. No hardcoded `public/` paths.
+- **Testing:** Pest tests required for all logic changes.
+
+## Commands
 ```powershell
-# Install dependencies, setup .env, generate key, migrate, and build assets
+# Setup environment
 composer run setup
 
-# Link storage for local file access
-php artisan storage:link
-```
-
-### Development
-```powershell
-# Run server, queue, and vite in parallel
+# Run dev environment
 composer run dev
-```
 
-### Testing & Linting
-```powershell
-# Run all tests (Pest)
+# Testing & Linting
 composer run test
-
-# Run linting (Laravel Pint)
 composer run lint
 ```
 
-## Development Conventions
-
-### Security
-- **Strict No-Secrets Policy:** Never expose API keys or secrets in Blade/Livewire/JS. Use `.env` and `config/`.
-- **Admin Access:** No public links to login. Access via `/login` directly. Admin routes protected by `auth` and `is_admin` gate.
-- **Data Protection:** Use signed URLs for QR code actions.
-
-### Storage
-- Never remove anything if something needs to be removed tell the developer first!!! 
-- Always use the `Storage` facade.
-- Never hardcode `asset('storage/...')`. Use `Storage::url($path)`.
-- Store relative paths in the database (e.g., `units/{unit_id}/filename.jpg`).
-
-### Code Style
-- **Status Changes:** Must use explicit set-state logic (`SET_SOLD`, `SET_AVAILABLE`), not toggles.
-- **Database:** Use transactions and `lockForUpdate()` for status changes to prevent race conditions.
-- **ULIDs:** `Unit` uses ULID (`public_id`) for public-facing URLs.
-
-### Testing
-- All feature changes must be verified with Pest tests.
-- Focus on: Security (auth/gates), Concurrency (status logs), and Core CRUD.
-
 ## Important Routes
 - `GET /` - Public Showroom
-- `GET /units/{unit}` - Public Vehicle Detail
-- `GET /login` - Admin Login
-- `GET /admin` - Admin Dashboard
+- `GET /auction` - Auction Hall
+- `GET /comparison` - Side-by-side Comparison
+- `GET /admin` - Dashboard (Admin Only)
+- `GET /admin/customization` - UI Configuration
 - `GET /admin/units` - Inventory Management
-- `GET /admin/settings/shop` - Shop Configuration
-- `GET /admin/units/{unit}/qr` - QR Action Page (Signed URL)
+- `GET /admin/deposits` - Bid Deposit Verification

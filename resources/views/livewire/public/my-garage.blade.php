@@ -3,28 +3,28 @@
     use Illuminate\Support\Facades\Storage;
 @endphp
 
-<div class="max-w-7xl mx-auto px-container-padding py-stack-lg space-y-16 animate-showroom-fade-up">
+<div class="max-w-7xl mx-auto px-6 md:px-container-padding py-12 md:py-stack-lg space-y-12 md:space-y-16 animate-showroom-fade-up">
     <!-- Header Section -->   
-    <div class="flex flex-col md:flex-row justify-between items-end mb-stack-lg gap-gutter">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 md:mb-stack-lg gap-8 md:gap-gutter">
         <div>
-            <h1 class="font-display-lg text-6xl md:text-7xl font-bold tracking-tighter text-primary mb-2">My Garage</h1>  
-            <p class="font-body-lg text-lg font-medium text-secondary">Your curated private collection of automotive excellence.</p>
+            <h1 class="font-display-lg text-4xl md:text-7xl font-bold tracking-tighter text-primary mb-2">My Garage</h1>  
+            <p class="font-body-lg text-base md:text-lg font-medium text-secondary">Your curated private collection of automotive excellence.</p>
         </div>
 
         <!-- Floating Summary Panel -->
-        <div class="bg-surface-container-lowest border border-outline-variant rounded-3xl p-6 gallery-shadow flex items-center gap-10">     
-            <div>
-                <span class="font-label-sm text-[10px] font-bold text-secondary block uppercase tracking-[0.2em] mb-1">Portfolio Value</span>
-                <span class="font-body-lg text-3xl font-bold text-primary tracking-tight">₱{{ number_format($collectionValue) }}</span>
+        <div class="w-full md:w-auto bg-surface-container-lowest border border-outline-variant rounded-[30px] md:rounded-3xl p-6 md:p-8 gallery-shadow flex flex-col md:flex-row items-center gap-8 md:gap-10">     
+            <div class="flex flex-row md:flex-col items-center md:items-start justify-between w-full md:w-auto gap-4">
+                <span class="font-label-sm text-[9px] md:text-[10px] font-bold text-secondary block uppercase tracking-[0.2em] mb-1">Portfolio Value</span>
+                <span class="font-body-lg text-2xl md:text-3xl font-bold text-primary tracking-tight">₱{{ number_format($collectionValue) }}</span>
             </div>
-            <div class="h-10 w-px bg-outline-variant/30"></div>    
-            <div>
-                <span class="font-label-sm text-[10px] font-bold text-secondary block uppercase tracking-[0.2em] mb-1">Acquired Assets</span>
-                <span class="font-body-lg text-3xl font-bold text-primary tracking-tight">{{ $acquiredUnits->count() }}</span>   
+            <div class="hidden md:block h-10 w-px bg-outline-variant/30"></div>    
+            <div class="flex flex-row md:flex-col items-center md:items-start justify-between w-full md:w-auto gap-4">
+                <span class="font-label-sm text-[9px] md:text-[10px] font-bold text-secondary block uppercase tracking-[0.2em] mb-1">Acquired Assets</span>
+                <span class="font-body-lg text-2xl md:text-3xl font-bold text-primary tracking-tight">{{ $acquiredUnits->count() }}</span>   
             </div>
-            <a href="{{ route('home') }}" wire:navigate class="bg-primary hover:bg-inverse-surface text-on-primary px-6 py-3 rounded-2xl gallery-transition flex items-center gap-2 ambient-shadow">
-                <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="2.5"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                <span class="font-label-bold text-[11px] font-bold uppercase tracking-widest">Discover More</span>
+            <a href="{{ route('home') }}" wire:navigate class="w-full md:w-auto bg-primary hover:bg-inverse-surface text-on-primary px-8 py-4 rounded-2xl gallery-transition flex items-center justify-center gap-2 ambient-shadow">
+                <svg viewBox="0 0 24 24" fill="none" class="h-4 w-4" stroke="currentColor" stroke-width="2.5"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                <span class="font-label-bold text-[10px] md:text-[11px] font-bold uppercase tracking-widest">Discover More</span>
             </a>
         </div>
     </div>
@@ -59,9 +59,9 @@
                             <p class="text-[10px] font-bold text-emerald-600 uppercase tracking-widest mt-2">Added to Vault: {{ $unit->updated_at->format('M d, Y') }}</p>
                         </div>
 
-                        <div class="mt-auto pt-8 border-t border-zinc-50 flex gap-4">
-                            <a href="{{ route('units.show', $unit) }}" wire:navigate class="flex-1 bg-zinc-100 text-black font-bold text-[10px] uppercase tracking-widest py-4 rounded-2xl hover:bg-zinc-200 transition-all text-center">
-                                View Registry     
+                        <div class="mt-auto pt-8 border-t border-zinc-50 flex gap-4 relative z-20">
+                            <a href="{{ route('units.show', $unit) }}" wire:navigate class="flex-1 bg-zinc-100 text-black font-bold text-[10px] uppercase tracking-widest py-4 rounded-2xl hover:bg-zinc-200 transition-all text-center after:absolute after:inset-0 after:z-10">
+                                <span class="relative z-20">View Registry</span>
                             </a>
                         </div>
                     </div>
@@ -79,10 +79,10 @@
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
             @forelse($myBids as $bid)
-                <article class="bg-white border border-outline-variant/30 rounded-[32px] p-8 flex gap-8 ambient-shadow hover-lift group">
+                <a href="{{ route('auction.room', $bid->auction->id) }}" class="bg-white border border-outline-variant/30 rounded-[32px] p-8 flex gap-8 ambient-shadow hover-lift group cursor-pointer transition-all">
                     <div class="w-32 h-24 rounded-2xl overflow-hidden bg-zinc-100 shrink-0">
                         @if($bid->auction->unit->mainImage)
-                            <img src="{{ Storage::url($bid->auction->unit->mainImage->url) }}" class="w-full h-full object-cover">
+                            <img src="{{ Storage::url($bid->auction->unit->mainImage->url) }}" class="w-full h-full object-cover transition-transform group-hover:scale-110">
                         @endif
                     </div>
                     <div class="flex-grow space-y-4">
@@ -107,10 +107,10 @@
                                     <span class="text-[10px] font-bold text-red-600 uppercase tracking-widest">Outbid</span>
                                 @endif
                             </div>
-                            <a href="{{ route('auction.room', $bid->auction->id) }}" class="text-[10px] font-bold text-black border-b border-black pb-0.5 hover:opacity-50 transition-opacity uppercase tracking-widest">Enter Room</a>
+                            <span class="text-[10px] font-bold text-black border-b border-black pb-0.5 hover:opacity-50 transition-opacity uppercase tracking-widest group-hover:decoration-2">Enter Room</span>
                         </div>
                     </div>
-                </article>
+                </a>
             @empty
                 <div class="col-span-full py-20 text-center bg-zinc-50/50 rounded-[32px] border border-dashed border-zinc-200">
                     <p class="text-[10px] font-bold uppercase tracking-[0.4em] text-zinc-400">No active bidding participation</p>
@@ -135,13 +135,13 @@
                         @endif
                         
                         <!-- Status Badge -->
-                        <div class="absolute top-6 left-6 bg-white/90 backdrop-blur-md px-4 py-1.5 rounded-full border border-outline-variant/30 flex items-center gap-2 shadow-sm">      
+                        <div class="absolute top-6 left-6 bg-white/90 backdrop-blur-md px-4 py-1.5 rounded-full border border-outline-variant/30 flex items-center gap-2 shadow-sm z-20">      
                             <div class="w-2 h-2 rounded-full {{ $unit->status === Unit::STATUS_AVAILABLE ? 'bg-emerald-500 animate-pulse' : 'bg-zinc-400' }}"></div>
                             <span class="font-label-sm text-[9px] font-bold text-primary uppercase tracking-widest">{{ $unit->status }}</span>        
                         </div>
 
                         <!-- Remove Action -->
-                        <button wire:click="removeUnit({{ $unit->id }})" class="absolute top-6 right-6 text-zinc-400 hover:text-red-600 bg-white/90 backdrop-blur-md p-2.5 rounded-full gallery-transition opacity-0 group-hover:opacity-100 shadow-lg border border-red-50">   
+                        <button wire:click.stop="removeUnit({{ $unit->id }})" class="absolute top-6 right-6 text-zinc-400 hover:text-red-600 bg-white/90 backdrop-blur-md p-2.5 rounded-full gallery-transition opacity-0 group-hover:opacity-100 shadow-lg border border-red-50 z-30">   
                             <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="2.5"><path d="M3 6h18m-2 0v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6m3 0V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
                         </button>
                     </div>
@@ -155,11 +155,11 @@
                             <span class="font-body-lg text-xl font-bold text-primary tracking-tight">{{ $unit->formattedPrice() }}</span>
                         </div>
 
-                        <div class="mt-auto pt-8 border-t border-outline-variant/10 flex gap-4">
-                            <a href="{{ route('units.show', $unit) }}" wire:navigate class="flex-1 bg-black text-white font-bold text-[10px] uppercase tracking-widest py-4 rounded-2xl hover:bg-zinc-800 transition-all text-center ambient-shadow">
+                        <div class="mt-auto pt-8 border-t border-outline-variant/10 flex gap-4 relative z-20">
+                            <a href="{{ route('units.show', $unit) }}" wire:navigate class="flex-1 bg-black text-white font-bold text-[10px] uppercase tracking-widest py-4 rounded-2xl hover:bg-zinc-800 transition-all text-center ambient-shadow after:absolute after:inset-0 after:z-10">
                                 Open Exhibit     
                             </a>
-                            <button wire:click="$toggle('compareIds')" class="p-4 border border-outline-variant/40 rounded-2xl text-zinc-400 hover:text-black hover:border-black gallery-transition group/btn">
+                            <button wire:click.stop="$toggle('compareIds')" class="p-4 border border-outline-variant/40 rounded-2xl text-zinc-400 hover:text-black hover:border-black gallery-transition group/btn relative z-30">
                                 <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5 group-hover/btn:scale-110 transition-transform" stroke="currentColor" stroke-width="2.5"><path d="M16 3L21 8L16 13M8 21L3 16L8 11"/></svg>
                             </button>
                         </div>

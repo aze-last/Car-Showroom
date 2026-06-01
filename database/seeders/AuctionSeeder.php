@@ -20,6 +20,7 @@ class AuctionSeeder extends Seeder
         Auction::create([
             'unit_id' => $units->first()->id,
             'lot_number' => '042',
+            'is_featured' => true,
             'start_at' => now()->subDay(),
             'end_at' => now()->addHours(2),
             'reserve_price_php' => 4500000,

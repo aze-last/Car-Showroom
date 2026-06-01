@@ -5,22 +5,31 @@
         <link href="https://fonts.googleapis.com" rel="preconnect"/>
         <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>      
         <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+        @include('partials.theme-styles')
     </head>
     <body class="min-h-screen bg-gallery-background font-hanken text-zinc-900 antialiased overflow-x-hidden">
         @php
             $currentUser = auth()->user();
             $isAdmin = (bool) ($currentUser?->is_admin ?? false);
             $isStaff = (bool) ($currentUser?->isStaff() ?? false);
-            $panelTitle = $isAdmin ? 'Admin Panel' : 'Staff Panel';
-            $homeRoute = $isAdmin ? route('admin.dashboard') : route('admin.units.index');
+            $isCollector = ! $isStaff;
+            
+            $panelTitle = $isAdmin ? 'Admin Suite' : ($isStaff ? 'Staff Portal' : 'Member Portal');
+            $panelSubtitle = $isAdmin ? 'Elite Management' : ($isStaff ? 'Gallery Operations' : 'Collector Registry');
+            $homeRoute = $isAdmin ? route('admin.dashboard') : ($isStaff ? route('admin.units.index') : route('garage'));
         @endphp
 
         <!-- Mobile TopNav -->     
         <div class="md:hidden flex justify-between items-center w-full px-8 h-20 bg-white border-b border-gallery-outline/20 fixed top-0 z-50">
-            <div class="text-[12px] font-bold uppercase tracking-widest text-black">Admin Suite</div>   
-            <button class="p-2 text-black" x-data x-on:click="document.getElementById('admin-mobile-nav').checked = true">
-                <svg viewBox="0 0 24 24" fill="none" class="h-6 w-6" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
-            </button>
+            <div class="flex items-center gap-4">
+                <div class="text-[12px] font-bold uppercase tracking-widest text-black">{{ $panelTitle }}</div>   
+            </div>
+            <div class="flex items-center gap-2">
+                <livewire:public.notification-bell />
+                <button class="p-2 text-black" x-data x-on:click="document.getElementById('admin-mobile-nav').checked = true">
+                    <svg viewBox="0 0 24 24" fill="none" class="h-6 w-6" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+                </button>
+            </div>
         </div>
 
         <input id="admin-mobile-nav" type="checkbox" class="peer sr-only" aria-hidden="true">
@@ -34,19 +43,35 @@
                         {{ $currentUser?->initials() }}
                     </div>
                     <div>
-                        <h1 class="text-[13px] font-bold text-black uppercase tracking-widest">Admin Suite</h1>
-                        <p class="text-[11px] font-medium text-zinc-400">Elite Management</p>    
+                        <h1 class="text-[13px] font-bold text-black uppercase tracking-widest">{{ $panelTitle }}</h1>
+                        <p class="text-[11px] font-medium text-zinc-400">{{ $panelSubtitle }}</p>    
                     </div>
                 </div>
 
-                <a href="{{ route('admin.units.create') }}" class="w-full bg-black text-white font-bold text-[11px] uppercase tracking-widest py-4 rounded-2xl hover:opacity-90 transition-all flex items-center justify-center gap-2 ambient-shadow">        
-                    <svg viewBox="0 0 24 24" fill="none" class="h-4 w-4" stroke="currentColor" stroke-width="3"><path d="M12 5v14M5 12h14" stroke-linecap="round"/></svg>
-                    Add Vehicle
-                </a>     
+                @if ($isStaff)
+                    <a href="{{ route('admin.units.create') }}" class="w-full bg-black text-white font-bold text-[11px] uppercase tracking-widest py-4 rounded-2xl hover:opacity-90 transition-all flex items-center justify-center gap-2 ambient-shadow">        
+                        <svg viewBox="0 0 24 24" fill="none" class="h-4 w-4" stroke="currentColor" stroke-width="3"><path d="M12 5v14M5 12h14" stroke-linecap="round"/></svg>
+                        Add Vehicle
+                    </a>
+                @else
+                    <a href="{{ route('home') }}" class="w-full bg-black text-white font-bold text-[11px] uppercase tracking-widest py-4 rounded-2xl hover:opacity-90 transition-all flex items-center justify-center gap-2 ambient-shadow">        
+                        <svg viewBox="0 0 24 24" fill="none" class="h-4 w-4" stroke="currentColor" stroke-width="3"><path d="M3 12L12 4L21 12V20A1 1 0 0 1 20 21H4A1 1 0 0 1 3 20V12Z" stroke-linejoin="round"/></svg>
+                        Public Gallery
+                    </a>
+                @endif
             </div>
 
             <nav class="flex-grow">
                 <ul class="space-y-2">
+                    @if ($isCollector)
+                        <li>
+                            <a href="{{ route('garage') }}" class="flex items-center gap-4 px-4 py-4 rounded-2xl transition-all {{ request()->routeIs('garage') ? 'bg-white text-black ambient-shadow font-bold' : 'text-zinc-400 hover:text-black' }}">
+                                <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9z"/></svg>
+                                <span class="text-[12px] uppercase tracking-widest">My Garage</span>
+                            </a>
+                        </li>
+                    @endif
+
                     @if ($isAdmin)
                         <li>
                             <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-4 px-4 py-4 rounded-2xl transition-all {{ request()->routeIs('admin.dashboard') ? 'bg-white text-black ambient-shadow font-bold' : 'text-zinc-400 hover:text-black' }}">
@@ -56,12 +81,14 @@
                         </li>
                     @endif
 
-                    <li>
-                        <a href="{{ route('admin.units.index') }}" class="flex items-center gap-4 px-4 py-4 rounded-2xl transition-all {{ request()->routeIs('admin.units.*') ? 'bg-white text-black ambient-shadow font-bold' : 'text-zinc-400 hover:text-black' }}">
-                            <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="2"><path d="M4 8.5L12 4L20 8.5V15.5L12 20L4 15.5V8.5Z" stroke-linejoin="round"/></svg>
-                            <span class="text-[12px] uppercase tracking-widest">Inventory</span>
-                        </a>
-                    </li>
+                    @if ($isStaff)
+                        <li>
+                            <a href="{{ route('admin.units.index') }}" class="flex items-center gap-4 px-4 py-4 rounded-2xl transition-all {{ request()->routeIs('admin.units.*') ? 'bg-white text-black ambient-shadow font-bold' : 'text-zinc-400 hover:text-black' }}">
+                                <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="2"><path d="M4 8.5L12 4L20 8.5V15.5L12 20L4 15.5V8.5Z" stroke-linejoin="round"/></svg>
+                                <span class="text-[12px] uppercase tracking-widest">Inventory</span>
+                            </a>
+                        </li>
+                    @endif
 
                     @if ($isAdmin)
                         <li>
@@ -86,6 +113,14 @@
                         </li>
 
                         <li>
+                            <a href="{{ route('admin.deposits.index') }}" class="relative flex items-center gap-4 px-4 py-4 rounded-2xl transition-all {{ request()->routeIs('admin.deposits.*') ? 'bg-white text-black ambient-shadow font-bold' : 'text-zinc-400 hover:text-black' }}">
+                                <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="2"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                <span class="text-[12px] uppercase tracking-widest">Deposits</span>
+                                <livewire:deposit-badge />
+                            </a>
+                        </li>
+
+                        <li>
                             <a href="{{ route('admin.employees.index') }}" class="flex items-center gap-4 px-4 py-4 rounded-2xl transition-all {{ request()->routeIs('admin.employees.*') ? 'bg-white text-black ambient-shadow font-bold' : 'text-zinc-400 hover:text-black' }}">
                                 <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="2"><path d="M17 21V19A4 4 0 0 0 13 15H5A4 4 0 0 0 1 19V21M9 11A4 4 0 1 0 9 3A4 4 0 0 0 9 11ZM23 21V19A4 4 0 0 0 19.33 15.17M16 3.13A4 4 0 0 1 16 11" stroke-linecap="round" stroke-linejoin="round"/></svg>
                                 <span class="text-[12px] uppercase tracking-widest">Employees</span>
@@ -103,10 +138,16 @@
             </nav>
 
             <div class="mt-auto pt-8 border-t border-gallery-outline/10 space-y-4">
-                <a href="{{ route('admin.settings.shop') }}" class="flex items-center gap-4 px-4 py-3 rounded-2xl text-zinc-400 hover:text-black transition-all">
-                    <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-                    <span class="text-[12px] uppercase tracking-widest">Global Settings</span>
+                <a href="{{ route('profile.edit') }}" class="flex items-center gap-4 px-4 py-3 rounded-2xl {{ request()->routeIs('profile.edit') || request()->routeIs('user-password.edit') || request()->routeIs('two-factor.show') ? 'bg-white text-black font-bold ambient-shadow' : 'text-zinc-400 hover:text-black' }} transition-all">
+                    <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    <span class="text-[12px] uppercase tracking-widest">Account Settings</span>
                 </a>
+                @if ($isAdmin)
+                    <a href="{{ route('admin.settings.shop') }}" class="flex items-center gap-4 px-4 py-3 rounded-2xl {{ request()->routeIs('admin.settings.*') ? 'bg-white text-black font-bold ambient-shadow' : 'text-zinc-400 hover:text-black' }} transition-all">
+                        <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                        <span class="text-[12px] uppercase tracking-widest">System Master</span>
+                    </a>
+                @endif
                 <form method="POST" action="{{ route('logout') }}" x-data>
                     @csrf
                     <button type="submit" class="w-full flex items-center gap-4 px-4 py-3 rounded-2xl text-zinc-400 hover:text-black transition-all">
@@ -117,8 +158,10 @@
             </div>
         </aside>
 
+        @include('partials.admin-header')
+
         <!-- Main Content -->
-        <main class="lg:ml-72 pt-24 lg:pt-12 px-6 lg:px-12 pb-24 min-h-screen">
+        <main class="lg:ml-72 pt-24 lg:pt-32 px-6 lg:px-12 pb-24 min-h-screen">
             <div class="max-w-7xl mx-auto">
                 {{ $slot }}
             </div>

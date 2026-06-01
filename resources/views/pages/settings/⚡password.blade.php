@@ -14,7 +14,8 @@ new class extends Component {
      */
     public function rendering($view): void
     {
-        $view->layout('layouts.admin-panel', ['title' => 'Security Settings']);
+        $title = auth()->user()->isStaff() ? 'Credentials' : 'Security Settings';
+        $view->layout('layouts.admin-panel', ['title' => $title]);
     }
 
     public string $current_password = '';
@@ -78,7 +79,12 @@ new class extends Component {
 
             <div class="flex items-center gap-4">
                 <div class="flex items-center justify-end">
-                    <flux:button variant="primary" type="submit" class="w-full" data-test="update-password-button">
+                    <flux:button 
+                        variant="primary" 
+                        type="submit" 
+                        class="w-full" 
+                        data-test="update-password-button"
+                    >
                         {{ __('Save') }}
                     </flux:button>
                 </div>

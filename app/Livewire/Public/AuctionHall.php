@@ -9,7 +9,11 @@ use Livewire\WithPagination;
 
 class AuctionHall extends Component
 {
-    use WithPagination;
+    use WithPagination, \Livewire\WithFileUploads;
+
+    public ?Auction $selectedAuction = null;
+    public $proof_image;
+    public ?int $deposit_amount = 5000; // Default or dynamic
 
     public function mount()
     {
@@ -18,6 +22,49 @@ class AuctionHall extends Component
                 ->where('type', 'App\Notifications\BidPlacedNotification')
                 ->markAsRead();
         }
+    }
+
+    public function openJoinModal(int $auctionId): void
+    {
+        if (!auth()->check()) {
+            $this->redirectRoute('login');
+            return;
+        }
+
+        $this->selectedAuction = Auction::with('unit')->findOrFail($auctionId);
+    }
+
+    public function submitDeposit(): void
+    {
+        $this->validate([
+            'proof_image' => ['required', 'image', 'max:5120'],
+            'deposit_amount' => ['required', 'integer', 'min:1000'],
+        ]);
+
+        $path = $this->proof_image->store('deposits/' . $this->selectedAuction->id, 'public');
+
+        $deposit = \App\Models\BidDeposit::create([
+            'user_id' => auth()->id(),
+            'auction_id' => $this->selectedAuction->id,
+            'amount' => $this->deposit_amount,
+            'proof_image' => $path,
+            'status' => 'pending',
+        ]);
+
+        // Notify Admins
+        $admins = \App\Models\User::where('is_admin', true)->get();
+        foreach ($admins as $admin) {
+            $admin->notify(new \App\Notifications\DepositSubmittedNotification([
+                'message' => "New deposit from " . auth()->user()->name . " for " . $this->selectedAuction->unit->name,
+                'auction_id' => $this->selectedAuction->id,
+                'user_name' => auth()->user()->name,
+                'amount' => $this->deposit_amount,
+            ]));
+        }
+
+        $this->proof_image = null;
+        
+        session()->flash('status', 'Successfully sent your entry. Please wait for admin approval.');
     }
 
     public function render(): View

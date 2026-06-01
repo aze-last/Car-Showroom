@@ -68,9 +68,14 @@ Route::middleware(['auth', 'verified'])
             Route::get('/auctions', \App\Livewire\AdminAuctionsIndex::class)->name('auctions.index');
             Route::get('/auctions/create', \App\Livewire\AdminAuctionForm::class)->name('auctions.create');
             Route::get('/auctions/{auction}/edit', \App\Livewire\AdminAuctionForm::class)->name('auctions.edit');
+            Route::post('/auctions/{auction}/activate', [\App\Http\Controllers\AuctionController::class, 'activate'])->name('auctions.activate');
+            
+            Route::get('/deposits', \App\Livewire\AdminDepositVerification::class)->name('deposits.index');
+            
             Route::get('/logs', AdminLogs::class)
                 ->middleware('can:viewAny,'.UnitStatusLog::class)
                 ->name('logs.index');
+            Route::get('/customization', \App\Livewire\AdminCustomization::class)->name('customization');
             Route::get('/settings/shop', AdminShopSettings::class)->name('settings.shop');
         });
     });

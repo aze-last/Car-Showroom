@@ -28,6 +28,8 @@ class AdminAuctionForm extends Component
 
     public string $status = 'scheduled';
 
+    public bool $is_featured = false;
+
     public function mount(?Auction $auction = null): void
     {
         Gate::authorize('access-admin');
@@ -37,6 +39,7 @@ class AdminAuctionForm extends Component
             $this->isEdit = true;
             $this->unit_id = $auction->unit_id;
             $this->lot_number = $auction->lot_number;
+            $this->is_featured = (bool) $auction->is_featured;
             $this->start_at = $auction->start_at->format('Y-m-d\TH:i');
             $this->end_at = $auction->end_at->format('Y-m-d\TH:i');
             $this->reserve_price_php = $auction->reserve_price_php;
@@ -67,6 +70,7 @@ class AdminAuctionForm extends Component
             'reserve_price_php' => ['required', 'integer', 'min:0'],
             'starting_bid_php' => ['required', 'integer', 'min:0'],
             'status' => ['required', 'in:scheduled,live,completed,cancelled'],
+            'is_featured' => ['boolean'],
         ]);
 
         if ($this->isEdit) {
