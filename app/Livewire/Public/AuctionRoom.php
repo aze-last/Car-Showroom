@@ -20,6 +20,12 @@ class AuctionRoom extends Component
 
     public function mount(Auction $auction): void
     {
+        if (! $auction->isLive()) {
+            $this->redirectRoute('auction.hall');
+
+            return;
+        }
+
         $this->auction = $auction->load(['unit.category', 'unit.images', 'bids.user']);
         $this->bidAmount = ($this->auction->current_bid_php ?: $this->auction->starting_bid_php) + 50000;
         $this->activeImage = $this->auction->unit->mainImage?->url;
@@ -64,7 +70,7 @@ class AuctionRoom extends Component
             // Lock the auction for update to prevent race conditions
             $auction = Auction::where('id', $this->auction->id)->lockForUpdate()->first();
 
-            if ($auction->status !== 'live') {
+            if (! $auction->isLive()) {
                 $this->addError('bidAmount', 'This auction is no longer accepting bids.');
 
                 return;

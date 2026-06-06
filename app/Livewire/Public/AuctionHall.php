@@ -75,15 +75,17 @@ class AuctionHall extends Component
         $featuredAuction = Auction::query()
             ->with(['unit.category', 'unit.images'])
             ->withCount('bids')
-            ->where('status', 'live')
+            ->whereIn('status', ['live', 'active'])
+            ->where('end_at', '>', now())
             ->latest('start_at')
             ->first();
 
         $activeLots = Auction::query()
             ->with(['unit.category', 'unit.images'])
             ->withCount('bids')
-            ->whereIn('status', ['live', 'scheduled'])
+            ->whereIn('status', ['live', 'active', 'scheduled'])
             ->where('id', '!=', $featuredAuction?->id)
+            ->where('end_at', '>', now())
             ->orderBy('end_at', 'asc')
             ->paginate(12);
 

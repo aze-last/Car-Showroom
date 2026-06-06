@@ -53,44 +53,45 @@ new class extends Component {
 
     <flux:heading class="sr-only">{{ __('Password Settings') }}</flux:heading>
 
-    <x-pages::settings.layout :heading="__('Update password')" :subheading="__('Ensure your account is using a long, random password to stay secure')">
-        <form method="POST" wire:submit="updatePassword" class="mt-6 space-y-6">
+    <x-pages::settings.layout :heading="__('Update Password')" :subheading="__('Secure your registry access with a long, complex credential.')">
+        <form method="POST" wire:submit="updatePassword" class="mt-6 space-y-8">
             <flux:input
                 wire:model="current_password"
-                :label="__('Current password')"
+                :label="__('Current Password')"
                 type="password"
                 required
                 autocomplete="current-password"
+                class="admin-input !h-14 !bg-zinc-50/50 !text-zinc-900 font-bold"
             />
             <flux:input
                 wire:model="password"
-                :label="__('New password')"
+                :label="__('New Password')"
                 type="password"
                 required
                 autocomplete="new-password"
+                class="admin-input !h-14 !bg-zinc-50/50 !text-zinc-900 font-bold"
             />
             <flux:input
                 wire:model="password_confirmation"
-                :label="__('Confirm Password')"
+                :label="__('Confirm Registry Key')"
                 type="password"
                 required
                 autocomplete="new-password"
+                class="admin-input !h-14 !bg-zinc-50/50 !text-zinc-900 font-bold"
             />
 
-            <div class="flex items-center gap-4">
-                <div class="flex items-center justify-end">
-                    <flux:button 
-                        variant="primary" 
-                        type="submit" 
-                        class="w-full" 
-                        data-test="update-password-button"
-                    >
-                        {{ __('Save') }}
-                    </flux:button>
-                </div>
+            <div class="flex items-center gap-6 pt-4">
+                <button 
+                    type="submit" 
+                    class="admin-btn-primary min-w-[160px] !h-14 shadow-2xl shadow-zinc-200" 
+                    data-test="update-password-button"
+                >
+                    <span wire:loading wire:target="updatePassword" class="h-4 w-4 animate-spin rounded-full border-2 border-white/20 border-t-white mr-2"></span>
+                    {{ __('Apply Key Change') }}
+                </button>
 
-                <x-action-message class="me-3" on="password-updated">
-                    {{ __('Saved.') }}
+                <x-action-message class="text-emerald-600 font-black text-[10px] uppercase tracking-[0.2em]" on="password-updated">
+                    {{ __('Credentials Secured') }}
                 </x-action-message>
             </div>
         </form>

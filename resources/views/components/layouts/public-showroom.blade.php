@@ -28,12 +28,16 @@
                 <nav class="hidden md:flex gap-8 items-center h-full">
                     <a href="{{ route('home') }}" wire:navigate class="text-[12px] font-semibold uppercase tracking-widest {{ request()->routeIs('home') && !request('category') ? 'text-black border-b border-black pb-1' : 'text-zinc-500 hover:text-black pb-1' }} transition-all duration-300">Catalog</a>
                     
-                    <a href="{{ route('auction.hall') }}" wire:navigate class="relative text-[12px] font-semibold uppercase tracking-widest {{ request()->routeIs('auction.*') ? 'text-black border-b border-black pb-1' : 'text-zinc-500 hover:text-black pb-1' }} transition-all duration-300">
-                        Auction
-                        <livewire:public.auction-nav-badge />
-                    </a>
+                    @if(Setting::get('design_show_auctions', true))
+                        <a href="{{ route('auction.hall') }}" wire:navigate class="relative text-[12px] font-semibold uppercase tracking-widest {{ request()->routeIs('auction.*') ? 'text-black border-b border-black pb-1' : 'text-zinc-500 hover:text-black pb-1' }} transition-all duration-300">
+                            Auction
+                            <livewire:public.auction-nav-badge />
+                        </a>
+                    @endif
 
-                    <a href="{{ route('comparison') }}" wire:navigate class="text-[12px] font-semibold uppercase tracking-widest {{ request()->routeIs('comparison') ? 'text-black border-b border-black pb-1' : 'text-zinc-500 hover:text-black pb-1' }} transition-all duration-300">Comparison</a>
+                    @if(Setting::get('design_show_comparison', true))
+                        <a href="{{ route('comparison') }}" wire:navigate class="text-[12px] font-semibold uppercase tracking-widest {{ request()->routeIs('comparison') ? 'text-black border-b border-black pb-1' : 'text-zinc-500 hover:text-black pb-1' }} transition-all duration-300">Comparison</a>
+                    @endif
 
                     <a href="{{ route('about') }}" wire:navigate class="text-[12px] font-semibold uppercase tracking-widest {{ request()->routeIs('about') ? 'text-black border-b border-black pb-1' : 'text-zinc-500 hover:text-black pb-1' }} transition-all duration-300">About</a>
                 </nav>
@@ -102,11 +106,18 @@
             >
                 <div class="px-4 pt-2 pb-6 space-y-1">
                     <a href="{{ route('home') }}" wire:navigate class="block px-3 py-4 text-sm font-bold uppercase tracking-widest text-black border-b border-zinc-50">Catalog</a>
-                    <a href="{{ route('auction.hall') }}" wire:navigate class="block px-3 py-4 text-sm font-bold uppercase tracking-widest text-black border-b border-zinc-50 flex justify-between items-center">
-                        Auction
-                        <livewire:public.auction-nav-badge />
-                    </a>
-                    <a href="{{ route('comparison') }}" wire:navigate class="block px-3 py-4 text-sm font-bold uppercase tracking-widest text-black border-b border-zinc-50">Comparison</a>
+                    
+                    @if(Setting::get('design_show_auctions', true))
+                        <a href="{{ route('auction.hall') }}" wire:navigate class="block px-3 py-4 text-sm font-bold uppercase tracking-widest text-black border-b border-zinc-50 flex justify-between items-center">
+                            Auction
+                            <livewire:public.auction-nav-badge />
+                        </a>
+                    @endif
+
+                    @if(Setting::get('design_show_comparison', true))
+                        <a href="{{ route('comparison') }}" wire:navigate class="block px-3 py-4 text-sm font-bold uppercase tracking-widest text-black border-b border-zinc-50">Comparison</a>
+                    @endif
+
                     <a href="{{ route('about') }}" wire:navigate class="block px-3 py-4 text-sm font-bold uppercase tracking-widest text-black border-b border-zinc-50">About</a>
                     
                     <div class="pt-6 pb-2">

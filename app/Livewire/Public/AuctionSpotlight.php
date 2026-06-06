@@ -12,6 +12,7 @@ class AuctionSpotlight extends Component
         $featuredAuction = Auction::query()
             ->with(['unit.mainImage', 'unit.category'])
             ->whereIn('status', ['live', 'active'])
+            ->where('end_at', '>', now())
             ->orderByDesc('is_featured')
             ->first();
 

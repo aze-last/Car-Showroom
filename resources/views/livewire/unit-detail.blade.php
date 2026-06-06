@@ -188,20 +188,25 @@
                 </div>
                 
                 <div class="flex flex-col gap-4">
-                    <button 
-                        @if(auth()->check())
-                            wire:click="$dispatch('open-chat')"
-                        @else
-                            onclick="window.location.href='{{ route('login') }}'"
-                        @endif
-                        class="w-full bg-black text-white font-bold uppercase tracking-widest text-[11px] py-4 rounded-xl hover:opacity-90 transition-all duration-300 shadow-xl hover:shadow-2xl"
-                    >
-                        Request Information
-                    </button>
-                    <button wire:click="toggleCompare({{ $unit->id }})" class="w-full bg-transparent border-2 border-gallery-outline/20 text-black font-bold uppercase tracking-widest text-[11px] py-4 rounded-xl hover:border-black transition-all duration-300 flex items-center justify-center gap-2">
-                        <svg viewBox="0 0 24 24" fill="none" class="h-4 w-4" stroke="currentColor" stroke-width="2.5"><path d="M7 16V4M7 4L3 8M7 4L11 8M17 8V20M17 20L13 16M17 20L21 16" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                        <span>{{ in_array($unit->id, $compareIds) ? 'Selected' : 'Compare' }}</span>
-                    </button>
+                    @if(App\Models\Setting::get('design_show_inquiries', true))
+                        <button 
+                            @if(auth()->check())
+                                wire:click="$dispatch('open-chat')"
+                            @else
+                                onclick="window.location.href='{{ route('login') }}'"
+                            @endif
+                            class="w-full bg-black text-white font-bold uppercase tracking-widest text-[11px] py-4 rounded-xl hover:opacity-90 transition-all duration-300 shadow-xl hover:shadow-2xl"
+                        >
+                            Request Information
+                        </button>
+                    @endif
+
+                    @if(App\Models\Setting::get('design_show_comparison', true))
+                        <button wire:click="toggleCompare({{ $unit->id }})" class="w-full bg-transparent border-2 border-gallery-outline/20 text-black font-bold uppercase tracking-widest text-[11px] py-4 rounded-xl hover:border-black transition-all duration-300 flex items-center justify-center gap-2">
+                            <svg viewBox="0 0 24 24" fill="none" class="h-4 w-4" stroke="currentColor" stroke-width="2.5"><path d="M7 16V4M7 4L3 8M7 4L11 8M17 8V20M17 20L13 16M17 20L21 16" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            <span>{{ in_array($unit->id, $compareIds) ? 'Selected' : 'Compare' }}</span>
+                        </button>
+                    @endif
                 </div>
 
                 <div class="mt-10 pt-8 border-t border-gallery-outline/10 flex flex-col gap-6">
@@ -218,7 +223,9 @@
 
             <!-- Livewire Chat Component -->
             @auth
-                <livewire:public.chat-inquiry :unit="$unit" />
+                @if(App\Models\Setting::get('design_show_inquiries', true))
+                    <livewire:public.chat-inquiry :unit="$unit" />
+                @endif
             @endauth
         </div>
     </aside>

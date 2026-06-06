@@ -1,9 +1,43 @@
 <!-- Marketplace Preset -->
 <div class="flex flex-col space-y-12 py-12">
+    <!-- Featured Slider Area -->
+    @if($featuredUnits->isNotEmpty())
+        <section class="w-full px-6 max-w-7xl mx-auto mb-12">
+            <h2 class="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-400 mb-8 px-2">Editor's Selection</h2>
+            <div class="flex gap-8 overflow-x-auto no-scrollbar pb-8 snap-x snap-mandatory">
+                @foreach($featuredUnits as $fUnit)
+                    <a 
+                        href="{{ route('units.show', $fUnit) }}" 
+                        wire:navigate 
+                        class="snap-center shrink-0 w-[85vw] md:w-[450px] relative group overflow-hidden rounded-[40px] aspect-[16/10] bg-zinc-900 border border-zinc-100 shadow-xl"
+                    >
+                        @if($fUnit->mainImage)
+                            <img 
+                                src="{{ Storage::url($fUnit->mainImage->url) }}" 
+                                class="absolute inset-0 w-full h-full object-cover opacity-70 group-hover:scale-110 group-hover:opacity-90 transition-all duration-1000"
+                            >
+                        @endif
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+                        <div class="absolute bottom-0 left-0 w-full p-10 flex flex-col items-start gap-4">
+                            <span class="px-4 py-1 rounded-full bg-brand-primary text-white text-[9px] font-black uppercase tracking-widest">
+                                Featured
+                            </span>
+                            <div>
+                                <h3 class="text-3xl font-bold text-white tracking-tighter">{{ $fUnit->name }}</h3>
+                                <p class="text-white/60 font-medium text-sm mt-1">{{ $fUnit->category->name }} • {{ $fUnit->formattedPrice() }}</p>
+                            </div>
+                        </div>
+                    </a>
+                @endforeach
+            </div>
+        </section>
+    @endif
+
+    <!-- Main Inventory Label -->
     <div class="max-w-7xl mx-auto w-full px-6 flex flex-col md:flex-row justify-between items-end gap-6">
         <div>
             <h1 class="text-5xl font-bold text-black tracking-tighter">{{ $designSettings['headline'] }}</h1>
-            <p class="text-zinc-500 font-medium mt-2 uppercase text-xs tracking-widest">{{ $designSettings['subtitle'] }}</p>
+            <p class="text-zinc-500 font-medium mt-2 uppercase text-xs tracking-widest">Full Inventory Registry</p>
         </div>
         <div class="flex gap-4">
             <div class="flex items-center gap-4 bg-white p-4 rounded-2xl border border-zinc-100 shadow-sm">

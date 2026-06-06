@@ -40,7 +40,7 @@ class AuctionController extends Controller
             return back()->with('error', "Minimum {$auction->min_bidders} approved bidders required. Currently have {$approvedDepositsCount}.");
         }
 
-        $auction->update(['status' => 'active']);
+        $auction->update(['status' => 'live']);
 
         return back()->with('status', 'Auction is now ACTIVE and open for bidding.');
     }

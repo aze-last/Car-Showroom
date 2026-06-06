@@ -19,8 +19,8 @@
                 Back
             </a>
 
-            @if ($isEdit && $unit instanceof Unit)
-                <a href="{{ $unit->signedQrUrl() }}" target="_blank" rel="noopener noreferrer" class="admin-btn-secondary">
+            @if ($isEdit && $this->unit)
+                <a href="{{ URL::signedRoute('admin.units.qr', ['unit' => $this->unit->public_id]) }}" target="_blank" rel="noopener noreferrer" class="admin-btn-secondary">
                     <svg viewBox="0 0 24 24" fill="none" class="h-4 w-4" stroke="currentColor" stroke-width="2">
                         <path d="M6 9V2H18V9M6 18H4C3.46957 18 2.96086 17.7893 2.58579 17.4142C2.21071 17.0391 2 16.5304 2 16V11C2 10.4696 2.21071 9.96086 2.58579 9.58579C2.96086 9.21071 3.46957 9 4 9H20C20.5304 9 21.0391 9.21071 21.4142 9.58579C21.7893 9.96086 22 10.4696 22 11V16C22 16.5304 21.7893 17.0391 21.4142 17.4142C21.0391 17.7893 20.5304 18 20 18H18M6 14H18V22H6V14Z" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
@@ -344,7 +344,7 @@
                                 <a
                                     href="data:image/svg+xml;charset=utf-8,{{ rawurlencode($qrSvg) }}"
                                     download="unit-{{ $unit->public_id }}-qr.svg"
-                                    class="admin-btn-secondary w-full"
+                                    class="admin-btn-secondary w-full text-zinc-400"
                                 >
                                     <svg viewBox="0 0 24 24" fill="none" class="h-4 w-4" stroke="currentColor" stroke-width="2">
                                         <path d="M12 10V16M12 16L9 13M12 16L15 13" stroke-linecap="round" stroke-linejoin="round"/>

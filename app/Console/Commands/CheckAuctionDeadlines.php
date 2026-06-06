@@ -16,8 +16,24 @@ class CheckAuctionDeadlines extends Command
 
     public function handle()
     {
+        $this->processScheduledAuctions();
         $this->processEndedAuctions();
         $this->processPaymentDeadlines();
+    }
+
+    /**
+     * Move scheduled auctions to live when start_at is reached.
+     */
+    private function processScheduledAuctions()
+    {
+        $toActivate = Auction::where('status', 'scheduled')
+            ->where('start_at', '<=', now())
+            ->get();
+
+        foreach ($toActivate as $auction) {
+            $auction->update(['status' => 'live']);
+            $this->info("Activated Auction #{$auction->id}");
+        }
     }
 
     /**
@@ -36,7 +52,7 @@ class CheckAuctionDeadlines extends Command
 
                 if ($winningBid) {
                     $auction->update([
-                        'status' => 'ended',
+                        'status' => 'completed',
                         'winner_user_id' => $winningBid->user_id,
                         'fallback_user_id' => $fallbackBid ? $fallbackBid->user_id : null,
                         'payment_deadline' => now()->addHours(48),
@@ -64,7 +80,7 @@ class CheckAuctionDeadlines extends Command
      */
     private function processPaymentDeadlines()
     {
-        $expiredPayments = Auction::where('status', 'ended')
+        $expiredPayments = Auction::where('status', 'completed')
             ->whereNotNull('payment_deadline')
             ->where('payment_deadline', '<=', now())
             ->get();

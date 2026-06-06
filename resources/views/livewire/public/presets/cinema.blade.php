@@ -1,39 +1,94 @@
 <!-- Cinema Preset -->
 <div class="flex flex-col">
-    <!-- 1. Cinema Hero Section with Parallax -->
+    <!-- 1. Cinema Hero Section with Smooth Slider -->
     @if($featuredUnits->isNotEmpty())
-        @php $heroUnit = $featuredUnits->first(); @endphp
-        <section class="cinema-hero w-full relative h-[85vh] min-h-[600px] overflow-hidden bg-black flex items-center justify-center">
-            <!-- Background Image with Parallax -->
-            <div class="absolute inset-0 z-0">
-                @if($heroUnit->mainImage)
-                    <img 
-                        src="{{ Storage::url($heroUnit->mainImage->url) }}" 
-                        alt="{{ $heroUnit->name }}" 
-                        class="hero-parallax-img w-full h-full object-cover opacity-60 scale-110"
-                    >
-                @endif
-                <div class="absolute inset-0 bg-gradient-to-b from-transparent via-black/20 to-black"></div>
-            </div>
+        <section 
+            x-data="{ 
+                active: 0,
+                count: {{ $featuredUnits->count() }},
+                autoplay: null,
+                init() {
+                    this.autoplay = setInterval(() => {
+                        this.active = (this.active + 1) % this.count
+                    }, 5000)
+                },
+                stopAutoplay() { clearInterval(this.autoplay) }
+            }"
+            class="cinema-hero w-full relative h-[85vh] min-h-[600px] overflow-hidden bg-black flex items-center justify-center"
+        >
+            <!-- Slides -->
+            @foreach($featuredUnits as $index => $heroUnit)
+                <div 
+                    x-show="active === {{ $index }}"
+                    x-transition:enter="transition ease-out duration-1000"
+                    x-transition:enter-start="opacity-0 scale-105"
+                    x-transition:enter-end="opacity-100 scale-100"
+                    x-transition:leave="transition ease-in duration-1000"
+                    x-transition:leave-start="opacity-100 scale-100"
+                    x-transition:leave-end="opacity-0 scale-95"
+                    class="absolute inset-0 z-0"
+                    wire:key="hero-slide-{{ $heroUnit->id }}"
+                >
+                    @if($heroUnit->mainImage)
+                        <img 
+                            src="{{ Storage::url($heroUnit->mainImage->url) }}" 
+                            alt="{{ $heroUnit->name }}" 
+                            class="hero-parallax-img w-full h-full object-cover opacity-60"
+                        >
+                    @endif
+                    <div class="absolute inset-0 bg-gradient-to-b from-transparent via-black/20 to-black"></div>
 
-            <!-- Hero Content -->
-            <div class="relative z-10 w-full max-w-7xl mx-auto px-6 text-center lg:text-left flex flex-col items-center lg:items-start">
-                <span class="cinema-hero-eyebrow inline-block px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-[10px] font-bold text-white uppercase tracking-[0.5em] mb-6 opacity-0">
-                    Featured Masterpiece
-                </span>
-                <h1 class="cinema-hero-h1 text-4xl md:text-8xl font-bold leading-tight text-white tracking-tighter mb-6 drop-shadow-2xl opacity-0">
-                    {{ $designSettings['headline'] }}
-                </h1>
-                <div class="cinema-hero-content flex flex-col md:flex-row items-center gap-8 text-white/70 opacity-0">
-                    <p class="text-lg md:text-xl font-medium tracking-wide border-l-2 border-brand-primary pl-6">
-                        {{ $heroUnit->name }} • {{ $heroUnit->formattedPrice() }}
-                    </p>
-                    <div class="cinema-hero-btn flex gap-4">
-                        <a href="{{ route('units.show', $heroUnit) }}" wire:navigate class="bg-white text-black font-bold uppercase tracking-widest text-[11px] px-10 py-4 rounded-xl hover:scale-105 transition-all duration-300 shadow-2xl shadow-white/10">
-                            Discover Detail
-                        </a>
+                    <!-- Hero Content (Inside Slide for animation grouping) -->
+                    <div class="absolute inset-0 flex items-center justify-center">
+                        <div class="w-full max-w-7xl mx-auto px-6 text-center lg:text-left flex flex-col items-center lg:items-start">
+                            <span 
+                                x-show="active === {{ $index }}"
+                                x-transition:enter="transition ease-out duration-1000 delay-300"
+                                x-transition:enter-start="opacity-0 translate-y-4"
+                                x-transition:enter-end="opacity-100 translate-y-0"
+                                class="cinema-hero-eyebrow inline-block px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-[10px] font-bold text-white uppercase tracking-[0.5em] mb-6"
+                            >
+                                Featured Masterpiece
+                            </span>
+                            <h1 
+                                x-show="active === {{ $index }}"
+                                x-transition:enter="transition ease-out duration-1000 delay-500"
+                                x-transition:enter-start="opacity-0 translate-y-8"
+                                x-transition:enter-end="opacity-100 translate-y-0"
+                                class="cinema-hero-h1 text-4xl md:text-8xl font-bold leading-tight text-white tracking-tighter mb-6 drop-shadow-2xl"
+                            >
+                                {{ $heroUnit->name }}
+                            </h1>
+                            <div 
+                                x-show="active === {{ $index }}"
+                                x-transition:enter="transition ease-out duration-1000 delay-700"
+                                x-transition:enter-start="opacity-0"
+                                x-transition:enter-end="opacity-100"
+                                class="cinema-hero-content flex flex-col md:flex-row items-center gap-8 text-white/70"
+                            >
+                                <p class="text-lg md:text-xl font-medium tracking-wide border-l-2 border-brand-primary pl-6">
+                                    {{ $heroUnit->category?->name }} • {{ $heroUnit->formattedPrice() }}
+                                </p>
+                                <div class="cinema-hero-btn flex gap-4">
+                                    <a href="{{ route('units.show', $heroUnit) }}" wire:navigate class="bg-white text-black font-bold uppercase tracking-widest text-[11px] px-10 py-4 rounded-xl hover:scale-105 transition-all duration-300 shadow-2xl shadow-white/10">
+                                        Discover Detail
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
+            @endforeach
+
+            <!-- Slider Pagination Dots -->
+            <div class="absolute bottom-32 left-1/2 -translate-x-1/2 z-30 flex gap-3">
+                @foreach($featuredUnits as $index => $heroUnit)
+                    <button 
+                        @click="active = {{ $index }}; stopAutoplay()"
+                        class="w-2 h-2 rounded-full transition-all duration-500"
+                        :class="active === {{ $index }} ? 'bg-white w-8' : 'bg-white/30 hover:bg-white/50'"
+                    ></button>
+                @endforeach
             </div>
 
             <!-- Scroll Indicator -->

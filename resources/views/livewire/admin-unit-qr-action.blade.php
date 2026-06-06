@@ -23,13 +23,18 @@
         <div class="lg:col-span-5 space-y-8">
             <!-- Scan Success Card -->
             <div class="bg-white rounded-[40px] p-10 ambient-shadow border border-gallery-outline/10 text-center flex flex-col items-center group hover-lift transition-all duration-500">
-                <div class="w-20 h-20 bg-emerald-50 rounded-full flex items-center justify-center mb-8 shadow-inner">
+                <div class="print:hidden w-20 h-20 bg-emerald-50 rounded-full flex items-center justify-center mb-8 shadow-inner">
                     <svg viewBox="0 0 24 24" fill="none" class="h-10 w-10 text-emerald-600" stroke="currentColor" stroke-width="3"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14M22 4L12 14.01l-3-3" stroke-linecap="round" stroke-linejoin="round"/></svg>
                 </div>
-                <h2 class="text-3xl font-bold tracking-tighter text-black mb-2">Scan Successful</h2>
-                <p class="text-sm font-medium text-zinc-400 mb-10">Vehicle authenticated and locked for your current curator session.</p>
+                <h2 class="print:hidden text-3xl font-bold tracking-tighter text-black mb-2">Scan Successful</h2>
+                <p class="print:hidden text-sm font-medium text-zinc-400 mb-10">Vehicle authenticated and locked for your current curator session.</p>
                 
-                <div class="w-full bg-gallery-surface-low rounded-3xl p-6 flex items-center gap-6 text-left border border-gallery-outline/5 group-hover:bg-white transition-colors duration-500">
+                {{-- QR Code for Label Printing --}}
+                <div class="hidden print:block mb-8 w-48 h-48 mx-auto">
+                    {!! $qrSvg !!}
+                </div>
+
+                <div class="w-full bg-gallery-surface-low rounded-3xl p-6 flex items-center gap-6 text-left border border-gallery-outline/5 group-hover:bg-white transition-colors duration-500 print:border-none print:p-0">
                     <div class="w-20 h-20 rounded-2xl overflow-hidden bg-white shadow-sm flex-shrink-0">
                         @if($unit->mainImage)
                             <img src="{{ Storage::url($unit->mainImage->url) }}" class="w-full h-full object-cover">
@@ -168,4 +173,48 @@
             </div>
         </div>
     </main>
+
+    <style>
+        @media print {
+            header, .lg\:col-span-7, .pt-32, .pb-20, .lg\:col-span-5 > div:last-child {
+                display: none !important;
+            }
+            .lg\:col-span-5 {
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            main {
+                padding-top: 0 !important;
+                margin: 0 !important;
+                display: block !important;
+            }
+            body {
+                background: white !important;
+                margin: 0 !important;
+            }
+            /* Target the QR success card for printing as a label */
+            .lg\:col-span-5 > div:first-child {
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: center !important;
+                justify-content: center !important;
+                height: 100vh !important;
+                border: none !important;
+                padding: 0 !important;
+            }
+            /* Vehicle info box on the label */
+            .lg\:col-span-5 > div:first-child > div:last-child {
+                background: white !important;
+                border-top: 2px solid #eee !important;
+                width: 100% !important;
+                max-width: 450px !important;
+                padding: 2rem !important;
+                margin-top: 1rem !important;
+            }
+            .lg\:col-span-5 > div:first-child > div:last-child img {
+                border: 1px solid #eee !important;
+            }
+        }
+    </style>
 </div>

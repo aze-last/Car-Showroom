@@ -77,7 +77,7 @@
 
         <div class="showroom-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
             @forelse($activeLots as $lot)
-                <article wire:key="lot-{{ $lot->id }}" class="showroom-item opacity-0 group bg-white rounded-[30px] md:rounded-[40px] border border-zinc-100 overflow-hidden hover:shadow-2xl transition-all duration-500">
+                <article wire:key="lot-{{ $lot->id }}" class="showroom-item animate-showroom-fade-up group bg-white rounded-[30px] md:rounded-[40px] border border-zinc-100 overflow-hidden hover:shadow-2xl transition-all duration-500">
                     <div class="relative h-48 md:h-64 overflow-hidden bg-zinc-50">
                         @if($lot->unit->mainImage)
                             <img src="{{ Storage::url($lot->unit->mainImage->url) }}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">

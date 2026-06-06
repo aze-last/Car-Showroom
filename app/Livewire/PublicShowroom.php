@@ -118,25 +118,22 @@ class PublicShowroom extends Component
             ->orderBy('name')
             ->get();
 
+        // 1. Featured Units for Slider (Unlimited)
+        $featuredUnits = Unit::query()
+            ->with(['category', 'mainImage'])
+            ->where('status', Unit::STATUS_AVAILABLE)
+            ->where('is_featured', true)
+            ->latest()
+            ->get();
+
+        // 2. Main Catalog Units (All Available)
         $units = Unit::query()
             ->with(['category', 'mainImage'])
             ->where('status', Unit::STATUS_AVAILABLE)
-            ->when(
-                $this->search !== '',
-                fn ($query) => $query->where('name', 'like', '%'.$this->search.'%'),
-            )
-            ->when(
-                $this->categoryId !== null,
-                fn ($query) => $query->where('category_id', $this->categoryId),
-            )
-            ->when(
-                $this->minPrice !== null,
-                fn ($query) => $query->where('price_php', '>=', $this->minPrice),
-            )
-            ->when(
-                $this->maxPrice !== null,
-                fn ($query) => $query->where('price_php', '<=', $this->maxPrice),
-            )
+            ->when($this->search !== '', fn ($q) => $q->where('name', 'like', '%'.$this->search.'%'))
+            ->when($this->categoryId !== null, fn ($q) => $q->where('category_id', $this->categoryId))
+            ->when($this->minPrice !== null, fn ($q) => $q->where('price_php', '>=', $this->minPrice))
+            ->when($this->maxPrice !== null, fn ($q) => $q->where('price_php', '<=', $this->maxPrice))
             ->when($this->sortBy === 'price_asc', fn ($q) => $q->orderBy('price_php', 'asc'))
             ->when($this->sortBy === 'price_desc', fn ($q) => $q->orderBy('price_php', 'desc'))
             ->when($this->sortBy === 'newest', fn ($q) => $q->orderByDesc('is_featured')->latest('updated_at'))
@@ -146,14 +143,13 @@ class PublicShowroom extends Component
         $designLayout = \App\Models\Setting::get('design_layout', 'cinema');
         $heroUnitId = \App\Models\Setting::get('design_hero_unit_id');
 
-        $featuredUnits = Unit::query()
-            ->with(['category', 'mainImage'])
-            ->where('status', Unit::STATUS_AVAILABLE)
-            ->when($heroUnitId, fn ($q) => $q->where('id', $heroUnitId))
-            ->when(! $heroUnitId, fn ($q) => $q->where('is_featured', true))
-            ->latest()
-            ->limit(5)
-            ->get();
+        // If a specific Hero Unit is set via customization, we use it as the first slide
+        if ($heroUnitId) {
+            $heroUnit = Unit::with(['category', 'mainImage'])->find($heroUnitId);
+            if ($heroUnit && $heroUnit->isAvailable()) {
+                $featuredUnits = collect([$heroUnit])->concat($featuredUnits->where('id', '!=', $heroUnitId))->unique('id');
+            }
+        }
 
         return view('livewire.public-showroom', [
             'categories' => $categories,
