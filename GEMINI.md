@@ -7,6 +7,10 @@ This project utilizes a specialized **Agent Team** for architectural orchestrati
 - **Location:** `.agent-team/`
 - **Mandate:** The agent profiles in this folder are the **primary source of truth**. All changes must align with the objectives and rules defined in the agent files.
 - **Coordination:** The `Coordinator` agent orchestrates all tasks and ensures end-to-end integration (Database -> Model -> UI) for every feature.
+- **Specialists:**
+    - `Inventory Specialist`: Vehicle lifecycle and data quality.
+    - `Auction Specialist`: Real-time bidding logic, status automation, and deposit workflows.
+    - `UI-UX Auditor`: Aesthetics, motion, and accessibility.
 
 ## Architecture & Logic (LATEST)
 - **Technology Stack:** Laravel 12, Livewire 4, Flux UI (Pro), Tailwind CSS 4, Pest (Testing).
