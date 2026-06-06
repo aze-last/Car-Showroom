@@ -36,11 +36,11 @@
             <div class="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity duration-300">
                 <svg viewBox="0 0 24 24" fill="none" class="h-20 w-20 text-black" stroke="currentColor" stroke-width="2.5"><path d="M21 15V19A2 2 0 0 1 19 21H5A2 2 0 0 1 3 19V15M7 10L12 15L17 10M12 15V3" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </div>
-            <h3 class="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.4em] mb-4">Active Leads</h3>
+            <h3 class="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.4em] mb-4">Unread Chats</h3>
             <div class="text-5xl font-bold text-black tracking-tighter mb-2">{{ $activeInquiriesCount }}</div>      
             <div class="flex items-center gap-2">
                 <span class="bg-black text-white font-bold text-[9px] px-2 py-1 rounded-full flex items-center gap-1 uppercase tracking-widest">
-                    Pipeline
+                    Messaging
                 </span>
             </div>
         </div>
@@ -165,36 +165,34 @@
         </div>
     </section>
 
-    <!-- Deal Pipeline Area -->
+    <!-- Recent Messaging Pipeline -->
     <section class="bg-white rounded-[40px] p-10 border border-gallery-outline/20 ambient-shadow overflow-hidden">        
         <div class="flex justify-between items-center mb-10">
-            <h3 class="text-[12px] font-bold text-black uppercase tracking-[0.4em]">Active Deal Pipeline</h3>
-            <a href="{{ route('admin.inquiries.index') }}" class="text-[10px] font-bold text-black border-b-2 border-black pb-1 hover:opacity-60 transition-all uppercase tracking-widest">Expand CRM</a>
+            <h3 class="text-[12px] font-bold text-black uppercase tracking-[0.4em]">Live Chat Pipeline</h3>
+            <a href="{{ route('admin.messages') }}" class="text-[10px] font-bold text-black border-b-2 border-black pb-1 hover:opacity-60 transition-all uppercase tracking-widest">Open Message Center</a>
         </div>
         <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse">    
                 <thead>
                     <tr class="border-b border-gallery-outline/10 text-zinc-400">        
-                        <th class="py-6 px-4 font-bold text-[10px] uppercase tracking-widest">Principal Lead</th>
-                        <th class="py-6 px-4 font-bold text-[10px] uppercase tracking-widest">Asset of Interest</th>
-                        <th class="py-6 px-4 font-bold text-[10px] uppercase tracking-widest">Pipeline Stage</th>
-                        <th class="py-6 px-4 font-bold text-[10px] uppercase tracking-widest">Engagement</th>
+                        <th class="py-6 px-4 font-bold text-[10px] uppercase tracking-widest">Collector</th>
+                        <th class="py-6 px-4 font-bold text-[10px] uppercase tracking-widest">Unit Context</th>
+                        <th class="py-6 px-4 font-bold text-[10px] uppercase tracking-widest">Last Message</th>
+                        <th class="py-6 px-4 font-bold text-[10px] uppercase tracking-widest">Received</th>
                         <th class="py-6 px-4 font-bold text-[10px] uppercase tracking-widest text-right">Action</th>
                     </tr>
                 </thead>
                 <tbody class="text-[14px] text-black">
-                    @foreach($recentInquiries as $inquiry)
+                    @foreach($recentInquiries as $msg)
                         <tr class="border-b border-gallery-outline/5 hover:bg-gallery-surface-low transition-colors duration-200 group">      
-                            <td class="py-6 px-4 font-bold">{{ $inquiry->name }}</td>   
-                            <td class="py-6 px-4 text-zinc-500 font-medium">{{ $inquiry->unit?->name ?? 'Catalog Inquiry' }}</td>   
+                            <td class="py-6 px-4 font-bold">{{ $msg->user->name }}</td>   
+                            <td class="py-6 px-4 text-zinc-500 font-medium">{{ $msg->unit?->name ?? 'General' }}</td>   
                             <td class="py-6 px-4">    
-                                <span class="inline-block px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest {{ $inquiry->status === 'closed' ? 'bg-black text-white' : 'bg-gallery-surface-low text-zinc-600' }}">
-                                    {{ $inquiry->status }}
-                                </span>
+                                <p class="text-xs text-zinc-400 truncate max-w-xs">{{ $msg->body }}</p>
                             </td>
-                            <td class="py-6 px-4 text-zinc-400 font-medium">{{ $inquiry->created_at?->diffForHumans() }}</td>
+                            <td class="py-6 px-4 text-zinc-400 font-medium">{{ $msg->created_at?->diffForHumans() }}</td>
                             <td class="py-6 px-4 text-right">
-                                <a href="{{ route('admin.inquiries.index', ['selectedInquiryId' => $inquiry->id]) }}" class="text-zinc-300 group-hover:text-black transition-colors">
+                                <a href="{{ route('admin.messages', ['user_id' => $msg->user_id, 'unit_id' => $msg->unit_id]) }}" class="text-zinc-300 group-hover:text-black transition-colors">
                                     <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5 inline" stroke="currentColor" stroke-width="2.5"><path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
                                 </a>
                             </td>

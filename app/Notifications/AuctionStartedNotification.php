@@ -21,8 +21,8 @@ class AuctionStartedNotification extends Notification
     public function toMail($notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject('Auction Live: ' . $this->auction->title)
-            ->line('The auction for ' . ($this->auction->unit->name ?? 'a vehicle') . ' is now live!')
+            ->subject('Auction Live: '.$this->auction->title)
+            ->line('The auction for '.($this->auction->unit->name ?? 'a vehicle').' is now live!')
             ->action('View Auction', route('auction.room', $this->auction))
             ->line('Happy bidding!');
     }

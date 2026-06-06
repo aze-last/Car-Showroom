@@ -17,16 +17,6 @@ class UnitDetail extends Component
     #[Session(key: 'compare_ids')]
     public array $compareIds = [];
 
-    public string $name = '';
-
-    public string $email = '';
-
-    public string $phone = '';
-
-    public string $message = '';
-
-    public bool $submitted = false;
-
     public function mount(Unit $unit): void
     {
         $this->unit = $unit->load([
@@ -37,12 +27,6 @@ class UnitDetail extends Component
         if (! is_array($this->compareIds)) {
             $this->compareIds = [];
         }
-
-        if (auth()->check()) {
-            $user = auth()->user();
-            $this->name = $user->name;
-            $this->email = $user->email;
-        }
     }
 
     public function toggleCompare(int $id): void
@@ -52,36 +36,6 @@ class UnitDetail extends Component
         } elseif (count($this->compareIds) < 3) {
             $this->compareIds[] = $id;
         }
-    }
-
-    public function submitInquiry(): void
-    {
-        $this->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'max:255'],
-            'phone' => ['nullable', 'string', 'max:50'],
-            'message' => ['required', 'string', 'max:2000'],
-        ]);
-
-        // Rate limiting: 5 inquiries per minute per IP
-        $rateLimitKey = 'inquiry:'.request()->ip();
-        if (\Illuminate\Support\Facades\RateLimiter::tooManyAttempts($rateLimitKey, 5)) {
-            $this->addError('message', 'Too many requests. Please try again in a minute.');
-
-            return;
-        }
-        \Illuminate\Support\Facades\RateLimiter::hit($rateLimitKey, 60);
-
-        Inquiry::query()->create([
-            'unit_id' => $this->unit->id,
-            'name' => $this->name,
-            'email' => $this->email,
-            'phone' => $this->phone,
-            'message' => $this->message,
-        ]);
-
-        $this->reset(['name', 'email', 'phone', 'message']);
-        $this->submitted = true;
     }
 
     public function nextImage(): void

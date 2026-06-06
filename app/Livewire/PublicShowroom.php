@@ -145,12 +145,12 @@ class PublicShowroom extends Component
         // Fetch Design Tokens
         $designLayout = \App\Models\Setting::get('design_layout', 'cinema');
         $heroUnitId = \App\Models\Setting::get('design_hero_unit_id');
-        
+
         $featuredUnits = Unit::query()
             ->with(['category', 'mainImage'])
             ->where('status', Unit::STATUS_AVAILABLE)
-            ->when($heroUnitId, fn($q) => $q->where('id', $heroUnitId))
-            ->when(!$heroUnitId, fn($q) => $q->where('is_featured', true))
+            ->when($heroUnitId, fn ($q) => $q->where('id', $heroUnitId))
+            ->when(! $heroUnitId, fn ($q) => $q->where('is_featured', true))
             ->latest()
             ->limit(5)
             ->get();
@@ -166,7 +166,7 @@ class PublicShowroom extends Component
                 'showAuctions' => \App\Models\Setting::get('design_show_auctions', true),
                 'showComparison' => \App\Models\Setting::get('design_show_comparison', true),
                 'showInquiries' => \App\Models\Setting::get('design_show_inquiries', true),
-            ]
+            ],
         ])->layout('components.layouts.public-showroom', [
             'title' => 'Vehicle Showroom',
         ]);

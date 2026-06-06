@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 class CheckAuctionDeadlines extends Command
 {
     protected $signature = 'auction:check-deadlines';
+
     protected $description = 'Processes ended auctions and payment deadlines.';
 
     public function handle()
@@ -41,9 +42,9 @@ class CheckAuctionDeadlines extends Command
                         'payment_deadline' => now()->addHours(48),
                     ]);
 
-                    // Set winner deposit to 'applied' or similar if needed, 
+                    // Set winner deposit to 'applied' or similar if needed,
                     // but usually it stays 'approved' until payment.
-                    
+
                     // Mark losers for refund
                     BidDeposit::where('auction_id', $auction->id)
                         ->where('user_id', '!=', $winningBid->user_id)
@@ -80,7 +81,7 @@ class CheckAuctionDeadlines extends Command
                 // 2. Add strike to winner
                 $strike = UserAuctionStrike::firstOrCreate(['user_id' => $winnerId]);
                 $strike->increment('strike_count');
-                
+
                 if ($strike->strike_count >= 3) {
                     $strike->update([
                         'is_suspended' => true,

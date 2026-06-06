@@ -27,6 +27,7 @@ class AdminDepositController extends Controller
     public function approve(BidDeposit $deposit)
     {
         $deposit->update(['status' => 'approved']);
+
         return back()->with('status', 'Deposit approved. User can now bid.');
     }
 
@@ -36,10 +37,10 @@ class AdminDepositController extends Controller
     public function reject(Request $request, BidDeposit $deposit)
     {
         $request->validate(['admin_note' => 'required|string']);
-        
+
         $deposit->update([
             'status' => 'rejected',
-            'admin_note' => $request->admin_note
+            'admin_note' => $request->admin_note,
         ]);
 
         return back()->with('status', 'Deposit rejected.');

@@ -28,9 +28,29 @@
                     <div class="h-10 md:h-12 w-px bg-white/10"></div>
                     <div>
                         <p class="text-[9px] md:text-[10px] text-zinc-500 uppercase tracking-widest mb-1">Ends In</p>
-                        <p class="text-2xl md:text-3xl font-bold text-emerald-400 tabular-nums" wire:poll.1s>
-                            {{ now()->diff($featuredAuction->end_at)->format('%H:%I:%S') }}
-                        </p>
+                        <div x-data="{
+                            expiry: new Date('{{ $featuredAuction->end_at->toIso8601String() }}').getTime(),
+                            remaining: '',
+                            update() {
+                                let now = new Date().getTime();
+                                let diff = this.expiry - now;
+                                
+                                if (diff <= 0) {
+                                    this.remaining = '00:00:00';
+                                    return;
+                                }
+
+                                let h = Math.floor(diff / (1000 * 60 * 60));
+                                let m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                                let s = Math.floor((diff % (1000 * 60)) / 1000);
+                                
+                                this.remaining = [h, m, s].map(v => v.toString().padStart(2, '0')).join(':');
+                            }
+                        }" x-init="update(); setInterval(() => update(), 1000)">
+                            <p class="text-2xl md:text-3xl font-bold text-emerald-400 tabular-nums" x-text="remaining" wire:poll.5s>
+                                {{ now()->diff($featuredAuction->end_at)->format('%H:%I:%S') }}
+                            </p>
+                        </div>
                     </div>
                 </div>
 

@@ -3,8 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Auction;
-use App\Models\BidDeposit;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 
 class AuctionController extends Controller
@@ -15,6 +13,7 @@ class AuctionController extends Controller
     public function index()
     {
         $auctions = Auction::with('unit')->latest()->paginate(12);
+
         return view('auctions.index', compact('auctions'));
     }
 
@@ -24,6 +23,7 @@ class AuctionController extends Controller
     public function show(Auction $auction)
     {
         $auction->load(['unit', 'bids.user', 'deposits']);
+
         return view('auctions.show', compact('auction'));
     }
 

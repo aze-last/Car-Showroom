@@ -16,14 +16,14 @@ return new class extends Migration
             $table->foreignId('winner_user_id')->nullable()->after('status')->constrained('users')->nullOnDelete();
             $table->foreignId('fallback_user_id')->nullable()->after('winner_user_id')->constrained('users')->nullOnDelete();
             $table->timestamp('payment_deadline')->nullable()->after('fallback_user_id');
-            
+
             // Adjusting status to match new logic if needed, but we already have status.
             // The user asked for: pending, active, ended, cancelled.
             // Existing was: scheduled, live, completed, cancelled.
-            // I'll keep the existing or add a comment. 
+            // I'll keep the existing or add a comment.
             // Actually, let's use the requested enums.
         });
-        
+
         // Changing enum is tricky in SQLite/some DBs, usually better to recreate or just map them in code.
         // For now, I'll add the new status mapping if needed.
     }

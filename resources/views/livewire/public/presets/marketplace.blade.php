@@ -24,14 +24,14 @@
             <div class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-2 md:pb-0 md:flex-wrap md:justify-center w-full md:w-auto">
                 <button 
                     wire:click="clearCategoryFilter"
-                    class="category-pill shrink-0 text-[10px] font-bold uppercase tracking-widest px-6 py-3 rounded-xl transition-all duration-300 {{ $categoryId === null ? 'bg-black text-white shadow-xl scale-105' : 'text-zinc-400 hover:text-black hover:bg-zinc-50 border border-zinc-100' }}"
+                    class="category-pill shrink-0 text-[12px] font-bold uppercase tracking-[0.15em] px-6 py-3 rounded-xl transition-all duration-300 {{ $categoryId === null ? 'bg-black text-white shadow-xl scale-105' : 'text-zinc-400 hover:text-black hover:bg-zinc-50 border border-zinc-100' }}"
                 >
                     All
                 </button>
                 @foreach ($categories as $category)
                     <button 
                         wire:click="$set('categoryId', {{ $category->id }})"
-                        class="category-pill shrink-0 text-[10px] font-bold uppercase tracking-widest px-5 py-3 rounded-xl transition-all duration-300 {{ $categoryId === $category->id ? 'bg-black text-white shadow-xl scale-105' : 'text-zinc-400 hover:text-black hover:bg-zinc-50 border border-zinc-100' }}"
+                        class="category-pill shrink-0 text-[12px] font-bold uppercase tracking-[0.15em] px-5 py-3 rounded-xl transition-all duration-300 {{ $categoryId === $category->id ? 'bg-black text-white shadow-xl scale-105' : 'text-zinc-400 hover:text-black hover:bg-zinc-50 border border-zinc-100' }}"
                     >
                         {{ $category->name }}
                     </button>
@@ -43,7 +43,7 @@
                     wire:model.live.debounce.300ms="search"
                     type="text" 
                     placeholder="Find a vehicle..." 
-                    class="w-full bg-zinc-50 border-none rounded-xl px-6 py-3 text-xs font-bold uppercase tracking-widest focus:ring-2 focus:ring-black/5 focus:bg-white transition-all"
+                    class="w-full bg-zinc-50 border-none rounded-xl px-6 py-3 text-[14px] font-bold uppercase tracking-widest focus:ring-2 focus:ring-black/5 focus:bg-white transition-all"
                 >
             </div>
         </div>

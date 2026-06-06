@@ -9,10 +9,12 @@ use Livewire\WithPagination;
 
 class AuctionHall extends Component
 {
-    use WithPagination, \Livewire\WithFileUploads;
+    use \Livewire\WithFileUploads, WithPagination;
 
     public ?Auction $selectedAuction = null;
+
     public $proof_image;
+
     public ?int $deposit_amount = 5000; // Default or dynamic
 
     public function mount()
@@ -26,8 +28,9 @@ class AuctionHall extends Component
 
     public function openJoinModal(int $auctionId): void
     {
-        if (!auth()->check()) {
+        if (! auth()->check()) {
             $this->redirectRoute('login');
+
             return;
         }
 
@@ -41,7 +44,7 @@ class AuctionHall extends Component
             'deposit_amount' => ['required', 'integer', 'min:1000'],
         ]);
 
-        $path = $this->proof_image->store('deposits/' . $this->selectedAuction->id, 'public');
+        $path = $this->proof_image->store('deposits/'.$this->selectedAuction->id, 'public');
 
         $deposit = \App\Models\BidDeposit::create([
             'user_id' => auth()->id(),
@@ -55,7 +58,7 @@ class AuctionHall extends Component
         $admins = \App\Models\User::where('is_admin', true)->get();
         foreach ($admins as $admin) {
             $admin->notify(new \App\Notifications\DepositSubmittedNotification([
-                'message' => "New deposit from " . auth()->user()->name . " for " . $this->selectedAuction->unit->name,
+                'message' => 'New deposit from '.auth()->user()->name.' for '.$this->selectedAuction->unit->name,
                 'auction_id' => $this->selectedAuction->id,
                 'user_name' => auth()->user()->name,
                 'amount' => $this->deposit_amount,
@@ -63,7 +66,7 @@ class AuctionHall extends Component
         }
 
         $this->proof_image = null;
-        
+
         session()->flash('status', 'Successfully sent your entry. Please wait for admin approval.');
     }
 

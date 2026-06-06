@@ -1,4 +1,4 @@
-<x-layouts::auth.admin>
+<x-layouts::auth.split>
     <div class="space-y-8">
         @if (session('status'))
             <div class="rounded-xl border border-emerald-100 bg-emerald-50 px-4 py-3 text-xs font-bold text-emerald-800">
@@ -68,4 +68,4 @@
             </div>
         @endif
     </div>
-</x-layouts::auth.admin>
+</x-layouts.auth.split>

@@ -23,7 +23,7 @@ class SettingSeeder extends Seeder
             'facebook_url' => 'https://facebook.com/carshowroom',
             'instagram_url' => 'https://instagram.com/carshowroom',
             'tiktok_url' => 'https://tiktok.com/@carshowroom',
-            
+
             // Design Customization
             'design_palette' => 'emerald',
             'design_layout' => 'cinema',

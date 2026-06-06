@@ -13,6 +13,7 @@ class AdminDepositVerification extends Component
     use WithPagination;
 
     public ?int $selectedDepositId = null;
+
     public string $adminNote = '';
 
     public function mount(): void
@@ -23,18 +24,18 @@ class AdminDepositVerification extends Component
     public function approve(int $id): void
     {
         Gate::authorize('access-admin');
-        
+
         $deposit = BidDeposit::with(['user', 'auction.unit'])->findOrFail($id);
         $deposit->update(['status' => 'approved']);
 
         // Notify User
         $deposit->user->notify(new \App\Notifications\DepositApprovedNotification([
-            'message' => "Your deposit for " . $deposit->auction->unit->name . " has been approved. You can now enter the auction room.",
+            'message' => 'Your deposit for '.$deposit->auction->unit->name.' has been approved. You can now enter the auction room.',
             'auction_id' => $deposit->auction_id,
             'unit_name' => $deposit->auction->unit->name,
         ]));
-        
-        session()->flash('status', 'Deposit for ' . $deposit->user->name . ' approved.');
+
+        session()->flash('status', 'Deposit for '.$deposit->user->name.' approved.');
     }
 
     public function openRejectModal(int $id): void
@@ -46,7 +47,7 @@ class AdminDepositVerification extends Component
     public function reject(): void
     {
         Gate::authorize('access-admin');
-        
+
         $this->validate([
             'adminNote' => ['required', 'string', 'max:255'],
         ]);
@@ -59,7 +60,7 @@ class AdminDepositVerification extends Component
 
         // Notify User
         $deposit->user->notify(new \App\Notifications\DepositRejectedNotification([
-            'message' => "Your deposit for " . $deposit->auction->unit->name . " was rejected.",
+            'message' => 'Your deposit for '.$deposit->auction->unit->name.' was rejected.',
             'auction_id' => $deposit->auction_id,
             'unit_name' => $deposit->auction->unit->name,
             'reason' => $this->adminNote,
@@ -67,7 +68,7 @@ class AdminDepositVerification extends Component
 
         $this->selectedDepositId = null;
         $this->dispatch('close-modal', name: 'reject-deposit-modal');
-        
+
         session()->flash('status', 'Deposit rejected.');
     }
 

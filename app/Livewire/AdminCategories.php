@@ -7,7 +7,6 @@ use App\Models\Unit;
 use Illuminate\Contracts\View\View;
 use Illuminate\Validation\Rule;
 use Livewire\Component;
-
 use Livewire\WithPagination;
 
 class AdminCategories extends Component

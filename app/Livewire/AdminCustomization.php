@@ -13,13 +13,21 @@ class AdminCustomization extends Component
     use WithFileUploads;
 
     public $palette;
+
     public $layout;
+
     public $logo;
+
     public $hero_unit_id;
+
     public $hero_headline;
+
     public $hero_subtitle;
+
     public $show_auctions;
+
     public $show_comparison;
+
     public $show_inquiries;
 
     public $logo_path;
@@ -64,7 +72,7 @@ class AdminCustomization extends Component
         Setting::set('design_show_inquiries', $this->show_inquiries, 'boolean');
 
         session()->flash('status', 'Design settings updated successfully.');
-        
+
         return redirect()->route('admin.customization');
     }
 

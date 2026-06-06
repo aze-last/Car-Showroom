@@ -16,43 +16,69 @@ class AdminShopSettings extends Component
 
     // Identity
     public string $legal_name = '';
+
     public string $dba_name = '';
+
     public string $shop_phone = '';
+
     public string $sales_inquiry_email = '';
+
     public string $service_inquiry_email = '';
+
     public string $legal_inquiry_email = '';
 
     // Geography
     public string $shop_address = '';
+
     public string $shop_city = '';
+
     public string $shop_state = '';
+
     public string $shop_postal_code = '';
+
     public string $map_latitude = '14.5995'; // Manila Default
+
     public string $map_longitude = '120.9842'; // Manila Default
 
     // Socials
     public string $facebook_url = '';
+
     public string $instagram_url = '';
+
     public string $tiktok_url = '';
 
     // Appearance (Merged from AdminCustomization)
     public $palette;
+
     public $layout_preset;
+
     public $hero_unit_id;
+
     public $hero_headline;
+
     public $hero_subtitle;
+
     public $show_auctions;
+
     public $show_comparison;
+
     public $show_inquiries;
+
     public $design_logo;
+
     public ?string $current_design_logo_url = null;
 
     // Infrastructure
     public string $s3_bucket = '';
+
     public string $s3_region = '';
+
     public string $primary_color = '#000000';
+
     public string $accent_tone = '#565e74';
+
     public $logo;
+
     public ?string $current_logo_url = null;
 
     public function mount(): void
@@ -87,7 +113,7 @@ class AdminShopSettings extends Component
         $this->show_auctions = (bool) Setting::get('design_show_auctions', true);
         $this->show_comparison = (bool) Setting::get('design_show_comparison', true);
         $this->show_inquiries = (bool) Setting::get('design_show_inquiries', true);
-        
+
         $designLogoPath = Setting::get('design_logo_path');
         if ($designLogoPath) {
             $this->current_design_logo_url = Storage::url($designLogoPath);

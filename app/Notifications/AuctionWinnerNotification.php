@@ -22,8 +22,8 @@ class AuctionWinnerNotification extends Notification
     {
         return (new MailMessage)
             ->subject('Congratulations! You Won the Auction')
-            ->line('You are the highest bidder for ' . ($this->auction->unit->name ?? 'the vehicle') . '.')
-            ->line('Amount: ₱' . number_format($this->auction->current_bid_php))
+            ->line('You are the highest bidder for '.($this->auction->unit->name ?? 'the vehicle').'.')
+            ->line('Amount: ₱'.number_format($this->auction->current_bid_php))
             ->line('Please complete the payment within 48 hours.')
             ->action('View Payment Details', route('auction.room', $this->auction))
             ->line('Failure to pay within 48 hours will result in a strike and forfeiture of your deposit.');

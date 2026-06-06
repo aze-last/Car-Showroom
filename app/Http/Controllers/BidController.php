@@ -7,7 +7,6 @@ use App\Models\Bid;
 use App\Models\BidDeposit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Gate;
 
 class BidController extends Controller
 {
@@ -34,7 +33,7 @@ class BidController extends Controller
             ->where('status', 'approved')
             ->exists();
 
-        if (!$hasApprovedDeposit) {
+        if (! $hasApprovedDeposit) {
             return back()->with('error', 'You must have an approved deposit to bid on this auction.');
         }
 
@@ -44,10 +43,10 @@ class BidController extends Controller
         $maxBid = $currentPrice + ($currentPrice * 0.50);
 
         $request->validate([
-            'amount' => ['required', 'integer', 'min:' . $minBid, 'max:' . $maxBid],
+            'amount' => ['required', 'integer', 'min:'.$minBid, 'max:'.$maxBid],
         ], [
-            'amount.min' => 'Minimum bid increment is 5% (₱' . number_format($minBid) . ').',
-            'amount.max' => 'Maximum bid jump is 50% (₱' . number_format($maxBid) . ').',
+            'amount.min' => 'Minimum bid increment is 5% (₱'.number_format($minBid).').',
+            'amount.max' => 'Maximum bid jump is 50% (₱'.number_format($maxBid).').',
         ]);
 
         // 5. Place the bid within a transaction to handle concurrency
@@ -83,7 +82,7 @@ class BidController extends Controller
             'proof_image' => ['required', 'image', 'max:5120'], // 5MB
         ]);
 
-        $path = $request->file('proof_image')->store('deposits/' . $auction->id, 'public');
+        $path = $request->file('proof_image')->store('deposits/'.$auction->id, 'public');
 
         BidDeposit::create([
             'user_id' => auth()->id(),

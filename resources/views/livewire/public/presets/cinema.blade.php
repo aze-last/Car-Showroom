@@ -45,7 +45,7 @@
     @endif
 
     <!-- 2. Sticky Glassmorphism Controls -->
-    <nav class="sticky top-0 z-40 w-full px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto -mt-16 transition-all duration-500"
+    <nav class="sticky top-20 z-40 w-full px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto -mt-16 transition-all duration-500"
          :class="scrollY > 400 ? 'pt-4' : 'pt-0'">
         <div class="flex flex-col md:flex-row justify-between items-center gap-6 bg-white/70 backdrop-blur-2xl p-4 md:p-6 rounded-[32px] border border-white shadow-[0_32px_64px_-12px_rgba(0,0,0,0.1)] transition-all"
              :class="scrollY > 400 ? 'rounded-2xl scale-[0.98]' : 'rounded-[32px]'">
@@ -53,14 +53,14 @@
             <div class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-2 md:pb-0 md:flex-wrap md:justify-center w-full md:w-auto">
                 <button 
                     wire:click="clearCategoryFilter"
-                    class="category-pill shrink-0 text-[10px] font-bold uppercase tracking-widest px-6 py-3 rounded-full transition-all duration-300 {{ $categoryId === null ? 'bg-black text-white shadow-xl scale-105' : 'text-zinc-400 hover:text-black hover:bg-zinc-50' }}"
+                    class="category-pill shrink-0 text-[12px] font-bold uppercase tracking-[0.15em] px-6 py-3 rounded-full transition-all duration-300 {{ $categoryId === null ? 'bg-black text-white shadow-xl scale-105' : 'text-zinc-400 hover:text-black hover:bg-zinc-50' }}"
                 >
                     All
                 </button>
                 @foreach ($categories as $category)
                     <button 
                         wire:click="$set('categoryId', {{ $category->id }})"
-                        class="category-pill shrink-0 text-[10px] font-bold uppercase tracking-widest px-5 py-3 rounded-full transition-all duration-300 {{ $categoryId === $category->id ? 'bg-black text-white shadow-xl scale-105' : 'text-zinc-400 hover:text-black hover:bg-zinc-50' }}"
+                        class="category-pill shrink-0 text-[12px] font-bold uppercase tracking-[0.15em] px-5 py-3 rounded-full transition-all duration-300 {{ $categoryId === $category->id ? 'bg-black text-white shadow-xl scale-105' : 'text-zinc-400 hover:text-black hover:bg-zinc-50' }}"
                     >
                         {{ $category->name }}
                     </button>
@@ -74,12 +74,12 @@
                         wire:model.live.debounce.300ms="search"
                         type="text" 
                         placeholder="Search collection..." 
-                        class="w-full bg-zinc-100/50 border-none rounded-2xl pl-12 pr-6 py-3 text-xs font-bold uppercase tracking-widest placeholder:text-zinc-400 focus:ring-2 focus:ring-black/5 focus:bg-white transition-all"
+                        class="w-full bg-zinc-100/50 border-none rounded-2xl pl-12 pr-6 py-3 text-[14px] font-bold uppercase tracking-widest placeholder:text-zinc-400 focus:ring-2 focus:ring-black/5 focus:bg-white transition-all"
                     >
                 </div>
                 <div class="h-8 w-px bg-zinc-200 hidden md:block"></div>
                 <div class="flex items-center gap-3">
-                    <select wire:model.live="sortBy" class="bg-transparent border-none text-[10px] font-black text-black focus:ring-0 p-0 cursor-pointer uppercase tracking-[0.2em]">
+                    <select wire:model.live="sortBy" class="bg-transparent border-none text-[12px] font-black text-black focus:ring-0 p-0 cursor-pointer uppercase tracking-[0.15em]">
                         <option value="newest">Recent</option>    
                         <option value="price_desc">Premium</option> 
                         <option value="price_asc">Essential</option> 
@@ -147,7 +147,7 @@
 
                             <div class="absolute bottom-8 right-8 z-10">
                                 <span class="text-[9px] font-bold uppercase tracking-widest px-4 py-1.5 rounded-full shadow-xl {{ $unit->status === App\Models\Unit::STATUS_AVAILABLE ? 'bg-brand-primary text-white' : 'bg-zinc-950 text-white' }}">
-                                    {{ $unit->status === App\Models\Unit::STATUS_AVAILABLE ? 'In Stock' : 'Archived' }}
+                                    {{ $unit->status === App\Models\Unit::STATUS_AVAILABLE ? 'Available' : 'Archived' }}
                                 </span>
                             </div>      
                         </div>

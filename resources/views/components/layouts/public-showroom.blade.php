@@ -10,9 +10,6 @@
     @php
         use App\Models\Setting;
         use App\Models\Category;
-
-        $carsCategory = Category::where('name', 'Cars')->first();
-        $motorcyclesCategory = Category::where('name', 'Motorcycle')->first();
     @endphp
 
     <body class="min-h-screen bg-gallery-background text-zinc-900 antialiased font-hanken" x-data="{ mobileMenuOpen: false }">
@@ -37,14 +34,6 @@
                     </a>
 
                     <a href="{{ route('comparison') }}" wire:navigate class="text-[12px] font-semibold uppercase tracking-widest {{ request()->routeIs('comparison') ? 'text-black border-b border-black pb-1' : 'text-zinc-500 hover:text-black pb-1' }} transition-all duration-300">Comparison</a>
-
-                    @if($carsCategory)
-                        <a href="{{ route('home', ['category' => $carsCategory->id]) }}" wire:navigate class="text-[12px] font-semibold uppercase tracking-widest {{ request('category') == $carsCategory->id ? 'text-black border-b border-black pb-1' : 'text-zinc-500 hover:text-black pb-1' }} transition-all duration-300">Cars</a>
-                    @endif
-
-                    @if($motorcyclesCategory)
-                        <a href="{{ route('home', ['category' => $motorcyclesCategory->id]) }}" wire:navigate class="text-[12px] font-semibold uppercase tracking-widest {{ request('category') == $motorcyclesCategory->id ? 'text-black border-b border-black pb-1' : 'text-zinc-500 hover:text-black pb-1' }} transition-all duration-300">Motorcycles</a>
-                    @endif
 
                     <a href="{{ route('about') }}" wire:navigate class="text-[12px] font-semibold uppercase tracking-widest {{ request()->routeIs('about') ? 'text-black border-b border-black pb-1' : 'text-zinc-500 hover:text-black pb-1' }} transition-all duration-300">About</a>
                 </nav>
@@ -118,12 +107,6 @@
                         <livewire:public.auction-nav-badge />
                     </a>
                     <a href="{{ route('comparison') }}" wire:navigate class="block px-3 py-4 text-sm font-bold uppercase tracking-widest text-black border-b border-zinc-50">Comparison</a>
-                    @if($carsCategory)
-                        <a href="{{ route('home', ['category' => $carsCategory->id]) }}" wire:navigate class="block px-3 py-4 text-sm font-bold uppercase tracking-widest text-black border-b border-zinc-50">Cars</a>
-                    @endif
-                    @if($motorcyclesCategory)
-                        <a href="{{ route('home', ['category' => $motorcyclesCategory->id]) }}" wire:navigate class="block px-3 py-4 text-sm font-bold uppercase tracking-widest text-black border-b border-zinc-50">Motorcycles</a>
-                    @endif
                     <a href="{{ route('about') }}" wire:navigate class="block px-3 py-4 text-sm font-bold uppercase tracking-widest text-black border-b border-zinc-50">About</a>
                     
                     <div class="pt-6 pb-2">

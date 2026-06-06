@@ -5,15 +5,43 @@
 @endphp
 
 <section class="space-y-6">
-    <div class="flex flex-wrap items-center justify-between gap-3">
+    <div class="flex flex-wrap items-center justify-between gap-4 border-b border-zinc-100 pb-6">
         <div>
-            <h2 class="text-2xl font-semibold text-slate-900">{{ $isEdit ? 'Edit Unit' : 'Create Unit' }}</h2>
-            <p class="text-sm text-slate-500">Manage unit information, status workflow, and QR details.</p>
+            <h2 class="text-2xl font-black text-zinc-900 tracking-tight">{{ $isEdit ? 'Edit Unit' : 'Create Unit' }}</h2>
+            <p class="text-sm text-zinc-500 font-medium">Manage unit information, status workflow, and QR details.</p>
         </div>
-        <a href="{{ route('admin.units.index') }}" class="admin-btn-secondary">Back to Units</a>
+        
+        <div class="flex flex-wrap items-center gap-2">
+            <a href="{{ route('admin.units.index') }}" class="admin-btn-secondary">
+                <svg viewBox="0 0 24 24" fill="none" class="h-4 w-4" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M5 12L12 19M5 12L12 5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Back
+            </a>
+
+            @if ($isEdit && $unit instanceof Unit)
+                <a href="{{ $unit->signedQrUrl() }}" target="_blank" rel="noopener noreferrer" class="admin-btn-secondary">
+                    <svg viewBox="0 0 24 24" fill="none" class="h-4 w-4" stroke="currentColor" stroke-width="2">
+                        <path d="M6 9V2H18V9M6 18H4C3.46957 18 2.96086 17.7893 2.58579 17.4142C2.21071 17.0391 2 16.5304 2 16V11C2 10.4696 2.21071 9.96086 2.58579 9.58579C2.96086 9.21071 3.46957 9 4 9H20C20.5304 9 21.0391 9.21071 21.4142 9.58579C21.7893 9.96086 22 10.4696 22 11V16C22 16.5304 21.7893 17.0391 21.4142 17.4142C21.0391 17.7893 20.5304 18 20 18H18M6 14H18V22H6V14Z" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Print QR
+                </a>
+            @endif
+
+            <button type="submit" form="unit-form" wire:loading.attr="disabled" wire:target="save" class="admin-btn-primary">
+                <span wire:loading wire:target="save" class="h-4 w-4 animate-spin rounded-full border-2 border-white/20 border-t-white"></span>
+                <span wire:loading.remove wire:target="save">
+                    <svg viewBox="0 0 24 24" fill="none" class="h-4 w-4" stroke="currentColor" stroke-width="2.5">
+                        <path d="M19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H16L21 8V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21Z" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M17 21V13H7V21M7 3V8H15" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </span>
+                {{ $isEdit ? 'Save Changes' : 'Create Unit' }}
+            </button>
+        </div>
     </div>
 
-    <form wire:submit="save" class="space-y-6">
+    <form id="unit-form" wire:submit="save" class="space-y-6">
         <div class="grid gap-6 xl:grid-cols-[1.35fr_1fr]">
             <article class="admin-card">
                 <div class="admin-card-header">
@@ -312,14 +340,17 @@
                                 {!! $qrSvg !!}
                             </div>
                             <p class="text-xs text-slate-500">public_id: <span class="font-mono text-slate-700">{{ $unit->public_id }}</span></p>
-                            <div class="flex gap-2">
-                                <a href="{{ $unit->signedQrUrl() }}" target="_blank" rel="noopener noreferrer" class="admin-btn-secondary flex-1">Print QR</a>
+                            <div class="flex flex-col gap-2">
                                 <a
                                     href="data:image/svg+xml;charset=utf-8,{{ rawurlencode($qrSvg) }}"
                                     download="unit-{{ $unit->public_id }}-qr.svg"
-                                    class="admin-btn-secondary flex-1"
+                                    class="admin-btn-secondary w-full"
                                 >
-                                    Download QR
+                                    <svg viewBox="0 0 24 24" fill="none" class="h-4 w-4" stroke="currentColor" stroke-width="2">
+                                        <path d="M12 10V16M12 16L9 13M12 16L15 13" stroke-linecap="round" stroke-linejoin="round"/>
+                                        <path d="M17 21H7C5.89543 21 5 20.1046 5 19V5C5 3.89543 5.89543 3 7 3H12.5858C12.851 3 13.1054 3.10536 13.2929 3.29289L18.7071 8.70711C18.8946 8.89464 19 9.149 19 9.41421V19C19 20.1046 18.1046 21 17 21Z" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                    Download SVG
                                 </a>
                             </div>
                         @else
@@ -330,12 +361,7 @@
             </div>
         </div>
 
-        <div class="flex items-center justify-end gap-3">
-            <span wire:loading wire:target="save" class="text-sm text-slate-500">Saving changes...</span>
-            <button type="submit" wire:loading.attr="disabled" wire:target="save" class="admin-btn-primary">
-                {{ $isEdit ? 'Save Changes' : 'Create Unit' }}
-            </button>
-        </div>
+        {{-- Bottom actions removed in favor of header actions --}}
     </form>
 
     {{-- Confirmation Modals --}}

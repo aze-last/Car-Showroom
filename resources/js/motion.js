@@ -112,20 +112,20 @@ function initShowroomAnimations() {
     // 1. Hero Reveal Animation (Cinema Preset)
     const heroSection = document.querySelector(".cinema-hero");
     if (heroSection && heroSection.getAttribute('data-animated') !== 'true') {
-        const heroTl = gsap.timeline({ defaults: { ease: "power4.out" } });
+        const heroTl = gsap.timeline({ defaults: { ease: "expo.out" } });
         
         heroTl.fromTo(".cinema-hero-eyebrow", 
-            { opacity: 0, y: 20 }, 
-            { opacity: 1, y: 0, duration: 1 }, 0.2
+            { opacity: 0, y: 15 }, 
+            { opacity: 1, y: 0, duration: 0.8 }, 0.3
         ).fromTo(".cinema-hero-h1", 
-            { opacity: 0, y: 40, scale: 1.05 }, 
-            { opacity: 1, y: 0, scale: 1, duration: 1.2 }, 0.4
+            { opacity: 0, y: 30 }, 
+            { opacity: 1, y: 0, duration: 1 }, 0.4
         ).fromTo(".cinema-hero-content", 
-            { opacity: 0, x: -20 }, 
-            { opacity: 1, x: 0, duration: 1 }, 0.8
+            { opacity: 0, y: 15 }, 
+            { opacity: 1, y: 0, duration: 0.8 }, 0.7
         ).fromTo(".cinema-hero-btn", 
-            { opacity: 0, y: 20 }, 
-            { opacity: 1, y: 0, duration: 0.8 }, 1
+            { opacity: 0, scale: 0.95 }, 
+            { opacity: 1, scale: 1, duration: 0.6 }, 0.9
         );
 
         heroSection.setAttribute('data-animated', 'true');
@@ -139,20 +139,20 @@ function initShowroomAnimations() {
         inView(item, ({ target }) => {
             animate(
                 target,
-                { opacity: [0, 1], y: [40, 0], scale: [0.9, 1] },
+                { opacity: [0, 1], y: [25, 0], scale: [0.99, 1] },
                 { 
-                    duration: 0.8, 
-                    easing: [0.23, 1, 0.32, 1],
-                    delay: (index % 3) * 0.1 // Simple stagger logic based on row position
+                    duration: 0.7, 
+                    easing: [0.16, 1, 0.3, 1], // Custom expo-out curve
+                    delay: (index % 3) * 0.05 // Faster stagger for snappiness
                 }
             );
-            return () => {}; // Optional cleanup
-        }, { margin: "0px 0px -100px 0px" });
+            return () => {}; 
+        }, { margin: "0px 0px -50px 0px" });
 
         item.setAttribute('data-scroll-init', 'true');
     });
 
-    // 3. 3D Tilt & Premium Hover Interactions
+    // 3. 3D Tilt & Premium Hover Interactions (Dampened)
     document.querySelectorAll(".showroom-item").forEach(item => {
         if (item.getAttribute('data-hover-premium') === 'true') return;
 
@@ -166,24 +166,27 @@ function initShowroomAnimations() {
             const centerX = rect.width / 2;
             const centerY = rect.height / 2;
             
-            const rotateX = (y - centerY) / 20;
-            const rotateY = (centerX - x) / 20;
+            // Divisor increased from 20 to 45 for 'Anti-OA' subtleness
+            const rotateX = (y - centerY) / 45;
+            const rotateY = (centerX - x) / 45;
 
+            gsap.killTweensOf(inner); // Snappy tracking optimization
             gsap.to(inner, {
                 rotateX: rotateX,
                 rotateY: rotateY,
-                duration: 0.5,
+                duration: 0.6,
                 ease: "power2.out",
-                transformPerspective: 1000
+                transformPerspective: 1200 // Increased perspective for deeper look
             });
         });
 
         item.addEventListener("mouseleave", () => {
+            // Replaced elastic.out (jiggle) with power3.out (premium)
             gsap.to(inner, {
                 rotateX: 0,
                 rotateY: 0,
-                duration: 0.8,
-                ease: "elastic.out(1, 0.5)"
+                duration: 0.6,
+                ease: "power3.out"
             });
         });
 

@@ -31,8 +31,10 @@ class AdminDashboard extends Component
             ->where('status', Unit::STATUS_SOLD)
             ->sum('price_php');
 
-        $activeInquiriesCount = Inquiry::query()
-            ->whereIn('status', [Inquiry::STATUS_NEW, 'unread'])
+        $activeInquiriesCount = \App\Models\ChatMessage::query()
+            ->where('is_from_admin', false)
+            ->whereNull('read_at')
+            ->distinct(['user_id', 'unit_id'])
             ->count();
 
         $activeAuctionsCount = \App\Models\Auction::query()
@@ -49,8 +51,9 @@ class AdminDashboard extends Component
             ->limit(5)
             ->get();
 
-        $recentInquiries = Inquiry::query()
-            ->with('unit')
+        $recentInquiries = \App\Models\ChatMessage::query()
+            ->where('is_from_admin', false)
+            ->with(['user', 'unit'])
             ->latest()
             ->limit(5)
             ->get();

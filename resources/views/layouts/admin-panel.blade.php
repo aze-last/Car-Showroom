@@ -88,9 +88,19 @@
                                 <span class="text-[12px] uppercase tracking-widest">Inventory</span>
                             </a>
                         </li>
+                        <li>
+                            <a href="{{ route('admin.messages') }}" class="flex items-center justify-between gap-4 px-4 py-4 rounded-2xl transition-all {{ request()->routeIs('admin.messages') ? 'bg-white text-black shadow-[0_8px_30px_rgb(0,0,0,0.04)] font-bold' : 'text-zinc-400 hover:text-black hover:bg-white/50' }}">
+                                <div class="flex items-center gap-4">
+                                    <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="2"><path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 0 1-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                    <span class="text-[12px] uppercase tracking-[0.2em]">Messages</span>
+                                </div>
+                                <livewire:admin.⚡message-badge />
+                            </a>
+                        </li>
                     @endif
 
                     @if ($isAdmin)
+                        {{-- Inquiries Hidden --}}
                         <li>
                             <a href="{{ route('admin.categories.index') }}" class="flex items-center gap-4 px-4 py-4 rounded-2xl transition-all {{ request()->routeIs('admin.categories.*') ? 'bg-white text-black ambient-shadow font-bold' : 'text-zinc-400 hover:text-black' }}">
                                 <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="2"><path d="M4 7H20M4 12H20M4 17H14" stroke-linecap="round"/></svg>

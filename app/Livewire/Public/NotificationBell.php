@@ -20,6 +20,20 @@ class NotificationBell extends Component
         }
     }
 
+    public function handleNotificationClick($notificationId)
+    {
+        if (!auth()->check()) return;
+
+        $notification = auth()->user()->notifications()->findOrFail($notificationId);
+        $notification->markAsRead();
+
+        $actionUrl = $notification->data['action_url'] ?? null;
+
+        if ($actionUrl) {
+            return $this->redirect($actionUrl, navigate: true);
+        }
+    }
+
     public function render()
     {
         $notifications = auth()->check()

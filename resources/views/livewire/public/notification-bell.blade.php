@@ -33,7 +33,7 @@
         <div class="max-h-[50vh] md:max-h-[400px] overflow-y-auto custom-scrollbar bg-white">
             @forelse($notifications as $notification)
                 <div 
-                    wire:click="markAsRead('{{ $notification->id }}')"
+                    wire:click="handleNotificationClick('{{ $notification->id }}')"
                     class="group p-5 md:p-6 hover:bg-zinc-50 transition-all cursor-pointer border-b border-zinc-50 last:border-0 flex gap-4 {{ $notification->read_at ? 'opacity-30' : '' }}"
                 >
                     <div class="h-10 w-10 md:h-12 md:w-12 rounded-2xl {{ $notification->read_at ? 'bg-zinc-50' : 'bg-zinc-100' }} flex items-center justify-center shrink-0 transition-transform group-active:scale-90">
@@ -45,6 +45,8 @@
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-red-600"><path d="M18 6 6 18M6 6l12 12"/></svg>
                         @elseif($notification->type === 'App\Notifications\DepositSubmittedNotification')
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-zinc-900"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                        @elseif($notification->type === 'App\Notifications\UserSentMessageNotification' || $notification->type === 'App\Notifications\AdminRepliedToInquiry.php')
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-blue-600"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
                         @else
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-zinc-400"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
                         @endif

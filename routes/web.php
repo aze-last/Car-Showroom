@@ -45,6 +45,9 @@ Route::middleware(['auth', 'verified'])
     ->prefix('admin')
     ->name('admin.')
     ->group(function (): void {
+        Route::get('/messages', \App\Livewire\AdminMessagesIndex::class)
+            ->name('messages');
+
         // Inventory Management (Shared by Staff/Admin)
         Route::get('/units', AdminUnitsIndex::class)
             ->middleware('can:viewAny,'.Unit::class)
@@ -69,9 +72,9 @@ Route::middleware(['auth', 'verified'])
             Route::get('/auctions/create', \App\Livewire\AdminAuctionForm::class)->name('auctions.create');
             Route::get('/auctions/{auction}/edit', \App\Livewire\AdminAuctionForm::class)->name('auctions.edit');
             Route::post('/auctions/{auction}/activate', [\App\Http\Controllers\AuctionController::class, 'activate'])->name('auctions.activate');
-            
+
             Route::get('/deposits', \App\Livewire\AdminDepositVerification::class)->name('deposits.index');
-            
+
             Route::get('/logs', AdminLogs::class)
                 ->middleware('can:viewAny,'.UnitStatusLog::class)
                 ->name('logs.index');

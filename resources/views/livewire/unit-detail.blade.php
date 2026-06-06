@@ -188,7 +188,14 @@
                 </div>
                 
                 <div class="flex flex-col gap-4">
-                    <button wire:click="$set('showInquiryForm', true)" class="w-full bg-black text-white font-bold uppercase tracking-widest text-[11px] py-4 rounded-xl hover:opacity-90 transition-all duration-300 shadow-xl hover:shadow-2xl">
+                    <button 
+                        @if(auth()->check())
+                            wire:click="$dispatch('open-chat')"
+                        @else
+                            onclick="window.location.href='{{ route('login') }}'"
+                        @endif
+                        class="w-full bg-black text-white font-bold uppercase tracking-widest text-[11px] py-4 rounded-xl hover:opacity-90 transition-all duration-300 shadow-xl hover:shadow-2xl"
+                    >
                         Request Information
                     </button>
                     <button wire:click="toggleCompare({{ $unit->id }})" class="w-full bg-transparent border-2 border-gallery-outline/20 text-black font-bold uppercase tracking-widest text-[11px] py-4 rounded-xl hover:border-black transition-all duration-300 flex items-center justify-center gap-2">
@@ -209,34 +216,10 @@
                 </div>
             </div>
 
-            <!-- Inquiry Form Panel (Trustworthy & Conversion Focused) -->
-            <div class="bg-gallery-surface-lowest rounded-[32px] border border-gallery-outline/20 ambient-shadow p-8 overflow-hidden">
-                <h3 class="text-xl font-bold text-black mb-6">Private Inquiry</h3>
-                
-                @if ($submitted)
-                    <div class="py-8 text-center animate-showroom-fade-up">
-                        <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500 text-white mb-6">
-                            <svg viewBox="0 0 24 24" fill="none" class="h-8 w-8" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17L4 12" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                        </div>
-                        <h3 class="text-lg font-bold text-black">Inquiry Received</h3>
-                        <p class="mt-2 text-zinc-500 font-medium">A curator will contact you shortly.</p>
-                        <button type="button" wire:click="$set('submitted', false)" class="mt-8 text-[10px] font-bold uppercase tracking-widest text-black underline underline-offset-4 opacity-60 hover:opacity-100 transition-opacity">New Request</button>
-                    </div>
-                @else
-                    <form wire:submit="submitInquiry" class="flex flex-col gap-4">
-                        <input type="text" wire:model="name" placeholder="Name" class="w-full h-12 rounded-2xl border-none bg-gallery-surface-low px-6 text-sm font-medium focus:ring-2 focus:ring-black/5 transition-all">
-                        <input type="email" wire:model="email" placeholder="Email" class="w-full h-12 rounded-2xl border-none bg-gallery-surface-low px-6 text-sm font-medium focus:ring-2 focus:ring-black/5 transition-all">
-                        <input type="text" wire:model="phone" placeholder="Phone (Optional)" class="w-full h-12 rounded-2xl border-none bg-gallery-surface-low px-6 text-sm font-medium focus:ring-2 focus:ring-black/5 transition-all">
-                        <textarea wire:model="message" rows="3" placeholder="Message..." class="w-full rounded-2xl border-none bg-gallery-surface-low px-6 py-4 text-sm font-medium focus:ring-2 focus:ring-black/5 transition-all resize-none"></textarea>
-                        
-                        <button type="submit" wire:loading.attr="disabled" class="mt-2 w-full bg-gallery-surface-highest text-black font-bold uppercase tracking-widest text-[10px] py-4 rounded-xl hover:bg-gallery-surface-high transition-colors duration-200">
-                            <span wire:loading.remove wire:target="submitInquiry">Send Request</span>
-                            <span wire:loading wire:target="submitInquiry">Processing...</span>
-                        </button>
-                        <p class="text-[10px] text-zinc-400 mt-2 text-center font-medium leading-relaxed">Your information is handled with absolute discretion by our gallery staff.</p>
-                    </form>
-                @endif
-            </div>
+            <!-- Livewire Chat Component -->
+            @auth
+                <livewire:public.chat-inquiry :unit="$unit" />
+            @endauth
         </div>
     </aside>
 </main>
