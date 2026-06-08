@@ -11,19 +11,26 @@ use Livewire\Component;
 
 class ComparisonTray extends Component
 {
-    #[Session(key: 'compare_ids')]
     public array $compareIds = [];
+
+    public function mount(): void
+    {
+        $this->compareIds = session()->get('compare_ids', []);
+    }
 
     #[On('compare-updated')]
     public function refreshTray(): void
     {
-        // Handled by Livewire's #[On] attribute to trigger a render.
+        $this->compareIds = session()->get('compare_ids', []);
     }
 
     public function toggleCompare(int $id): void
     {
+        $this->compareIds = session()->get('compare_ids', []);
+
         if (in_array($id, $this->compareIds)) {
             $this->compareIds = array_values(array_diff($this->compareIds, [$id]));
+            session()->put('compare_ids', $this->compareIds);
             
             $unit = Unit::find($id);
             $name = $unit ? $unit->name : 'Asset';
@@ -35,6 +42,7 @@ class ComparisonTray extends Component
     public function clearCompare(): void
     {
         $this->compareIds = [];
+        session()->put('compare_ids', []);
         $this->dispatch('toast', message: 'Comparison list cleared', type: 'info');
         $this->dispatch('compare-updated');
     }
@@ -51,7 +59,8 @@ class ComparisonTray extends Component
 
     public function render(): View
     {
-        $showComparison = \App\Models\Setting::get('design_show_comparison', true);
+        $showComparison = \App\Models\Setting::get('design_show_comparison', true)
+            && !request()->routeIs('comparison');
 
         return view('livewire.public.comparison-tray', [
             'showComparison' => $showComparison,

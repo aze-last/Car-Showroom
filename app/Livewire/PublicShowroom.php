@@ -5,6 +5,7 @@ namespace App\Livewire;
 use App\Models\Category;
 use App\Models\Unit;
 use Illuminate\Contracts\View\View;
+use Livewire\Attributes\On;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -28,13 +29,18 @@ class PublicShowroom extends Component
     #[Url(as: 'max', history: true)]
     public ?int $maxPrice = null;
 
-    #[\Livewire\Attributes\Session(key: 'compare_ids')]
     public array $compareIds = [];
 
     public bool $showCompareModal = false;
 
+    public function mount(): void
+    {
+        $this->compareIds = session()->get('compare_ids', []);
+    }
+
     public function toggleCompare(int $id): void
     {
+        $this->compareIds = session()->get('compare_ids', []);
         $unit = Unit::find($id);
         $name = $unit ? $unit->name : 'Asset';
 
@@ -48,6 +54,7 @@ class PublicShowroom extends Component
             $this->dispatch('toast', message: "Comparison limit reached (max 3)", type: 'info');
         }
 
+        session()->put('compare_ids', $this->compareIds);
         $this->dispatch('compare-updated');
     }
 
@@ -68,8 +75,15 @@ class PublicShowroom extends Component
     public function clearCompare(): void
     {
         $this->compareIds = [];
+        session()->put('compare_ids', []);
         $this->dispatch('toast', message: 'Comparison list cleared', type: 'info');
         $this->dispatch('compare-updated');
+    }
+
+    #[On('compare-updated')]
+    public function refreshCompare(): void
+    {
+        $this->compareIds = session()->get('compare_ids', []);
     }
 
     #[\Livewire\Attributes\Computed]

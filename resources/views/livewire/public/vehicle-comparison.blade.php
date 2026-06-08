@@ -44,12 +44,12 @@
 
             {{-- Empty Slots --}}
             @for($i = count($units); $i < 3; $i++)
-                <div class="p-10 border-l border-gallery-outline/10 flex flex-col items-center justify-center text-center opacity-20">
-                    <div class="w-full aspect-[4/3] rounded-[32px] border-2 border-dashed border-zinc-300 mb-8 flex items-center justify-center">
-                        <svg viewBox="0 0 24 24" fill="none" class="h-10 w-10 text-zinc-400" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14" stroke-linecap="round"/></svg>
+                <a href="{{ route('home') }}" wire:navigate class="p-10 border-l border-gallery-outline/10 flex flex-col items-center justify-center text-center hover:bg-zinc-50/55 transition-all duration-300 group cursor-pointer relative">
+                    <div class="w-full aspect-[4/3] rounded-[32px] border-2 border-dashed border-zinc-200 group-hover:border-black mb-8 flex items-center justify-center transition-colors">
+                        <svg viewBox="0 0 24 24" fill="none" class="h-10 w-10 text-zinc-400 group-hover:text-black transition-colors" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14" stroke-linecap="round"/></svg>
                     </div>
-                    <span class="text-[10px] font-bold uppercase tracking-widest">Select Asset</span>
-                </div>
+                    <span class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 group-hover:text-black transition-colors">Select Asset</span>
+                </a>
             @endfor
         </div>
 

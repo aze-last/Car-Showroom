@@ -5,6 +5,7 @@ namespace App\Livewire;
 use App\Models\Unit;
 use Illuminate\Contracts\View\View;
 use Livewire\Attributes\Session;
+use Livewire\Attributes\On;
 use Livewire\Component;
 
 class UnitDetail extends Component
@@ -13,7 +14,6 @@ class UnitDetail extends Component
 
     public int $currentImageIndex = 0;
 
-    #[Session(key: 'compare_ids')]
     public array $compareIds = [];
 
     public function mount(Unit $unit): void
@@ -23,23 +23,24 @@ class UnitDetail extends Component
             'images',
         ]);
 
-        if (! is_array($this->compareIds)) {
-            $this->compareIds = [];
-        }
+        $this->compareIds = session()->get('compare_ids', []);
     }
 
     public function toggleCompare(int $id): void
     {
+        $this->compareIds = session()->get('compare_ids', []);
         $unit = Unit::find($id);
         $name = $unit ? $unit->name : 'Asset';
 
         if (in_array($id, $this->compareIds)) {
             $this->compareIds = array_values(array_diff($this->compareIds, [$id]));
             session()->flash('toast', ['message' => "Removed $name from Comparison", 'type' => 'info']);
+            session()->put('compare_ids', $this->compareIds);
             $this->dispatch('compare-updated');
         } elseif (count($this->compareIds) < 3) {
             $this->compareIds[] = $id;
             session()->flash('toast', ['message' => "Added $name to Comparison", 'type' => 'success']);
+            session()->put('compare_ids', $this->compareIds);
             $this->dispatch('compare-updated');
             
             // Redirect back to catalog so they can select the next one
@@ -49,6 +50,12 @@ class UnitDetail extends Component
             $this->dispatch('toast', message: "Comparison limit reached (max 3)", type: 'info');
             $this->dispatch('compare-updated');
         }
+    }
+
+    #[On('compare-updated')]
+    public function refreshCompare(): void
+    {
+        $this->compareIds = session()->get('compare_ids', []);
     }
 
     public function nextImage(): void

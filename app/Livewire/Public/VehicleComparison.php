@@ -9,15 +9,22 @@ use Livewire\Component;
 
 class VehicleComparison extends Component
 {
-    #[Session(key: 'compare_ids')]
     public array $compareIds = [];
+
+    public function mount(): void
+    {
+        $this->compareIds = session()->get('compare_ids', []);
+    }
 
     public function removeFromComparison(int $id): void
     {
+        $this->compareIds = session()->get('compare_ids', []);
         $this->compareIds = array_values(array_diff($this->compareIds, [$id]));
+        session()->put('compare_ids', $this->compareIds);
+        $this->dispatch('compare-updated');
 
         if (empty($this->compareIds)) {
-            $this->redirect(route('units.index'), navigate: true);
+            $this->redirect(route('home'), navigate: true);
         }
     }
 
