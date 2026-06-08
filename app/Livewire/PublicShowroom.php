@@ -35,11 +35,20 @@ class PublicShowroom extends Component
 
     public function toggleCompare(int $id): void
     {
+        $unit = Unit::find($id);
+        $name = $unit ? $unit->name : 'Asset';
+
         if (in_array($id, $this->compareIds)) {
             $this->compareIds = array_values(array_diff($this->compareIds, [$id]));
+            $this->dispatch('toast', message: "Removed $name from Comparison", type: 'info');
         } elseif (count($this->compareIds) < 3) {
             $this->compareIds[] = $id;
+            $this->dispatch('toast', message: "Added $name to Comparison", type: 'success');
+        } else {
+            $this->dispatch('toast', message: "Comparison limit reached (max 3)", type: 'info');
         }
+
+        $this->dispatch('compare-updated');
     }
 
     public function toggleSave(int $id)
@@ -59,6 +68,8 @@ class PublicShowroom extends Component
     public function clearCompare(): void
     {
         $this->compareIds = [];
+        $this->dispatch('toast', message: 'Comparison list cleared', type: 'info');
+        $this->dispatch('compare-updated');
     }
 
     #[\Livewire\Attributes\Computed]

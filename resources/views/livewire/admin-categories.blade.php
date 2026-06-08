@@ -82,18 +82,19 @@
         <!-- Desktop Table View -->
         <div class="hidden md:block overflow-x-auto">
             <table class="min-w-full text-sm">
-                <thead class="bg-slate-50 text-left text-xs uppercase tracking-wide text-slate-500">
+                <thead class="bg-zinc-50/50 text-left text-[10px] font-bold uppercase tracking-widest text-zinc-400">
                     <tr>
-                        <th scope="col" class="px-4 py-3 sm:px-5">Category Name</th>
-                        <th scope="col" class="px-4 py-3">Units Count</th>
-                        <th scope="col" class="px-4 py-3">Created Date</th>
-                        <th scope="col" class="px-4 py-3 text-right sm:px-5">Actions</th>
+                        <th scope="col" class="px-6 py-5 border-b border-zinc-100">Category Hierarchy</th>
+                        <th scope="col" class="px-6 py-5 border-b border-zinc-100">Catalog Density</th>
+                        <th scope="col" class="px-6 py-5 border-b border-zinc-100">Market Value</th>
+                        <th scope="col" class="px-6 py-5 border-b border-zinc-100">Registry Date</th>
+                        <th scope="col" class="px-6 py-5 border-b border-zinc-100 text-right">Actions</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-slate-100">
+                <tbody class="divide-y divide-zinc-100">
                     @foreach ($categories as $category)
-                        <tr wire:key="category-row-{{ $category->id }}" class="odd:bg-white even:bg-slate-50/40 hover:bg-slate-100/70">
-                            <td class="px-4 py-3 sm:px-5">
+                        <tr wire:key="category-row-{{ $category->id }}" class="hover:bg-zinc-50/50 transition-colors group">
+                            <td class="px-6 py-5">
                                 @if ($editingCategoryId === $category->id)
                                     <div class="flex flex-wrap items-center gap-2">
                                         <input type="text" wire:model="editingName" class="admin-input max-w-xs">
@@ -102,25 +103,34 @@
                                     </div>
                                     @error('editingName') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                                 @else
-                                    <span class="font-medium text-slate-900">{{ $category->name }}</span>
+                                    <span class="text-sm font-bold text-black tracking-tight">{{ $category->name }}</span>
                                 @endif
                             </td>
-                            <td class="px-4 py-3 text-slate-700">{{ number_format($category->all_units_count) }}</td>
-                            <td class="px-4 py-3 text-slate-600">{{ $category->created_at?->format('Y-m-d') }}</td>
-                            <td class="px-4 py-3 text-right sm:px-5">
+                            <td class="px-6 py-5">
+                                <span class="text-sm font-bold text-black">{{ number_format($category->units_count) }}</span>
+                                <span class="text-[10px] font-bold text-zinc-300 uppercase tracking-widest block">Units</span>
+                            </td>
+                            <td class="px-6 py-5">
+                                <span class="text-sm font-bold text-black">₱{{ number_format($category->total_value / 1000000, 1) }}M</span>
+                                <span class="text-[10px] font-bold text-emerald-500 uppercase tracking-widest block">In-Stock</span>
+                            </td>
+                            <td class="px-6 py-5">
+                                <span class="text-[11px] font-medium text-zinc-500 uppercase tracking-widest">{{ $category->created_at?->format('M d, Y') }}</span>
+                            </td>
+                            <td class="px-6 py-5 text-right">
                                 @if ($editingCategoryId !== $category->id)
                                     <div class="inline-flex gap-2">
-                                        <button type="button" wire:click="startEditing({{ $category->id }})" class="admin-btn-secondary px-3 py-1.5 text-xs">
+                                        <button type="button" wire:click="startEditing({{ $category->id }})" class="h-10 px-4 rounded-xl border border-zinc-200 text-zinc-600 font-bold text-[10px] uppercase tracking-widest hover:bg-zinc-50 transition-all">
                                             Edit
                                         </button>
                                         <button
                                             type="button"
                                             wire:click="delete({{ $category->id }})"
                                             wire:confirm="Delete this category?"
-                                            @disabled($category->all_units_count > 0)
-                                            class="admin-btn-secondary px-3 py-1.5 text-xs text-red-700 hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
+                                            @disabled($category->units_count > 0)
+                                            class="h-10 w-10 rounded-xl border border-red-100 bg-red-50 text-red-600 flex items-center justify-center disabled:opacity-30 transition-all"
                                         >
-                                            Delete
+                                            <svg viewBox="0 0 24 24" fill="none" class="h-4 w-4" stroke="currentColor" stroke-width="2.5"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" stroke-linecap="round" stroke-linejoin="round"/></svg>
                                         </button>
                                     </div>
                                 @endif

@@ -30,7 +30,7 @@
                 <p class="print:hidden text-sm font-medium text-zinc-400 mb-10">Vehicle authenticated and locked for your current curator session.</p>
                 
                 {{-- QR Code for Label Printing --}}
-                <div class="hidden print:block mb-8 w-48 h-48 mx-auto">
+                <div id="print-qr-code" class="hidden print:flex mb-8 w-48 h-48 mx-auto">
                     {!! $qrSvg !!}
                 </div>
 
@@ -76,16 +76,46 @@
                 </div>
 
                 @if($unit->isAvailable())
-                <div class="space-y-4 pt-6 border-t border-gallery-outline/5">
-                    <div class="space-y-2">
-                        <label class="block text-[10px] font-bold text-zinc-400 uppercase tracking-widest px-1">Assign Buyer</label>
-                        <select wire:model="buyer_id" class="w-full bg-white border border-gallery-outline/20 rounded-2xl py-4 px-6 font-bold text-sm focus:ring-2 focus:ring-black transition-all appearance-none">
-                            <option value="">Select Collector...</option>
-                            @foreach($users as $user)
-                                <option value="{{ $user->id }}">{{ $user->name }} ({{ $user->email }})</option>
-                            @endforeach
-                        </select>
+                <div class="space-y-6 pt-6 border-t border-gallery-outline/5">
+                    <div>
+                        <label class="block text-[10px] font-bold text-zinc-400 uppercase tracking-widest px-1 mb-3">Buyer Type</label>
+                        <flux:radio.group wire:model.live="is_guest" variant="segmented" class="w-full mb-4">
+                            <flux:radio value="0" label="Registered Collector" />
+                            <flux:radio value="1" label="Guest Walk-in" />
+                        </flux:radio.group>
                     </div>
+
+                    @if(!$is_guest)
+                        <div class="space-y-2">
+                            <label class="block text-[10px] font-bold text-zinc-400 uppercase tracking-widest px-1">Assign Collector</label>
+                            <flux:select wire:model="buyer_id" searchable placeholder="Select Collector...">
+                                @foreach($users as $user)
+                                    <flux:select.option value="{{ $user->id }}">{{ $user->name }} ({{ $user->email }})</flux:select.option>
+                                @endforeach
+                            </flux:select>
+                        </div>
+                    @else
+                        <div class="space-y-4 bg-gallery-surface-low p-6 rounded-2xl border border-gallery-outline/5">
+                            <div class="space-y-1">
+                                <label class="block text-[10px] font-bold text-zinc-400 uppercase tracking-widest px-1">Guest Name</label>
+                                <flux:input wire:model="guest_name" placeholder="John Doe" class="w-full" />
+                            </div>
+                            <div class="space-y-1">
+                                <label class="block text-[10px] font-bold text-zinc-400 uppercase tracking-widest px-1">Contact Number</label>
+                                <flux:input wire:model="guest_contact" placeholder="+63 912 345 6789" class="w-full" />
+                            </div>
+                            <div class="space-y-1">
+                                <label class="block text-[10px] font-bold text-zinc-400 uppercase tracking-widest px-1">Handover Photo</label>
+                                <flux:input type="file" wire:model="handover_image" accept="image/*" />
+                                @if ($handover_image)
+                                    <div class="mt-4 w-32 h-32 rounded-xl overflow-hidden border border-gallery-outline/10 shadow-sm">
+                                        <img src="{{ $handover_image->temporaryUrl() }}" class="w-full h-full object-cover">
+                                    </div>
+                                @endif
+                                <div wire:loading wire:target="handover_image" class="text-xs font-medium text-zinc-500 mt-2">Uploading...</div>
+                            </div>
+                        </div>
+                    @endif
                 </div>
                 @endif
             </div>
@@ -176,44 +206,42 @@
 
     <style>
         @media print {
-            header, .lg\:col-span-7, .pt-32, .pb-20, .lg\:col-span-5 > div:last-child {
-                display: none !important;
-            }
-            .lg\:col-span-5 {
-                width: 100% !important;
-                margin: 0 !important;
-                padding: 0 !important;
-            }
-            main {
-                padding-top: 0 !important;
-                margin: 0 !important;
-                display: block !important;
+            @page {
+                size: auto;
+                margin: 0;
             }
             body {
                 background: white !important;
                 margin: 0 !important;
-            }
-            /* Target the QR success card for printing as a label */
-            .lg\:col-span-5 > div:first-child {
-                display: flex !important;
-                flex-direction: column !important;
-                align-items: center !important;
-                justify-content: center !important;
-                height: 100vh !important;
-                border: none !important;
                 padding: 0 !important;
             }
-            /* Vehicle info box on the label */
-            .lg\:col-span-5 > div:first-child > div:last-child {
-                background: white !important;
-                border-top: 2px solid #eee !important;
-                width: 100% !important;
-                max-width: 450px !important;
-                padding: 2rem !important;
-                margin-top: 1rem !important;
+            /* Hide all screen elements */
+            body * {
+                visibility: hidden !important;
             }
-            .lg\:col-span-5 > div:first-child > div:last-child img {
-                border: 1px solid #eee !important;
+            /* Show only the QR code wrapper and its descendants */
+            #print-qr-code, #print-qr-code * {
+                visibility: visible !important;
+            }
+            /* Center the QR code in the print page */
+            #print-qr-code {
+                position: absolute !important;
+                left: 0 !important;
+                top: 0 !important;
+                width: 100% !important;
+                height: 100vh !important;
+                display: flex !important;
+                justify-content: center !important;
+                align-items: center !important;
+                page-break-inside: avoid !important;
+                margin: 0 !important;
+                padding: 20px !important;
+            }
+            #print-qr-code svg {
+                width: 80vmin !important;
+                height: 80vmin !important;
+                max-width: 400px !important;
+                max-height: 400px !important;
             }
         }
     </style>

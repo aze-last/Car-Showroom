@@ -28,6 +28,11 @@
                 <span class="bg-emerald-50 text-emerald-600 font-bold text-[9px] px-2 py-1 rounded-full flex items-center gap-1 uppercase tracking-widest">
                     Available
                 </span>
+                @if($salesTrend != 0)
+                    <span class="text-[9px] font-bold {{ $salesTrend > 0 ? 'text-emerald-500' : 'text-red-500' }} uppercase tracking-widest">
+                        {{ $salesTrend > 0 ? '↑' : '↓' }} {{ abs(round($salesTrend)) }}% vs last month
+                    </span>
+                @endif
             </div>
         </div>
 
@@ -70,6 +75,11 @@
                 <span class="bg-zinc-100 text-zinc-900 font-bold text-[9px] px-2 py-1 rounded-full flex items-center gap-1 uppercase tracking-widest">
                     Total Units
                 </span>
+                @if($unitTrend != 0)
+                    <span class="text-[9px] font-bold {{ $unitTrend > 0 ? 'text-emerald-500' : 'text-red-500' }} uppercase tracking-widest">
+                        {{ $unitTrend > 0 ? '↑' : '↓' }} {{ abs(round($unitTrend)) }}% acquisition
+                    </span>
+                @endif
             </div>
         </div>
     </section>
@@ -87,7 +97,7 @@
             </div>
             
             <div class="flex-grow relative w-full flex items-end pt-10 px-6">
-                <!-- SVG Line/Area (Minimalist representation of Acquisition vs Sales) -->    
+                <!-- SVG Line/Area (Dynamic representation of Sales Velocity) -->    
                 <div class="relative w-full h-[300px] z-10">      
                     <svg class="w-full h-full overflow-visible" preserveAspectRatio="none" viewBox="0 0 1000 300">
                         <defs>
@@ -97,23 +107,30 @@
                             </linearGradient>
                         </defs>
                         <!-- Area -->
-                        <path d="M 0,250 C 150,220 300,280 450,150 C 600,20 750,180 900,120 L 1000,50 L 1000,300 L 0,300 Z" fill="url(#areaGradient)"></path>
+                        <path d="{{ $chartPath }} L 1000,300 L 0,300 Z" fill="url(#areaGradient)"></path>
                         <!-- Line -->
-                        <path d="M 0,250 C 150,220 300,280 450,150 C 600,20 750,180 900,120 L 1000,50" fill="none" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"></path>     
+                        <path d="{{ $chartPath }}" fill="none" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"></path>     
                         
-                        <!-- Pulse Points -->
-                        <circle cx="450" cy="150" r="6" fill="#ffffff" stroke="#000000" stroke-width="3"></circle>     
-                        <circle cx="900" cy="120" r="6" fill="#ffffff" stroke="#000000" stroke-width="3"></circle>      
+                        <!-- Dynamic Pulse Points -->
+                        @foreach($velocityData as $index => $data)
+                            @php
+                                $maxCount = collect($velocityData)->max('count') ?: 1;
+                                $x = $index * (1000 / 5);
+                                $y = 250 - ($data['count'] / $maxCount * 200);
+                            @endphp
+                            <g class="group/point">
+                                <circle cx="{{ $x }}" cy="{{ $y }}" r="6" fill="#ffffff" stroke="#000000" stroke-width="3" class="transition-all duration-300 group-hover/point:r-8"></circle>
+                                <text x="{{ $x }}" y="{{ $y - 15 }}" text-anchor="middle" class="opacity-0 group-hover/point:opacity-100 transition-opacity duration-300 text-[10px] font-bold fill-black">{{ $data['count'] }}</text>
+                            </g>
+                        @endforeach
                     </svg>
                 </div>
                 
-                <!-- X-Axis Labels -->
+                <!-- X-Axis Labels (Dynamic) -->
                 <div class="absolute bottom-[-20px] left-6 right-6 flex justify-between text-[10px] font-bold text-zinc-300 uppercase tracking-widest">
-                    <span>Alpha</span>
-                    <span>Beta</span>
-                    <span>Gamma</span>
-                    <span>Delta</span>
-                    <span>Epsilon</span>
+                    @foreach($velocityData as $data)
+                        <span>{{ $data['label'] }}</span>
+                    @endforeach
                 </div>
             </div>
             <div class="mt-16 pt-8 border-t border-gallery-outline/5 flex items-center justify-between">

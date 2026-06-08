@@ -9,13 +9,23 @@
         @endif
     </button>
 
+    <!-- Mobile Backdrop -->
+    <div 
+        x-show="open" 
+        @click="open = false" 
+        x-transition:enter="transition ease-out duration-200"
+        x-transition:enter-start="opacity-0"
+        x-transition:enter-end="opacity-100"
+        class="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 md:hidden"
+    ></div>
+
     <div 
         x-show="open" 
         @click.away="open = false"
         x-transition:enter="transition ease-out duration-300"
         x-transition:enter-start="opacity-0 scale-95 translate-y-4"
         x-transition:enter-end="opacity-100 scale-100 translate-y-0"
-        class="absolute right-[-10px] sm:right-0 mt-6 w-[calc(100vw-1.5rem)] sm:w-96 bg-white rounded-[32px] shadow-[0_40px_80px_-16px_rgba(0,0,0,0.3)] border border-zinc-100 z-50 overflow-hidden"
+        class="fixed md:absolute top-24 md:top-auto left-4 right-4 md:left-auto md:right-[-10px] md:mt-6 md:w-96 bg-white rounded-[32px] shadow-[0_40px_80px_-16px_rgba(0,0,0,0.3)] border border-zinc-100 z-50 overflow-hidden"
     >
         <div class="p-6 md:p-8 border-b border-zinc-100 flex justify-between items-center bg-white">
             <div>

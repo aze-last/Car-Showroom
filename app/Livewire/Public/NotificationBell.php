@@ -22,7 +22,9 @@ class NotificationBell extends Component
 
     public function handleNotificationClick($notificationId)
     {
-        if (!auth()->check()) return;
+        if (! auth()->check()) {
+            return;
+        }
 
         $notification = auth()->user()->notifications()->findOrFail($notificationId);
         $notification->markAsRead();

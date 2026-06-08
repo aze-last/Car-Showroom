@@ -2,7 +2,6 @@
 
 namespace App\Livewire;
 
-use App\Models\Inquiry;
 use App\Models\Unit;
 use Illuminate\Contracts\View\View;
 use Livewire\Attributes\Session;
@@ -31,10 +30,24 @@ class UnitDetail extends Component
 
     public function toggleCompare(int $id): void
     {
+        $unit = Unit::find($id);
+        $name = $unit ? $unit->name : 'Asset';
+
         if (in_array($id, $this->compareIds)) {
             $this->compareIds = array_values(array_diff($this->compareIds, [$id]));
+            session()->flash('toast', ['message' => "Removed $name from Comparison", 'type' => 'info']);
+            $this->dispatch('compare-updated');
         } elseif (count($this->compareIds) < 3) {
             $this->compareIds[] = $id;
+            session()->flash('toast', ['message' => "Added $name to Comparison", 'type' => 'success']);
+            $this->dispatch('compare-updated');
+            
+            // Redirect back to catalog so they can select the next one
+            $this->redirect(route('home'), navigate: true);
+            return;
+        } else {
+            $this->dispatch('toast', message: "Comparison limit reached (max 3)", type: 'info');
+            $this->dispatch('compare-updated');
         }
     }
 

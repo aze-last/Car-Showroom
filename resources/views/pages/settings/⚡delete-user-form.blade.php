@@ -51,12 +51,16 @@ new class extends Component {
                 </p>
             </div>
 
-            <flux:input 
-                wire:model="password" 
-                :label="__('Password')" 
-                type="password" 
-                class="admin-input !h-14 !bg-zinc-50/50 !text-zinc-900 font-bold"
-            />
+            <div>
+                <label class="block text-xs font-black uppercase tracking-widest text-zinc-400 mb-2">{{ __('Password') }}</label>
+                <input 
+                    wire:model="password" 
+                    type="password" 
+                    required
+                    class="admin-input !h-14 !bg-zinc-50/50 !text-zinc-900 font-bold"
+                />
+                @error('password') <p class="mt-2 text-xs font-bold text-red-600 uppercase tracking-widest">{{ $message }}</p> @enderror
+            </div>
 
             <div class="flex items-center gap-4 pt-4">
                 <flux:modal.close>

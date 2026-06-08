@@ -125,6 +125,7 @@ class UnitManagementTest extends TestCase
         Livewire::actingAs($user)
             ->test(\App\Livewire\AdminUnitQrAction::class, ['unit' => $unit])
             ->set('reason', 'QR scan sale')
+            ->set('buyer_id', $user->id)
             ->call('markAsSold')
             ->assertHasNoErrors();
 

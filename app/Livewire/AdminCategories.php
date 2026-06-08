@@ -93,7 +93,10 @@ class AdminCategories extends Component
     {
         return view('livewire.admin-categories', [
             'categories' => Category::query()
-                ->withCount('allUnits')
+                ->withCount(['allUnits as units_count'])
+                ->withSum(['allUnits as total_value' => function ($query) {
+                    $query->where('status', Unit::STATUS_AVAILABLE);
+                }], 'price_php')
                 ->orderBy('name')
                 ->paginate(10),
         ])->layout('layouts.admin-panel', [

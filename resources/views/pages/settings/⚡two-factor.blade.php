@@ -201,7 +201,7 @@ new class extends Component {
                         <flux:badge color="green">{{ __('Enabled') }}</flux:badge>
                     </div>
 
-                    <flux:text>
+                    <flux:text class="!text-zinc-900 font-medium">
                         {{ __('With two-factor authentication enabled, you will be prompted for a secure, random pin during login, which you can retrieve from the TOTP-supported application on your phone.') }}
                     </flux:text>
 
@@ -224,7 +224,7 @@ new class extends Component {
                         <flux:badge color="red">{{ __('Disabled') }}</flux:badge>
                     </div>
 
-                    <flux:text variant="subtle">
+                    <flux:text variant="subtle" class="!text-zinc-500 font-medium">
                         {{ __('When you enable two-factor authentication, you will be prompted for a secure pin during login. This pin can be retrieved from a TOTP-supported application on your phone.') }}
                     </flux:text>
 
@@ -268,8 +268,8 @@ new class extends Component {
                 </div>
 
                 <div class="space-y-2 text-center">
-                    <flux:heading size="lg">{{ $this->modalConfig['title'] }}</flux:heading>
-                    <flux:text>{{ $this->modalConfig['description'] }}</flux:text>
+                    <flux:heading size="lg" class="!text-zinc-900">{{ $this->modalConfig['title'] }}</flux:heading>
+                    <flux:text class="!text-zinc-500 font-medium">{{ $this->modalConfig['description'] }}</flux:text>
                 </div>
             </div>
 

@@ -92,38 +92,42 @@ new class extends Component {
 
     <x-pages::settings.layout :heading="__('Profile')" :subheading="__('Update your name and email address')">
         <form wire:submit="updateProfileInformation" class="my-6 w-full space-y-8">
-            <flux:input 
-                wire:model="name" 
-                :label="__('Name')" 
-                type="text" 
-                required 
-                autofocus 
-                autocomplete="name" 
-                class="admin-input !h-14 !bg-zinc-50/50 !text-zinc-900 font-bold"
-            />
+            <div>
+                <label class="block text-xs font-black uppercase tracking-widest text-zinc-400 mb-2">{{ __('Name') }}</label>
+                <input 
+                    wire:model="name" 
+                    type="text" 
+                    required 
+                    autofocus 
+                    autocomplete="name" 
+                    class="admin-input !h-14 !bg-zinc-50/50 !text-zinc-900 font-bold"
+                />
+                @error('name') <p class="mt-2 text-xs font-bold text-red-600 uppercase tracking-widest">{{ $message }}</p> @enderror
+            </div>
 
             <div>
-                <flux:input 
+                <label class="block text-xs font-black uppercase tracking-widest text-zinc-400 mb-2">{{ __('Email') }}</label>
+                <input 
                     wire:model="email" 
-                    :label="__('Email')" 
                     type="email" 
                     required 
                     autocomplete="email" 
                     class="admin-input !h-14 !bg-zinc-50/50 !text-zinc-900 font-bold"
                 />
+                @error('email') <p class="mt-2 text-xs font-bold text-red-600 uppercase tracking-widest">{{ $message }}</p> @enderror
 
                 @if ($this->hasUnverifiedEmail)
                     <div class="bg-amber-50 border border-amber-100 rounded-2xl p-6 mt-6">
-                        <flux:text class="text-amber-900 font-medium">
+                        <flux:text class="!text-amber-900 font-medium">
                             {{ __('Your email address is unverified.') }}
 
-                            <flux:link class="text-sm font-black uppercase tracking-widest text-amber-600 underline underline-offset-4 cursor-pointer" wire:click.prevent="resendVerificationNotification">
+                            <flux:link class="text-sm font-black uppercase tracking-widest !text-amber-600 underline underline-offset-4 cursor-pointer" wire:click.prevent="resendVerificationNotification">
                                 {{ __('Resend Link') }}
                             </flux:link>
                         </flux:text>
 
                         @if (session('status') === 'verification-link-sent')
-                            <flux:text class="mt-4 text-xs font-black uppercase tracking-widest text-emerald-600">
+                            <flux:text class="mt-4 text-xs font-black uppercase tracking-widest !text-emerald-600">
                                 {{ __('A new verification link has been sent.') }}
                             </flux:text>
                         @endif

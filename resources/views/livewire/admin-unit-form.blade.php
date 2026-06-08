@@ -330,34 +330,7 @@
                     </div>
                 </article>
 
-                <article class="admin-card">
-                    <div class="admin-card-header">
-                        <h3 class="text-base font-semibold text-slate-900">QR Code</h3>
-                    </div>
-                    <div class="admin-card-body space-y-3">
-                        @if ($isEdit && $unit instanceof Unit)
-                            <div class="mx-auto max-w-[220px] rounded-md border border-slate-200 bg-white p-2">
-                                {!! $qrSvg !!}
-                            </div>
-                            <p class="text-xs text-slate-500">public_id: <span class="font-mono text-slate-700">{{ $unit->public_id }}</span></p>
-                            <div class="flex flex-col gap-2">
-                                <a
-                                    href="data:image/svg+xml;charset=utf-8,{{ rawurlencode($qrSvg) }}"
-                                    download="unit-{{ $unit->public_id }}-qr.svg"
-                                    class="admin-btn-secondary w-full text-zinc-400"
-                                >
-                                    <svg viewBox="0 0 24 24" fill="none" class="h-4 w-4" stroke="currentColor" stroke-width="2">
-                                        <path d="M12 10V16M12 16L9 13M12 16L15 13" stroke-linecap="round" stroke-linejoin="round"/>
-                                        <path d="M17 21H7C5.89543 21 5 20.1046 5 19V5C5 3.89543 5.89543 3 7 3H12.5858C12.851 3 13.1054 3.10536 13.2929 3.29289L18.7071 8.70711C18.8946 8.89464 19 9.149 19 9.41421V19C19 20.1046 18.1046 21 17 21Z" stroke-linecap="round" stroke-linejoin="round"/>
-                                    </svg>
-                                    Download SVG
-                                </a>
-                            </div>
-                        @else
-                            <p class="text-sm text-slate-600">QR preview is available after creating this unit.</p>
-                        @endif
-                    </div>
-                </article>
+
             </div>
         </div>
 

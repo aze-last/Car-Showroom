@@ -30,9 +30,9 @@ class UserSentMessageNotification extends Notification
             'user_name' => $this->user->name,
             'unit_id' => $this->unit->id,
             'unit_name' => $this->unit->name,
-            'title' => 'New Message: ' . $this->unit->name,
-            'message' => $this->user->name . ' sent an inquiry: "' . Str::limit($this->messageSnippet, 50) . '"',
-            'action_url' => route('admin.messages') . '?user_id=' . $this->user->id . '&unit_id=' . $this->unit->id,
+            'title' => 'New Message: '.$this->unit->name,
+            'message' => $this->user->name.' sent an inquiry: "'.Str::limit($this->messageSnippet, 50).'"',
+            'action_url' => route('admin.messages').'?user_id='.$this->user->id.'&unit_id='.$this->unit->id,
         ];
     }
 }

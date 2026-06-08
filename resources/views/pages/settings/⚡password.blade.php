@@ -55,30 +55,39 @@ new class extends Component {
 
     <x-pages::settings.layout :heading="__('Update Password')" :subheading="__('Secure your registry access with a long, complex credential.')">
         <form method="POST" wire:submit="updatePassword" class="mt-6 space-y-8">
-            <flux:input
-                wire:model="current_password"
-                :label="__('Current Password')"
-                type="password"
-                required
-                autocomplete="current-password"
-                class="admin-input !h-14 !bg-zinc-50/50 !text-zinc-900 font-bold"
-            />
-            <flux:input
-                wire:model="password"
-                :label="__('New Password')"
-                type="password"
-                required
-                autocomplete="new-password"
-                class="admin-input !h-14 !bg-zinc-50/50 !text-zinc-900 font-bold"
-            />
-            <flux:input
-                wire:model="password_confirmation"
-                :label="__('Confirm Registry Key')"
-                type="password"
-                required
-                autocomplete="new-password"
-                class="admin-input !h-14 !bg-zinc-50/50 !text-zinc-900 font-bold"
-            />
+            <div>
+                <label class="block text-xs font-black uppercase tracking-widest text-zinc-400 mb-2">{{ __('Current Password') }}</label>
+                <input
+                    wire:model="current_password"
+                    type="password"
+                    required
+                    autocomplete="current-password"
+                    class="admin-input !h-14 !bg-zinc-50/50 !text-zinc-900 font-bold"
+                />
+                @error('current_password') <p class="mt-2 text-xs font-bold text-red-600 uppercase tracking-widest">{{ $message }}</p> @enderror
+            </div>
+            <div>
+                <label class="block text-xs font-black uppercase tracking-widest text-zinc-400 mb-2">{{ __('New Password') }}</label>
+                <input
+                    wire:model="password"
+                    type="password"
+                    required
+                    autocomplete="new-password"
+                    class="admin-input !h-14 !bg-zinc-50/50 !text-zinc-900 font-bold"
+                />
+                @error('password') <p class="mt-2 text-xs font-bold text-red-600 uppercase tracking-widest">{{ $message }}</p> @enderror
+            </div>
+            <div>
+                <label class="block text-xs font-black uppercase tracking-widest text-zinc-400 mb-2">{{ __('Confirm Registry Key') }}</label>
+                <input
+                    wire:model="password_confirmation"
+                    type="password"
+                    required
+                    autocomplete="new-password"
+                    class="admin-input !h-14 !bg-zinc-50/50 !text-zinc-900 font-bold"
+                />
+                @error('password_confirmation') <p class="mt-2 text-xs font-bold text-red-600 uppercase tracking-widest">{{ $message }}</p> @enderror
+            </div>
 
             <div class="flex items-center gap-6 pt-4">
                 <button 

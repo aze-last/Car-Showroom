@@ -10,6 +10,31 @@
         </a>
     </div>
 
+    <!-- Analytical Summary -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-white rounded-3xl p-6 border border-zinc-100 shadow-sm group hover:border-black transition-colors duration-300">
+            <p class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-2">Active Floor Value</p>
+            <div class="flex items-end justify-between">
+                <h3 class="text-2xl font-bold text-black tracking-tight">₱{{ number_format($stats['active_value'] / 1000000, 1) }}M</h3>
+                <span class="text-[10px] font-bold text-emerald-500 uppercase tracking-widest">Live Now</span>
+            </div>
+        </div>
+        <div class="bg-white rounded-3xl p-6 border border-zinc-100 shadow-sm group hover:border-black transition-colors duration-300">
+            <p class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-2">Total Bid volume</p>
+            <div class="flex items-end justify-between">
+                <h3 class="text-2xl font-bold text-black tracking-tight">{{ number_format($stats['total_bids']) }}</h3>
+                <span class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Historical</span>
+            </div>
+        </div>
+        <div class="bg-white rounded-3xl p-6 border border-zinc-100 shadow-sm group hover:border-black transition-colors duration-300">
+            <p class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-2">Conversion Rate</p>
+            <div class="flex items-end justify-between">
+                <h3 class="text-2xl font-bold text-black tracking-tight">{{ round($stats['success_rate']) }}%</h3>
+                <span class="text-[10px] font-bold text-black uppercase tracking-widest">Efficiency</span>
+            </div>
+        </div>
+    </div>
+
     @if (session('status'))
         <div class="bg-emerald-50 border border-emerald-100 text-emerald-700 px-6 py-4 rounded-2xl text-sm font-bold flex items-center gap-3 animate-showroom-fade-up">
             <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17L4 12" stroke-linecap="round" stroke-linejoin="round"/></svg>

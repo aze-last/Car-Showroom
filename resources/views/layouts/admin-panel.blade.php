@@ -6,6 +6,10 @@
         <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>      
         <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
         @include('partials.theme-styles')
+        <script>
+            document.documentElement.classList.remove('dark');
+            document.documentElement.classList.add('light');
+        </script>
     </head>
     <body class="min-h-screen bg-gallery-background font-hanken text-zinc-900 antialiased overflow-x-hidden">
         @php
@@ -178,5 +182,14 @@
         </main>
 
         @fluxScripts
+        <script>
+            function forceLightTheme() {
+                document.documentElement.classList.remove('dark');
+                document.documentElement.classList.add('light');
+            }
+            forceLightTheme();
+            document.addEventListener('livewire:navigated', forceLightTheme);
+            document.addEventListener('DOMContentLoaded', forceLightTheme);
+        </script>
     </body>
 </html>

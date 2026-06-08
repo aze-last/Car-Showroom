@@ -35,6 +35,9 @@ class Unit extends Model
         'source_external_id',
         'source_url',
         'buyer_id',
+        'guest_name',
+        'guest_contact',
+        'handover_image_path',
     ];
 
     protected function casts(): array

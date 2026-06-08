@@ -11,9 +11,11 @@ use BaconQrCode\Writer;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Gate;
 use Livewire\Component;
+use Livewire\WithFileUploads;
 
 class AdminUnitQrAction extends Component
 {
+    use WithFileUploads;
     public Unit $unit;
 
     public ?UnitStatusLog $lastLog = null;
@@ -22,7 +24,11 @@ class AdminUnitQrAction extends Component
 
     public ?string $reason = null;
 
+    public bool $is_guest = false;
     public ?int $buyer_id = null;
+    public ?string $guest_name = null;
+    public ?string $guest_contact = null;
+    public $handover_image;
 
     public function mount(Unit $unit): void
     {
@@ -37,6 +43,18 @@ class AdminUnitQrAction extends Component
     {
         Gate::authorize('changeStatus', $this->unit);
 
+        if ($this->is_guest) {
+            $this->validate([
+                'guest_name' => 'required|string|max:255',
+                'guest_contact' => 'required|string|max:255',
+                'handover_image' => 'required|image|max:10240', // 10MB max
+            ]);
+        } else {
+            $this->validate([
+                'buyer_id' => 'required|exists:users,id',
+            ]);
+        }
+
         $result = $statusService->setSold(
             unit: $this->unit,
             userId: (int) auth()->id(),
@@ -45,7 +63,14 @@ class AdminUnitQrAction extends Component
             userAgent: request()->userAgent(),
         );
 
-        if ($result && $this->buyer_id) {
+        if ($result && $this->is_guest) {
+            $path = $this->handover_image->store('units/handovers', 'public');
+            $this->unit->update([
+                'guest_name' => $this->guest_name,
+                'guest_contact' => $this->guest_contact,
+                'handover_image_path' => $path,
+            ]);
+        } elseif ($result && $this->buyer_id) {
             $this->unit->update(['buyer_id' => $this->buyer_id]);
 
             $buyer = \App\Models\User::find($this->buyer_id);
