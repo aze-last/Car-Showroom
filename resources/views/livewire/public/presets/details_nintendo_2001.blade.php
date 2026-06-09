@@ -93,7 +93,7 @@
                 <section 
                     class="relative w-full aspect-[16/10] bg-black beveled-plate p-1 overflow-hidden group shadow-2xl"
                 >
-                    <div class="w-full h-full relative overflow-x-auto snap-x snap-mandatory flex no-scrollbar scroll-smooth">
+                    <div id="nintendo-carousel" class="w-full h-full relative overflow-x-auto snap-x snap-mandatory flex no-scrollbar scroll-smooth">
                         @foreach($unit->images as $index => $img)
                             <div class="slide min-w-full w-full h-full overflow-hidden snap-center relative" wire:key="slide-{{ $img->id }}">
                                 <img 
@@ -118,12 +118,12 @@
                     <!-- Navigation D-Pad style buttons -->
                     @if($unit->images->count() > 1)
                         <div class="absolute top-1/2 -translate-y-1/2 left-4 z-20">
-                            <button onclick="this.closest('section').querySelector('.overflow-x-auto').scrollBy({ left: -this.closest('section').offsetWidth, behavior: 'smooth' })" class="w-10 h-10 bg-black/80 text-white rounded-full flex items-center justify-center border-2 border-white/30 hover:bg-[#e60012] hover:border-white transition-all transform active:scale-90">
+                            <button onclick="document.getElementById('nintendo-carousel').scrollBy({ left: -document.getElementById('nintendo-carousel').offsetWidth, behavior: 'smooth' })" class="w-10 h-10 bg-black/80 text-white rounded-full flex items-center justify-center border-2 border-white/30 hover:bg-[#e60012] hover:border-white transition-all transform active:scale-90">
                                 <svg viewBox="0 0 24 24" fill="none" class="h-6 w-6" stroke="currentColor" stroke-width="4"><path d="M15 18L9 12L15 6" stroke-linecap="round" stroke-linejoin="round"/></svg>
                             </button>
                         </div>
                         <div class="absolute top-1/2 -translate-y-1/2 right-4 z-20">
-                            <button onclick="this.closest('section').querySelector('.overflow-x-auto').scrollBy({ left: this.closest('section').offsetWidth, behavior: 'smooth' })" class="w-10 h-10 bg-black/80 text-white rounded-full flex items-center justify-center border-2 border-white/30 hover:bg-[#e60012] hover:border-white transition-all transform active:scale-90">
+                            <button onclick="document.getElementById('nintendo-carousel').scrollBy({ left: document.getElementById('nintendo-carousel').offsetWidth, behavior: 'smooth' })" class="w-10 h-10 bg-black/80 text-white rounded-full flex items-center justify-center border-2 border-white/30 hover:bg-[#e60012] hover:border-white transition-all transform active:scale-90">
                                 <svg viewBox="0 0 24 24" fill="none" class="h-6 w-6" stroke="currentColor" stroke-width="4"><path d="M9 18L15 12L9 6" stroke-linecap="round" stroke-linejoin="round"/></svg>
                             </button>
                         </div>
@@ -135,7 +135,7 @@
                     <div class="bg-[#dedede] beveled-plate p-3 flex gap-4 overflow-x-auto no-scrollbar shadow-inner">
                         @foreach ($unit->images as $index => $image)
                             <button 
-                                onclick="this.closest('.space-y-8').querySelector('.overflow-x-auto').scrollTo({ left: {{ $index }} * this.closest('.space-y-8').querySelector('.overflow-x-auto').offsetWidth, behavior: 'smooth' })"
+                                onclick="document.getElementById('nintendo-carousel').scrollTo({ left: {{ $index }} * document.getElementById('nintendo-carousel').offsetWidth, behavior: 'smooth' })"
                                 class="h-16 w-24 flex-shrink-0 beveled-plate overflow-hidden transition-all transform {{ $currentImageIndex === $index ? 'ring-4 ring-[#e60012] scale-105 z-10' : 'opacity-50 hover:opacity-100' }}"
                             >
                                 <img src="{{ Storage::url($image->url) }}" class="h-full w-full object-cover">

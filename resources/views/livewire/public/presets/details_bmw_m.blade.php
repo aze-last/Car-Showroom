@@ -6,7 +6,7 @@
         class="relative w-full aspect-[16/9] min-h-[450px] max-h-[650px] overflow-hidden group mb-12 border border-[#3c3c3c]"
     >
         <!-- Slides -->
-        <div class="w-full h-full relative overflow-x-auto snap-x snap-mandatory flex no-scrollbar scroll-smooth">
+        <div id="bmw-carousel" class="w-full h-full relative overflow-x-auto snap-x snap-mandatory flex no-scrollbar scroll-smooth">
             @foreach($unit->images as $index => $img)
                 <div class="slide min-w-full w-full h-full overflow-hidden snap-center relative" wire:key="slide-{{ $img->id }}">
                     <img 
@@ -29,10 +29,10 @@
             
             @if($unit->images->count() > 1)
                 <div class="flex gap-4 pointer-events-auto">
-                    <button onclick="this.closest('section').querySelector('.overflow-x-auto').scrollBy({ left: -this.closest('section').offsetWidth, behavior: 'smooth' })" class="bg-black/50 backdrop-blur p-4 hover:bg-white/20 transition-colors border border-[#3c3c3c] text-white flex items-center justify-center group/btn">
+                    <button onclick="document.getElementById('bmw-carousel').scrollBy({ left: -document.getElementById('bmw-carousel').offsetWidth, behavior: 'smooth' })" class="bg-black/50 backdrop-blur p-4 hover:bg-white/20 transition-colors border border-[#3c3c3c] text-white flex items-center justify-center group/btn">
                         <svg viewBox="0 0 24 24" fill="none" class="h-6 w-6 transform transition-transform group-hover/btn:-translate-x-1" stroke="currentColor" stroke-width="2"><path d="M15 18L9 12L15 6" stroke-linecap="round" stroke-linejoin="round"/></svg>
                     </button>
-                    <button onclick="this.closest('section').querySelector('.overflow-x-auto').scrollBy({ left: this.closest('section').offsetWidth, behavior: 'smooth' })" class="bg-black/50 backdrop-blur p-4 hover:bg-white/20 transition-colors border border-[#3c3c3c] text-white flex items-center justify-center group/btn">
+                    <button onclick="document.getElementById('bmw-carousel').scrollBy({ left: document.getElementById('bmw-carousel').offsetWidth, behavior: 'smooth' })" class="bg-black/50 backdrop-blur p-4 hover:bg-white/20 transition-colors border border-[#3c3c3c] text-white flex items-center justify-center group/btn">
                         <svg viewBox="0 0 24 24" fill="none" class="h-6 w-6 transform transition-transform group-hover/btn:translate-x-1" stroke="currentColor" stroke-width="2"><path d="M9 18L15 12L9 6" stroke-linecap="round" stroke-linejoin="round"/></svg>
                     </button>
                 </div>
@@ -44,7 +44,7 @@
             <div class="absolute bottom-0 left-0 w-full p-4 flex gap-4 overflow-x-auto bg-gradient-to-t from-black to-transparent z-20 no-scrollbar items-end h-24">
                 @foreach ($unit->images as $index => $image)
                     <button
-                        onclick="this.closest('section').querySelector('.overflow-x-auto').scrollTo({ left: {{ $index }} * this.closest('section').querySelector('.overflow-x-auto').offsetWidth, behavior: 'smooth' })"
+                        onclick="document.getElementById('bmw-carousel').scrollTo({ left: {{ $index }} * document.getElementById('bmw-carousel').offsetWidth, behavior: 'smooth' })"
                         class="h-14 w-24 overflow-hidden flex-shrink-0 border transition-all duration-300 border-[#3c3c3c] opacity-40 hover:opacity-100"
                     >
                         <img src="{{ Storage::url($image->url) }}" alt="" class="h-full w-full object-cover grayscale hover:grayscale-0">

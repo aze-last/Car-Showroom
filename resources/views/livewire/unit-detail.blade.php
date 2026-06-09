@@ -39,9 +39,9 @@
     <div class="flex-1 flex flex-col gap-12 min-w-0">
         <!-- Hero Carousel Area -->
         <section class="w-full relative rounded-[32px] overflow-hidden border border-gallery-outline/20 ambient-shadow bg-gallery-surface-lowest group">
-            <div class="w-full relative overflow-x-auto snap-x snap-mandatory flex no-scrollbar scroll-smooth h-full min-h-[400px] lg:min-h-[500px]">
+            <div id="cinema-carousel" class="w-full aspect-[16/9] relative overflow-x-auto snap-x snap-mandatory flex no-scrollbar scroll-smooth min-h-[400px] lg:min-h-[500px]">
                 @foreach($unit->images as $index => $img)
-                    <div class="slide min-w-full w-full h-full overflow-hidden snap-center relative aspect-[16/9]" wire:key="slide-{{ $img->id }}">
+                    <div class="slide min-w-full w-full h-full overflow-hidden snap-center relative" wire:key="slide-{{ $img->id }}">
                         <img 
                             src="{{ Storage::url($img->url) }}" 
                             alt="{{ $unit->name }} - {{ $index + 1 }}" 
@@ -69,7 +69,7 @@
                 <div class="p-4 flex gap-4 overflow-x-auto bg-gallery-surface-lowest border-t border-gallery-outline/10 hide-scrollbar">
                     @foreach ($unit->images as $index => $image)
                         <button
-                            onclick="this.closest('section').querySelector('.w-full').scrollTo({ left: {{ $index }} * this.closest('section').querySelector('.w-full').offsetWidth, behavior: 'smooth' })"
+                            onclick="document.getElementById('cinema-carousel').scrollTo({ left: {{ $index }} * document.getElementById('cinema-carousel').offsetWidth, behavior: 'smooth' })"
                             class="w-32 h-20 rounded-2xl overflow-hidden flex-shrink-0 border-2 transition-all duration-300 {{ $currentImageIndex === $index ? 'border-black shadow-lg scale-95' : 'border-transparent opacity-50 hover:opacity-100' }}"
                         >
                             <img src="{{ Storage::url($image->url) }}" alt="" class="h-full w-full object-cover">
