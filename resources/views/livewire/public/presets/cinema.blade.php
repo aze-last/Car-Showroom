@@ -1,5 +1,6 @@
 <!-- Cinema Preset -->
 <div class="flex flex-col">
+    <h1 class="sr-only">{{ $designSettings['headline'] }}</h1>
     <!-- 1. Cinema Hero Section with Smooth Slider -->
     @if($featuredUnits->isNotEmpty())
         <section 
@@ -50,7 +51,7 @@
                             >
                                 Featured Masterpiece
                             </span>
-                            <h1 
+                            <h2 
                                 x-show="active === {{ $index }}"
                                 x-transition:enter="transition ease-out duration-1000 delay-500"
                                 x-transition:enter-start="opacity-0 translate-y-8"
@@ -58,7 +59,7 @@
                                 class="cinema-hero-h1 text-4xl md:text-8xl font-bold leading-tight text-white tracking-tighter mb-6 drop-shadow-2xl"
                             >
                                 {{ $heroUnit->name }}
-                            </h1>
+                            </h2>
                             <div 
                                 x-show="active === {{ $index }}"
                                 x-transition:enter="transition ease-out duration-1000 delay-700"
@@ -156,6 +157,7 @@
                     class="{{ $colSpan }} showroom-item relative group bg-transparent rounded-[40px] overflow-visible transition-all duration-700"
                     wire:key="unit-{{ $unit->id }}"
                 >
+                    <a href="{{ route('units.show', $unit) }}" wire:navigate class="absolute inset-0 z-30 rounded-[40px]"></a>
                     <!-- Main Card Content (Tilts) -->
                     <div class="showroom-item-inner h-full flex flex-col bg-white rounded-[40px] overflow-hidden border border-zinc-100 hover:border-zinc-200 shadow-sm transition-all duration-500">
                         <div class="relative flex-1 overflow-hidden bg-zinc-50">    

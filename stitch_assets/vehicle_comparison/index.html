@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Vehicle Comparison | SHOWROOM</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        @font-face {
+            font-family: 'BMWTypeNextLatin';
+            src: url('https://fonts.cdnfonts.com/css/bmw-type-next-pro');
+        }
+        body {
+            background-color: #000000;
+            color: #ffffff;
+            -webkit-font-smoothing: antialiased;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        .m-tricolor {
+            background: linear-gradient(90deg, #0066b1 0%, #0066b1 33.33%, #1c69d4 33.33%, #1c69d4 66.66%, #e22718 66.66%, #e22718 100%);
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 240px repeat(3, 1fr);
+        }
+        @media (max-width: 1024px) {
+            .comparison-grid {
+                grid-template-columns: 140px repeat(3, 1fr);
+            }
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-error-container": "#ffdad6",
+                        "on-primary-container": "#636565",
+                        "surface-container": "#201f1f",
+                        "tertiary-fixed-dim": "#c6c6c7",
+                        "surface-elevated": "#262626",
+                        "on-primary": "#2f3131",
+                        "on-surface-variant": "#c4c7c8",
+                        "m-red": "#e22718",
+                        "hairline": "#3c3c3c",
+                        "secondary-fixed": "#d8e2ff",
+                        "on-secondary-fixed-variant": "#004494",
+                        "surface-variant": "#353434",
+                        "surface-container-low": "#1c1b1b",
+                        "primary-container": "#e2e2e2",
+                        "success": "#0fa336",
+                        "inverse-surface": "#e5e2e1",
+                        "surface-container-highest": "#353434",
+                        "error-container": "#93000a",
+                        "on-secondary-fixed": "#001a41",
+                        "on-surface": "#e5e2e1",
+                        "surface-tint": "#c6c6c7",
+                        "m-blue-light": "#0066b1",
+                        "muted": "#7e7e7e",
+                        "surface-soft": "#0d0d0d",
+                        "warning": "#f4b400",
+                        "outline": "#8e9192",
+                        "carbon-gray": "#2b2b2b",
+                        "body": "#bbbbbb",
+                        "on-background": "#e5e2e1",
+                        "on-primary-fixed": "#1a1c1c",
+                        "background": "#141313",
+                        "surface-dim": "#141313",
+                        "surface-card": "#1a1a1a",
+                        "hairline-strong": "#262626",
+                        "surface": "#141313",
+                        "outline-variant": "#444748",
+                        "on-secondary-container": "#d4e0ff",
+                        "primary-fixed-dim": "#c6c6c7",
+                        "surface-container-lowest": "#0e0e0e",
+                        "on-secondary": "#002e69",
+                        "surface-container-high": "#2a2a2a",
+                        "on-error": "#690005",
+                        "on-tertiary-container": "#636565",
+                        "ink": "#ffffff",
+                        "on-tertiary-fixed-variant": "#454747",
+                        "tertiary": "#ffffff",
+                        "m-blue-dark": "#1c69d4",
+                        "secondary-container": "#015fca",
+                        "inverse-on-surface": "#313030",
+                        "primary": "#ffffff",
+                        "secondary": "#adc6ff",
+                        "error": "#ffb4ab",
+                        "on-tertiary": "#2f3131",
+                        "inverse-primary": "#5d5f5f",
+                        "tertiary-container": "#e2e2e2",
+                        "canvas": "#000000",
+                        "secondary-fixed-dim": "#adc6ff",
+                        "primary-fixed": "#e2e2e2",
+                        "on-primary-fixed-variant": "#454747",
+                        "on-tertiary-fixed": "#1a1c1c",
+                        "body-strong": "#e6e6e6",
+                        "tertiary-fixed": "#e2e2e2",
+                        "surface-bright": "#3a3939"
+                    },
+                    "spacing": {
+                        "xxl": "64px",
+                        "section": "96px",
+                        "md": "16px",
+                        "lg": "24px",
+                        "sm": "12px",
+                        "xxs": "4px",
+                        "xs": "8px",
+                        "xl": "40px"
+                    },
+                    "fontFamily": {
+                        "display-md": ["BMWTypeNextLatin", "sans-serif"],
+                        "display-sm": ["BMWTypeNextLatin", "sans-serif"],
+                        "display-lg": ["BMWTypeNextLatin", "sans-serif"],
+                        "caption": ["BMWTypeNextLatin", "sans-serif"],
+                        "display-xl": ["BMWTypeNextLatin", "sans-serif"],
+                        "body-sm": ["BMWTypeNextLatin Light", "sans-serif"],
+                        "title-md": ["BMWTypeNextLatin", "sans-serif"],
+                        "title-sm": ["BMWTypeNextLatin", "sans-serif"],
+                        "nav-link": ["BMWTypeNextLatin", "sans-serif"],
+                        "label-uppercase": ["BMWTypeNextLatin", "sans-serif"],
+                        "button": ["BMWTypeNextLatin", "sans-serif"],
+                        "body-md": ["BMWTypeNextLatin Light", "sans-serif"],
+                        "title-lg": ["BMWTypeNextLatin", "sans-serif"]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-canvas selection:bg-m-blue-light selection:text-white">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full h-16 bg-canvas text-primary border-b border-hairline z-50 flex justify-between items-center px-lg transition-all duration-200 ease-in-out">
+<div class="flex items-center gap-xl">
+<span class="font-display-md text-display-md text-primary tracking-tighter italic">SHOWROOM</span>
+<div class="hidden md:flex gap-lg items-center">
+<a class="font-nav-link text-nav-link uppercase tracking-[1.5px] text-primary border-b-2 border-m-blue-light pb-1" href="#">Catalog</a>
+<a class="font-nav-link text-nav-link uppercase tracking-[1.5px] text-muted hover:text-primary transition-colors" href="#">Auctions</a>
+<a class="font-nav-link text-nav-link uppercase tracking-[1.5px] text-muted hover:text-primary transition-colors" href="#">Inventory</a>
+<a class="font-nav-link text-nav-link uppercase tracking-[1.5px] text-muted hover:text-primary transition-colors" href="#">Inquiries</a>
+</div>
+</div>
+<div class="flex items-center gap-md">
+<button class="material-symbols-outlined text-muted hover:text-primary transition-colors" data-icon="notifications">notifications</button>
+<button class="material-symbols-outlined text-muted hover:text-primary transition-colors" data-icon="settings">settings</button>
+<div class="h-8 w-px bg-hairline mx-xs"></div>
+<span class="font-label-uppercase text-label-uppercase text-primary hidden lg:block">Admin</span>
+<div class="w-8 h-8 bg-surface-elevated rounded-full overflow-hidden border border-hairline">
+<img alt="User profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCtx6IHnr4cObm1f6Djq6fd1No5omlp8cIHehfOQ1ZP-eaSG5jUVTHxrFnvfXJ0LKBiMESQDhnXCmGwMQYPyTjoCTfDBCUwg0TjdQ9z-o2T7U9qnEqxCk9kIFfW4PRcWV9sSyb6eexiLmJK4yPWEvwhaZux8e2xreBbK9NsMwoFCJ2GyNnO3U5UDGdw4QDm6iy60yqzBz6vv9jwQzJaTLOMGNDy1NCz15Wtv4HUfJxYyw8mVMAGnp7VWT_3Xl-7U8YdAVZqc1OZch0l"/>
+</div>
+</div>
+</nav>
+<main class="pt-16 min-h-screen">
+<!-- Hero Comparison Header -->
+<header class="pt-section pb-xl px-lg">
+<div class="max-w-screen-2xl mx-auto">
+<h1 class="font-display-lg text-display-lg uppercase text-primary leading-none tracking-tight mb-lg">
+                    COMPARISON <span class="text-muted">MATRIX</span>
+</h1>
+<p class="font-body-md text-body-md text-muted max-w-2xl">
+                    Detailed technical benchmarks for the latest BMW M high-performance fleet. Precision-engineered metrics designed for track-side evaluation and procurement.
+                </p>
+</div>
+</header>
+<!-- M-Stripe Divider -->
+<div class="w-full h-1 m-tricolor"></div>
+<!-- Sticky Header for Vehicles -->
+<div class="sticky top-16 bg-canvas z-40 border-b border-hairline">
+<div class="comparison-grid max-w-screen-2xl mx-auto">
+<div class="bg-surface-soft p-lg flex flex-col justify-end border-r border-hairline-strong">
+<span class="font-label-uppercase text-label-uppercase text-m-blue-light">SELECT VEHICLES</span>
+</div>
+<!-- Vehicle 1 -->
+<div class="bg-canvas p-lg border-r border-hairline-strong group">
+<div class="aspect-[16/9] bg-surface-card mb-md overflow-hidden">
+<img class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500" data-alt="A side-profile shot of a BMW M4 Competition in Isle of Man Green parked on a dark, wet asphalt track at dusk. The lighting is cinematic and moody, highlighting the aggressive carbon fiber aerodynamic details and sharp body lines. The atmosphere is high-performance, technical, and minimalist, with deep shadows and vibrant automotive paint." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCmQ-y7gRF8Ex4QxG776p3_kHpg336lQsxpmoddUDPYqqzIvuh4YBHPJ7DxP92uPGpSXdAfPStaosd4moXSu_jKrfRb8j0p7_4F-h4YeplLqANKTkGK2Ot_To6vVusKLXKZW9Fdiwqbxlj9k-zEHpq56ZuwMLiRvZsHwEI9i5rJA6uRE6N0iHqC48he2bqQ4ts1xgpbRV0kNT0cmpjWuxRyyMR1L8FK_AEsyg7UU1SLfknDsCxzLKBGXVeC8n7140GDVv0_5IIYqHiy"/>
+</div>
+<h3 class="font-title-lg text-title-lg text-primary uppercase">M4 COMPETITION</h3>
+<p class="font-caption text-caption text-muted">COUPE • 2024</p>
+</div>
+<!-- Vehicle 2 -->
+<div class="bg-canvas p-lg border-r border-hairline-strong group">
+<div class="aspect-[16/9] bg-surface-card mb-md overflow-hidden">
+<img class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500" data-alt="A front-three-quarter view of a BMW M3 CS in Frozen White, positioned inside a futuristic, dark industrial garage with overhead neon strip lights reflecting on the hood. The scene is crisp and high-contrast, emphasizing the signature kidney grille and carbon fiber roof. The mood is aggressive, focused, and embodies European motorsport engineering." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDBUzj0mfVO4pQhcTqhPxsmp0SSt_IKhj6c1rcUrIOHWV5Di9V4AngQbTDtNr1HZ1iHY6nLsvW9909twH8mVwnmM-3qhmIBpqkMJb_aR9SxKwL4Y2ysAbKhGRDNQ8zQ4W_vPAZrUy6kCGAC1qIaLskbjGITwPRwzOipKevR3GESnY8UnI_PbrfujRnxHATwTxEbR7sD8MIXRLcce8L4mSIwicX9MezG0c2w5_eSp0W2Iy16v8k0uc7egC_gqXkkb1nGTsjNc5AzyRbB"/>
+</div>
+<h3 class="font-title-lg text-title-lg text-primary uppercase">M3 SEDAN CS</h3>
+<p class="font-caption text-caption text-muted">SEDAN • 2024</p>
+</div>
+<!-- Vehicle 3 -->
+<div class="bg-canvas p-lg group">
+<div class="aspect-[16/9] bg-surface-card mb-md overflow-hidden">
+<img class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500" data-alt="A close-up action shot of a BMW M8 Competition Gran Coupe in Marina Bay Blue metallic paint speeding on a professional racing circuit. The background shows motion blur of the track curbs. The lighting is bright daylight, showcasing the intense color depth and the carbon ceramic brakes peeking through the wheels. The image conveys speed and high-end luxury." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBB86PS2e9ScpeGMwqht1RqI3jUmN41L8d_FEyexF0JflCCJN_Y4qZuFlA9NrmcMCVHnqy_Rx4_Y8MTm6Q6WMhgC3t5tTSQOpLMkS16F3mDGknxoymQXIJEjevfSVSS-5HuWIsMsBrd97hX--LQZ7zD-agix09Moyxt9k0f0ZU91dRav8EtChAm8ov1JintCKN2ZtwpsFL3M1huy3pgFHuxoPbGrGLjYnjMbFKwc8map2qoueK6CLm-_jQek3SdXn71JspJSSoW3Wek"/>
+</div>
+<h3 class="font-title-lg text-title-lg text-primary uppercase">M8 COMPETITION</h3>
+<p class="font-caption text-caption text-muted">GRAN COUPE • 2024</p>
+</div>
+</div>
+</div>
+<!-- Comparison Table Section -->
+<section class="max-w-screen-2xl mx-auto pb-section">
+<!-- Category: Performance -->
+<div class="bg-surface-elevated py-xs px-lg border-b border-hairline-strong">
+<span class="font-label-uppercase text-label-uppercase text-primary">PERFORMANCE</span>
+</div>
+<!-- Row: Engine -->
+<div class="comparison-grid border-b border-hairline-strong">
+<div class="bg-surface-soft p-lg border-r border-hairline-strong">
+<span class="font-label-uppercase text-label-uppercase text-muted">ENGINE TYPE</span>
+</div>
+<div class="p-lg border-r border-hairline-strong">
+<span class="font-title-md text-title-md text-primary">3.0L M TwinPower Turbo Inline-6</span>
+</div>
+<div class="p-lg border-r border-hairline-strong">
+<span class="font-title-md text-title-md text-primary">3.0L M TwinPower Turbo Inline-6 (CS)</span>
+</div>
+<div class="p-lg">
+<span class="font-title-md text-title-md text-primary">4.4L M TwinPower Turbo V-8</span>
+</div>
+</div>
+<!-- Row: Horsepower -->
+<div class="comparison-grid border-b border-hairline-strong">
+<div class="bg-surface-soft p-lg border-r border-hairline-strong">
+<span class="font-label-uppercase text-label-uppercase text-muted">POWER (HP)</span>
+</div>
+<div class="p-lg border-r border-hairline-strong">
+<span class="font-title-md text-title-md text-primary">503 HP</span>
+</div>
+<div class="p-lg border-r border-hairline-strong">
+<span class="font-title-md text-title-md text-primary">543 HP</span>
+</div>
+<div class="p-lg">
+<span class="font-title-md text-title-md text-primary">617 HP</span>
+</div>
+</div>
+<!-- Row: 0-60 mph -->
+<div class="comparison-grid border-b border-hairline-strong">
+<div class="bg-surface-soft p-lg border-r border-hairline-strong">
+<span class="font-label-uppercase text-label-uppercase text-muted">0-60 MPH</span>
+</div>
+<div class="p-lg border-r border-hairline-strong">
+<span class="font-title-md text-title-md text-primary">3.4 SEC</span>
+</div>
+<div class="p-lg border-r border-hairline-strong">
+<span class="font-title-md text-title-md text-primary">3.2 SEC</span>
+</div>
+<div class="p-lg">
+<span class="font-title-md text-title-md text-primary">3.0 SEC</span>
+</div>
+</div>
+<!-- Category: Chassis & Aero -->
+<div class="bg-surface-elevated py-xs px-lg border-b border-hairline-strong">
+<span class="font-label-uppercase text-label-uppercase text-primary">CHASSIS &amp; AERODYNAMICS</span>
+</div>
+<!-- Row: Weight -->
+<div class="comparison-grid border-b border-hairline-strong">
+<div class="bg-surface-soft p-lg border-r border-hairline-strong">
+<span class="font-label-uppercase text-label-uppercase text-muted">CURB WEIGHT</span>
+</div>
+<div class="p-lg border-r border-hairline-strong">
+<span class="font-title-md text-title-md text-primary">3,830 LBS</span>
+</div>
+<div class="p-lg border-r border-hairline-strong">
+<span class="font-title-md text-title-md text-primary">3,780 LBS</span>
+</div>
+<div class="p-lg">
+<span class="font-title-md text-title-md text-primary">4,480 LBS</span>
+</div>
+</div>
+<!-- Row: Transmission -->
+<div class="comparison-grid border-b border-hairline-strong">
+<div class="bg-surface-soft p-lg border-r border-hairline-strong">
+<span class="font-label-uppercase text-label-uppercase text-muted">DRIVETRAIN</span>
+</div>
+<div class="p-lg border-r border-hairline-strong">
+<span class="font-title-md text-title-md text-primary">M xDrive AWD</span>
+</div>
+<div class="p-lg border-r border-hairline-strong">
+<span class="font-title-md text-title-md text-primary">M xDrive CS-Tuned</span>
+</div>
+<div class="p-lg">
+<span class="font-title-md text-title-md text-primary">M xDrive AWD</span>
+</div>
+</div>
+<!-- Row: Brakes -->
+<div class="comparison-grid border-b border-hairline-strong">
+<div class="bg-surface-soft p-lg border-r border-hairline-strong">
+<span class="font-label-uppercase text-label-uppercase text-muted">BRAKING SYSTEM</span>
+</div>
+<div class="p-lg border-r border-hairline-strong">
+<span class="font-title-md text-title-md text-primary">M Compound Brakes</span>
+</div>
+<div class="p-lg border-r border-hairline-strong">
+<span class="font-title-md text-title-md text-primary">M Carbon Ceramic</span>
+</div>
+<div class="p-lg">
+<span class="font-title-md text-title-md text-primary">M Carbon Ceramic</span>
+</div>
+</div>
+<!-- Category: Pricing -->
+<div class="bg-surface-elevated py-xs px-lg border-b border-hairline-strong">
+<span class="font-label-uppercase text-label-uppercase text-primary">ACQUISITION</span>
+</div>
+<div class="comparison-grid">
+<div class="bg-surface-soft p-lg border-r border-hairline-strong">
+<span class="font-label-uppercase text-label-uppercase text-muted">MSRP STARTING</span>
+</div>
+<div class="p-lg border-r border-hairline-strong">
+<span class="font-display-sm text-display-sm text-primary">$82,200</span>
+<button class="mt-md block w-full py-sm border border-primary text-primary font-button text-button uppercase hover:bg-white hover:text-black transition-all">CONFIGURE</button>
+</div>
+<div class="p-lg border-r border-hairline-strong">
+<span class="font-display-sm text-display-sm text-primary">$118,700</span>
+<button class="mt-md block w-full py-sm border border-primary text-primary font-button text-button uppercase hover:bg-white hover:text-black transition-all">CONFIGURE</button>
+</div>
+<div class="p-lg">
+<span class="font-display-sm text-display-sm text-primary">$138,800</span>
+<button class="mt-md block w-full py-sm border border-primary text-primary font-button text-button uppercase hover:bg-white hover:text-black transition-all">CONFIGURE</button>
+</div>
+</div>
+</section>
+<!-- Technical Footer Quote -->
+<section class="py-section px-lg border-t border-hairline-strong">
+<div class="max-w-4xl mx-auto text-center">
+<span class="material-symbols-outlined text-4xl text-m-blue-light mb-md" data-icon="terminal">terminal</span>
+<blockquote class="font-display-sm text-display-sm uppercase leading-tight italic">
+                    "Precision is not an option. It is the fundamental requirement of everything that carries the M badge."
+                </blockquote>
+<div class="mt-lg flex justify-center gap-xs">
+<div class="w-8 h-1 m-tricolor"></div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="w-full py-xl bg-canvas text-body font-caption text-caption uppercase border-t-4 border-m-blue-dark">
+<div class="flex flex-col items-center justify-center gap-md px-lg">
+<span class="font-button text-button text-primary">SHOWROOM MOTORSPORT ENGINEERING</span>
+<div class="flex gap-lg">
+<a class="text-muted hover:text-primary transition-opacity" href="#">Legal</a>
+<a class="text-muted hover:text-primary transition-opacity" href="#">Privacy</a>
+<a class="text-muted hover:text-primary transition-opacity" href="#">Terms of Service</a>
+<a class="text-muted hover:text-primary transition-opacity" href="#">Press</a>
+</div>
+<p class="mt-md opacity-80">© 2024 SHOWROOM MOTORSPORT ENGINEERING. ALL RIGHTS RESERVED.</p>
+</div>
+</footer>
+<!-- Micro-interaction Scripts -->
+<script>
+        document.addEventListener('scroll', () => {
+            const nav = document.querySelector('nav');
+            if (window.scrollY > 10) {
+                nav.classList.add('bg-black/90', 'backdrop-blur-md');
+            } else {
+                nav.classList.remove('bg-black/90', 'backdrop-blur-md');
+            }
+        });
+
+        // Simple observer for entrance animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('opacity-100', 'translate-y-0');
+                    entry.target.classList.remove('opacity-0', 'translate-y-4');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.comparison-grid > div').forEach(el => {
+            el.classList.add('transition-all', 'duration-700', 'opacity-0', 'translate-y-4');
+            observer.observe(el);
+        });
+    </script>
+</body></html>

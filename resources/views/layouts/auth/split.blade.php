@@ -81,15 +81,9 @@
                                 {{ substr($shopName, 0, 1) }}
                             @endif
                         </a>
-                        
-                        <div class="flex items-center gap-3">
-                            <span class="h-px w-8 bg-brand-primary"></span>
-                            <h2 class="text-[10px] font-black uppercase tracking-[0.5em] text-brand-primary">Administrative Gateway</h2>
-                        </div>
-                        <h1 class="text-4xl font-bold tracking-tighter text-black leading-none">Command Center</h1>
-                        <p class="text-[13px] text-zinc-400 font-medium leading-relaxed max-w-sm">
-                            Authorized access to the <strong>{{ $shopName }}</strong> inventory and auction protocols.
-                        </p>
+                        <h1 class="text-3xl font-bold tracking-tight text-center lg:text-left">
+                           Login into {{ $shopName }} Website
+                        </h1>
                     </div>
 
                     <div class="showroom-auth-content p-8 md:p-10 bg-white/70 backdrop-blur-2xl rounded-[40px] border border-white shadow-[0_32px_80px_-20px_rgba(0,0,0,0.08)] animate-showroom-fade-up" style="animation-delay: 100ms">

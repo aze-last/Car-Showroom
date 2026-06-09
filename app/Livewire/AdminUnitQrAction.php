@@ -16,6 +16,7 @@ use Livewire\WithFileUploads;
 class AdminUnitQrAction extends Component
 {
     use WithFileUploads;
+
     public Unit $unit;
 
     public ?UnitStatusLog $lastLog = null;
@@ -25,9 +26,13 @@ class AdminUnitQrAction extends Component
     public ?string $reason = null;
 
     public bool $is_guest = false;
+
     public ?int $buyer_id = null;
+
     public ?string $guest_name = null;
+
     public ?string $guest_contact = null;
+
     public $handover_image;
 
     public function mount(Unit $unit): void

@@ -57,13 +57,13 @@ return [
                 'name' => 'The Cinema',
                 'description' => 'Visual-heavy parallax focus.',
             ],
-            'marketplace' => [
-                'name' => 'The Marketplace',
-                'description' => 'Activity and inventory browsing.',
+            'bmw_m' => [
+                'name' => 'BMW M-Performance',
+                'description' => 'Motorsport-engineered interface with black canvas and bold typography.',
             ],
-            'minimalist' => [
-                'name' => 'The Minimalist',
-                'description' => 'Lean, efficient inventory grid.',
+            'nintendo_2001' => [
+                'name' => 'Nintendo 2001',
+                'description' => 'A brushed-periwinkle "console chrome" interface inspired by 2001 hardware aesthetics.',
             ],
         ],
     ],

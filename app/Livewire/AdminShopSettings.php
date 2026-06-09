@@ -120,8 +120,8 @@ class AdminShopSettings extends Component
         }
 
         // Infrastructure
-        $this->s3_bucket = config('filesystems.disks.s3.bucket', 'gallery-assets-prod');
-        $this->s3_region = config('filesystems.disks.s3.region', 'ap-southeast-1');
+        $this->s3_bucket = config('filesystems.disks.s3.bucket') ?? 'gallery-assets-prod';
+        $this->s3_region = config('filesystems.disks.s3.region') ?? 'ap-southeast-1';
         $this->primary_color = Setting::get('primary_color', '#000000');
         $this->accent_tone = Setting::get('accent_tone', '#565e74');
 

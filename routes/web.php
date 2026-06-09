@@ -38,6 +38,22 @@ Route::get('/about', function () {
     return view('pages.about');
 })->name('about');
 
+Route::get('/sitemap.xml', function () {
+    $units = \App\Models\Unit::where('status', \App\Models\Unit::STATUS_AVAILABLE)->latest()->get();
+    $content = view('pages.sitemap', compact('units'))->render();
+
+    return response($content, 200)
+        ->header('Content-Type', 'text/xml');
+})->name('sitemap');
+
+Route::get('/privacy', function () {
+    return view('pages.privacy');
+})->name('privacy');
+
+Route::get('/terms', function () {
+    return view('pages.terms');
+})->name('terms');
+
 /**
  * Admin & Staff Routes
  */

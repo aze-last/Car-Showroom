@@ -4,7 +4,6 @@ namespace App\Livewire;
 
 use App\Models\Unit;
 use Illuminate\Contracts\View\View;
-use Livewire\Attributes\Session;
 use Livewire\Attributes\On;
 use Livewire\Component;
 
@@ -42,12 +41,13 @@ class UnitDetail extends Component
             session()->flash('toast', ['message' => "Added $name to Comparison", 'type' => 'success']);
             session()->put('compare_ids', $this->compareIds);
             $this->dispatch('compare-updated');
-            
+
             // Redirect back to catalog so they can select the next one
             $this->redirect(route('home'), navigate: true);
+
             return;
         } else {
-            $this->dispatch('toast', message: "Comparison limit reached (max 3)", type: 'info');
+            $this->dispatch('toast', message: 'Comparison limit reached (max 3)', type: 'info');
             $this->dispatch('compare-updated');
         }
     }
@@ -89,11 +89,16 @@ class UnitDetail extends Component
             ->take(3)
             ->get();
 
+        $shopName = \App\Models\Setting::get('shop_name', 'The Gallery');
+        $vehicleYearName = ($this->unit->year ? $this->unit->year.' ' : '').$this->unit->name;
+
         return view('livewire.unit-detail', [
             'activeImage' => $image,
             'similarUnits' => $similarUnits,
         ])->layout('components.layouts.public-showroom', [
-            'title' => $this->unit->name,
+            'title' => $vehicleYearName.' - Certified Luxury | '.$shopName,
+            'description' => 'Inspect specs, images, and history for the certified '.$vehicleYearName.'. Request information or participate in live bidding at '.$shopName.' ✓',
+            'metaImage' => $this->unit->mainImage ? \Illuminate\Support\Facades\Storage::url($this->unit->mainImage->url) : null,
         ]);
     }
 }

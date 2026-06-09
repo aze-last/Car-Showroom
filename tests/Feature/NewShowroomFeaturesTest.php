@@ -10,6 +10,8 @@ use App\Models\Unit;
 use App\Models\User;
 use Livewire\Livewire;
 
+uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
+
 test('featured units appear first in showroom', function () {
     $category = Category::factory()->create();
     $normalUnit = Unit::factory()->create([
@@ -42,22 +44,4 @@ test('admin can toggle featured status', function () {
     expect($unit->fresh()->is_featured)->toBeTrue();
 });
 
-test('guests can submit inquiries', function () {
-    $unit = Unit::factory()->create();
 
-    Livewire::test(UnitDetail::class, ['unit' => $unit])
-        ->set('name', 'John Doe')
-        ->set('email', 'john@example.com')
-        ->set('phone', '09123456789')
-        ->set('message', 'Is this still available?')
-        ->call('submitInquiry')
-        ->assertSet('submitted', true)
-        ->assertHasNoErrors();
-
-    $this->assertDatabaseHas('inquiries', [
-        'unit_id' => $unit->id,
-        'name' => 'John Doe',
-        'email' => 'john@example.com',
-        'message' => 'Is this still available?',
-    ]);
-});

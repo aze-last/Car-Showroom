@@ -6,21 +6,99 @@
         <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
         <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=Bebas+Neue&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet"/>
         @include('partials.theme-styles')
-    </head>
-    @php
-        use App\Models\Setting;
-        use App\Models\Category;
-    @endphp
+        
+        @php
+            $designLayout = \App\Models\Setting::get('design_layout', 'cinema');
+        @endphp
 
-    <body class="min-h-screen bg-gallery-background text-zinc-900 antialiased font-hanken" x-data="{ mobileMenuOpen: false }">
-        <header class="fixed top-0 w-full z-50 bg-gallery-surface/90 backdrop-blur-md transition-all duration-300">
+        @if($designLayout === 'bmw_m')
+            <style>
+                @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&family=Saira+Condensed:wght@400;700&display=swap');
+                
+                body.theme-bmw-m {
+                    background-color: #000000 !important;
+                    color: #ffffff !important;
+                    font-family: 'Inter', sans-serif !important;
+                }
+
+                /* Header Overrides */
+                .theme-bmw-m header { background-color: rgba(0, 0, 0, 0.95) !important; border-bottom: 1px solid #3c3c3c !important; }
+                .theme-bmw-m header a.text-black { color: #ffffff !important; border-bottom-color: #ffffff !important; }
+                .theme-bmw-m header a.text-zinc-500 { color: #bbbbbb !important; }
+                .theme-bmw-m header a.text-zinc-500:hover { color: #ffffff !important; }
+                .theme-bmw-m header span.text-black { color: #ffffff !important; }
+                .theme-bmw-m header button svg { stroke: #ffffff !important; }
+                .theme-bmw-m header .bg-black { background-color: #ffffff !important; color: #000000 !important; border-radius: 0 !important;}
+                
+                /* Footer Overrides */
+                .theme-bmw-m footer { background-color: #000000 !important; border-top: 1px solid #3c3c3c !important; color: #bbbbbb !important;}
+                .theme-bmw-m footer a:hover { color: #ffffff !important; }
+
+                /* Global Component Overrides for other pages (Auction/About/Garage) */
+                .theme-bmw-m .bg-white { background-color: #1a1a1a !important; border-color: #3c3c3c !important; color: #ffffff !important;}
+                .theme-bmw-m .bg-zinc-50 { background-color: #0d0d0d !important; border-color: #262626 !important; }
+                .theme-bmw-m .text-zinc-900, .theme-bmw-m .text-black { color: #ffffff !important; }
+                .theme-bmw-m .text-zinc-500, .theme-bmw-m .text-zinc-600 { color: #bbbbbb !important; }
+                .theme-bmw-m .border-zinc-100, .theme-bmw-m .border-zinc-200 { border-color: #3c3c3c !important; }
+                .theme-bmw-m .shadow-sm, .theme-bmw-m .shadow-md, .theme-bmw-m .shadow-lg, .theme-bmw-m .shadow-xl { box-shadow: none !important; border: 1px solid #262626 !important; }
+                .theme-bmw-m .rounded-3xl, .theme-bmw-m .rounded-2xl, .theme-bmw-m .rounded-xl, .theme-bmw-m .rounded-lg { border-radius: 0 !important; }
+
+                /* Typography overrides */
+                .theme-bmw-m .font-hanken { font-family: 'Inter', sans-serif !important; }
+                .theme-bmw-m h1, .theme-bmw-m h2, .theme-bmw-m h3, .theme-bmw-m h4, .theme-bmw-m h5, .theme-bmw-m h6 { font-family: 'Saira Condensed', sans-serif !important; text-transform: uppercase; }
+
+                /* Top Nav M-Stripe globally */
+                .theme-bmw-m::before {
+                    content: '';
+                    position: fixed;
+                    top: 0; left: 0; right: 0; height: 4px; z-index: 9999;
+                    background: linear-gradient(90deg, #0066b1 0%, #0066b1 33.33%, #1c69d4 33.33%, #1c69d4 66.66%, #e22718 66.66%, #e22718 100%);
+                }
+            </style>
+        @elseif($designLayout === 'nintendo_2001')
+            <style>
+                body.theme-nintendo-2001 {
+                    background-color: #7a8aba !important;
+                    color: #21242e !important;
+                    font-family: Arial, sans-serif !important;
+                }
+
+                .theme-nintendo-2001 header { 
+                    background-color: #21242e !important; 
+                    background-image: radial-gradient(rgba(255,255,255,0.05) 1px, transparent 0) !important;
+                    background-size: 4px 4px !important;
+                    border-bottom: 2px solid #5a5f8c !important; 
+                    height: 50px !important;
+                }
+                .theme-nintendo-2001 header .max-w-7xl { height: 50px !important; }
+                .theme-nintendo-2001 header a, .theme-nintendo-2001 header span { color: #e48600 !important; font-weight: 900 !important; text-transform: uppercase !important; font-size: 11px !important; }
+                .theme-nintendo-2001 header a:hover { color: #ffffff !important; }
+                .theme-nintendo-2001 header .bg-black { background-color: #f68d1f !important; color: #ffffff !important; border-radius: 2px !important; }
+                
+                .theme-nintendo-2001 footer { background-color: #21242e !important; border-top: 4px solid #3d4f97 !important; }
+                
+                .theme-nintendo-2001 .bg-white, .theme-nintendo-2001 .bg-zinc-50 { 
+                    background-color: #7a8aba !important; 
+                    border: 2px solid #3d4f97 !important;
+                    box-shadow: inset 2px 2px 0 rgba(255,255,255,0.2) !important;
+                }
+                
+                .theme-nintendo-2001 .text-zinc-900, .theme-nintendo-2001 .text-black { color: #21242e !important; }
+                .theme-nintendo-2001 .rounded-3xl, .theme-nintendo-2001 .rounded-2xl, .theme-nintendo-2001 .rounded-xl { border-radius: 4px !important; }
+            </style>
+        @endif
+    </head>
+
+    <body class="min-h-screen antialiased {{ $designLayout === 'bmw_m' ? 'theme-bmw-m font-inter' : ($designLayout === 'nintendo_2001' ? 'theme-nintendo-2001' : 'bg-gallery-background text-zinc-900 font-hanken') }}" x-data="{ mobileMenuOpen: false }">
+
+        <header class="fixed top-0 w-full z-50 transition-all duration-300 {{ $designLayout === 'bmw_m' ? 'bg-black/95 border-b border-[#3c3c3c]' : 'bg-gallery-surface/90 backdrop-blur-md' }}">
             <div class="flex justify-between items-center w-full px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto h-20">
                 <div class="flex items-center gap-6">
                     <a href="{{ route('home') }}" class="flex items-center gap-3 transition-transform hover:scale-105">
-                        @if($logo = Setting::get('design_logo_path'))
-                            <img src="{{ Storage::url($logo) }}" class="h-10 w-auto object-contain" alt="{{ Setting::get('shop_name', 'The Gallery') }}">
+                        @if($logo = \App\Models\Setting::get('design_logo_path'))
+                            <img src="{{ Storage::url($logo) }}" class="h-10 w-auto object-contain" alt="{{ \App\Models\Setting::get('shop_name', 'The Gallery') }}">
                         @else
-                            <span class="text-3xl font-bold tracking-tighter text-black">{{ Setting::get('shop_name', 'The Gallery') }}</span>
+                            <span class="text-3xl font-bold tracking-tighter text-black">{{ \App\Models\Setting::get('shop_name', 'The Gallery') }}</span>
                         @endif
                     </a>
                 </div>
@@ -28,14 +106,14 @@
                 <nav class="hidden md:flex gap-8 items-center h-full">
                     <a href="{{ route('home') }}" wire:navigate class="text-[12px] font-semibold uppercase tracking-widest {{ request()->routeIs('home') && !request('category') ? 'text-black border-b border-black pb-1' : 'text-zinc-500 hover:text-black pb-1' }} transition-all duration-300">Catalog</a>
                     
-                    @if(Setting::get('design_show_auctions', true))
+                    @if(\App\Models\Setting::get('design_show_auctions', true))
                         <a href="{{ route('auction.hall') }}" wire:navigate class="relative text-[12px] font-semibold uppercase tracking-widest {{ request()->routeIs('auction.*') ? 'text-black border-b border-black pb-1' : 'text-zinc-500 hover:text-black pb-1' }} transition-all duration-300">
                             Auction
                             <livewire:public.auction-nav-badge />
                         </a>
                     @endif
 
-                    @if(Setting::get('design_show_comparison', true))
+                    @if(\App\Models\Setting::get('design_show_comparison', true))
                         <a href="{{ route('comparison') }}" wire:navigate class="text-[12px] font-semibold uppercase tracking-widest {{ request()->routeIs('comparison') ? 'text-black border-b border-black pb-1' : 'text-zinc-500 hover:text-black pb-1' }} transition-all duration-300">Comparison</a>
                     @endif
 
@@ -107,14 +185,14 @@
                 <div class="px-4 pt-2 pb-6 space-y-1">
                     <a href="{{ route('home') }}" wire:navigate class="block px-3 py-4 text-sm font-bold uppercase tracking-widest text-black border-b border-zinc-50">Catalog</a>
                     
-                    @if(Setting::get('design_show_auctions', true))
+                    @if(\App\Models\Setting::get('design_show_auctions', true))
                         <a href="{{ route('auction.hall') }}" wire:navigate class="block px-3 py-4 text-sm font-bold uppercase tracking-widest text-black border-b border-zinc-50 flex justify-between items-center">
                             Auction
                             <livewire:public.auction-nav-badge />
                         </a>
                     @endif
 
-                    @if(Setting::get('design_show_comparison', true))
+                    @if(\App\Models\Setting::get('design_show_comparison', true))
                         <a href="{{ route('comparison') }}" wire:navigate class="block px-3 py-4 text-sm font-bold uppercase tracking-widest text-black border-b border-zinc-50">Comparison</a>
                     @endif
 
@@ -198,6 +276,20 @@
             </template>
         </div>
 
+        <footer class="bg-zinc-950 text-zinc-400 py-12 border-t border-zinc-900 mt-24">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-6">
+                <p class="text-xs">&copy; {{ date('Y') }} {{ \App\Models\Setting::get('shop_name', 'The Gallery') }}. All rights reserved.</p>
+                <div class="flex flex-wrap gap-6 text-[10px] uppercase tracking-widest font-bold">
+                    <a href="{{ route('home') }}" wire:navigate class="hover:text-white transition-colors">Catalog</a>
+                    <a href="{{ route('about') }}" wire:navigate class="hover:text-white transition-colors">About</a>
+                    <a href="{{ route('privacy') }}" wire:navigate class="hover:text-white transition-colors">Privacy Policy</a>
+                    <a href="{{ route('terms') }}" wire:navigate class="hover:text-white transition-colors">Terms of Service</a>
+                    <a href="/sitemap.xml" target="_blank" class="hover:text-white transition-colors">Sitemap</a>
+                </div>
+            </div>
+        </footer>
+
         @fluxScripts
+        @stack('scripts')
     </body>
 </html>

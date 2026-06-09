@@ -63,7 +63,7 @@
         @if (Route::has('register'))
             <div class="border-t border-zinc-50 pt-6 text-center">
                 <p class="text-[10px] font-black uppercase tracking-[0.1em] text-zinc-300">
-                    No account? <a href="{{ route('register') }}" class="text-zinc-400 hover:text-zinc-900 transition-colors">Contact management</a>
+                    No account? <a href="{{ route('register') }}" class="text-zinc-400 hover:text-zinc-900 transition-colors">Sign Up</a>
                 </p>
             </div>
         @endif

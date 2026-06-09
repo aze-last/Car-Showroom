@@ -1,41 +1,60 @@
+<div>
+    @php
+        use App\Models\Unit;
+        use Illuminate\Support\Facades\Storage;
+    @endphp
+
+    <script type="application/ld+json">
+    {!! json_encode([
+    '@context' => 'https://schema.org',
+    '@type' => 'Car',
+    'name' => $unit->name,
+    'image' => $unit->mainImage ? Storage::url($unit->mainImage->url) : '',
+    'description' => $unit->description ?: 'Premium curated listing.',
+    'brand' => [
+        '@type' => 'Brand',
+        'name' => $unit->category?->name ?? 'Vehicle'
+    ],
+    'offers' => [
+        '@type' => 'Offer',
+        'priceCurrency' => 'PHP',
+        'price' => $unit->price_php,
+        'itemCondition' => 'https://schema.org/UsedCondition',
+        'availability' => $unit->status === Unit::STATUS_AVAILABLE ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock'
+    ]
+], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) !!}
+</script>
+
 @php
-    use App\Models\Unit;
-    use Illuminate\Support\Facades\Storage;
+    $designLayout = \App\Models\Setting::get('design_layout', 'cinema');
 @endphp
 
-<main class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 flex flex-col lg:flex-row gap-16 relative animate-showroom-fade-up">
+@if($designLayout === 'bmw_m')
+    @include('livewire.public.presets.details_bmw_m')
+@elseif($designLayout === 'nintendo_2001')
+    @include('livewire.public.presets.details_nintendo_2001')
+@else
+    <main class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 flex flex-col lg:flex-row gap-16 relative animate-showroom-fade-up">
     <!-- Main Content Column -->
     <div class="flex-1 flex flex-col gap-12 min-w-0">
         <!-- Hero Carousel Area -->
         <section class="w-full relative rounded-[32px] overflow-hidden border border-gallery-outline/20 ambient-shadow bg-gallery-surface-lowest group">
-            <div class="aspect-[16/9] w-full relative">
-                @if ($activeImage)
-                    <img 
-                        src="{{ Storage::url($activeImage->url) }}" 
-                        alt="{{ $unit->name }}" 
-                        class="w-full h-full object-cover object-center absolute inset-0 transition-transform duration-1000 group-hover:scale-105 {{ $unit->status === Unit::STATUS_SOLD ? 'grayscale opacity-60' : '' }}"
-                    >
-                @endif
-                
-                <!-- Carousel Controls -->
-                @if($unit->images->count() > 1)
-                    <div class="absolute bottom-6 left-0 right-0 flex justify-center items-center gap-4 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                        <button wire:click="previousImage" class="w-10 h-10 rounded-full bg-white/80 backdrop-blur text-black flex items-center justify-center hover:bg-white transition-colors border border-gallery-outline/20">   
-                            <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="2.5"><path d="M15 18L9 12L15 6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                        </button>
-                        <div class="flex gap-2">
-                            @foreach($unit->images as $index => $img)
-                                <div class="w-2 h-2 rounded-full {{ $currentImageIndex === $index ? 'bg-black' : 'bg-black/20' }}"></div>
-                            @endforeach
-                        </div>
-                        <button wire:click="nextImage" class="w-10 h-10 rounded-full bg-white/80 backdrop-blur text-black flex items-center justify-center hover:bg-white transition-colors border border-gallery-outline/20">   
-                            <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="2.5"><path d="M9 18L15 12L9 6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                        </button>
+            <div class="w-full relative overflow-x-auto snap-x snap-mandatory flex no-scrollbar scroll-smooth h-full min-h-[400px] lg:min-h-[500px]">
+                @foreach($unit->images as $index => $img)
+                    <div class="slide min-w-full w-full h-full overflow-hidden snap-center relative aspect-[16/9]" wire:key="slide-{{ $img->id }}">
+                        <img 
+                            src="{{ Storage::url($img->url) }}" 
+                            alt="{{ $unit->name }} - {{ $index + 1 }}" 
+                            class="card-parallax w-full h-full object-cover object-center absolute inset-0 {{ $unit->status === Unit::STATUS_SOLD ? 'grayscale opacity-60' : '' }}"
+                        >
                     </div>
-                @endif
+                @endforeach
+                
+                <!-- Overlay Overlay for text/status if needed -->
+                <div class="absolute inset-0 pointer-events-none bg-gradient-to-t from-black/20 via-transparent to-transparent"></div>
 
                 <!-- Floating Tags -->
-                <div class="absolute top-6 left-6 flex gap-2">
+                <div class="absolute top-6 left-6 flex gap-2 pointer-events-none">
                     <span class="px-4 py-2 rounded-full bg-white/80 backdrop-blur font-bold text-[10px] uppercase tracking-widest text-black border border-gallery-outline/20 shadow-sm">
                         {{ $unit->status === Unit::STATUS_AVAILABLE ? 'In Stock' : 'Archived' }}
                     </span>
@@ -45,12 +64,12 @@
                 </div>
             </div>
             
-            <!-- Thumbnails -->
+            <!-- Thumbnails (Kept for manual navigation/anchors) -->
             @if($unit->images->count() > 1)
                 <div class="p-4 flex gap-4 overflow-x-auto bg-gallery-surface-lowest border-t border-gallery-outline/10 hide-scrollbar">
                     @foreach ($unit->images as $index => $image)
                         <button
-                            wire:click="$set('currentImageIndex', {{ $index }})"
+                            onclick="this.closest('section').querySelector('.w-full').scrollTo({ left: {{ $index }} * this.closest('section').querySelector('.w-full').offsetWidth, behavior: 'smooth' })"
                             class="w-32 h-20 rounded-2xl overflow-hidden flex-shrink-0 border-2 transition-all duration-300 {{ $currentImageIndex === $index ? 'border-black shadow-lg scale-95' : 'border-transparent opacity-50 hover:opacity-100' }}"
                         >
                             <img src="{{ Storage::url($image->url) }}" alt="" class="h-full w-full object-cover">
@@ -157,7 +176,7 @@
         <!-- Similar Units (Acquaintances) -->
         @if($similarUnits->isNotEmpty())
             <div class="mt-12 space-y-8">
-                <h2 class="text-[12px] font-bold uppercase tracking-[0.4em] text-black">Acquaintances</h2>
+                <h2 class="text-[12px] font-bold uppercase tracking-[0.4em] text-black">More Like This</h2>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                     @foreach ($similarUnits as $sUnit)
                         <a href="{{ route('units.show', $sUnit) }}" wire:navigate class="group flex flex-col gap-6" wire:key="similar-{{ $sUnit->id }}">
@@ -229,4 +248,6 @@
             @endauth
         </div>
     </aside>
-</main>
+    </main>
+@endif
+</div>

@@ -167,6 +167,28 @@ select:focus[data-flux-control] {
     .admin-toast {
         @apply transition-all duration-300 ease-out;
     }
+
+    .slide {
+        view-timeline: --slide inline;
+    }
+
+    .slide .card-parallax {
+        animation: parallax-scroll linear both;
+        animation-timeline: --slide;
+        animation-range: cover;
+    }
+}
+
+@keyframes parallax-scroll {
+    0% {
+        transform: translateX(-15%);
+    }
+    50% {
+        transform: translateX(0%);
+    }
+    100% {
+        transform: translateX(15%);
+    }
 }
 
 @media (min-width: 1024px) {

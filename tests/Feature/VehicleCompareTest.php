@@ -18,8 +18,9 @@ it('can add units to compare', function () {
 it('can remove units from compare', function () {
     $unit1 = Unit::factory()->create();
 
+    session()->put('compare_ids', [$unit1->id]);
+
     Livewire::test(PublicShowroom::class)
-        ->set('compareIds', [$unit1->id])
         ->call('toggleCompare', $unit1->id)
         ->assertSet('compareIds', []);
 });
@@ -49,9 +50,10 @@ it('fetches selected units in order', function () {
     $unit1 = Unit::factory()->create(['name' => 'Car A']);
     $unit2 = Unit::factory()->create(['name' => 'Car B']);
 
-    Livewire::test(PublicShowroom::class)
-        ->call('toggleCompare', $unit2->id)
-        ->call('toggleCompare', $unit1->id)
+    // Set the session directly to simulate comparison selection
+    session()->put('compare_ids', [$unit2->id, $unit1->id]);
+
+    Livewire::test(\App\Livewire\Public\ComparisonTray::class)
         ->assertCount('selectedUnits', 2)
         ->assertSee('Car B')
         ->assertSee('Car A');

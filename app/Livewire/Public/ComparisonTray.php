@@ -6,7 +6,6 @@ use App\Models\Unit;
 use Illuminate\Contracts\View\View;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\On;
-use Livewire\Attributes\Session;
 use Livewire\Component;
 
 class ComparisonTray extends Component
@@ -31,7 +30,7 @@ class ComparisonTray extends Component
         if (in_array($id, $this->compareIds)) {
             $this->compareIds = array_values(array_diff($this->compareIds, [$id]));
             session()->put('compare_ids', $this->compareIds);
-            
+
             $unit = Unit::find($id);
             $name = $unit ? $unit->name : 'Asset';
             $this->dispatch('toast', message: "Removed $name from Comparison", type: 'info');
@@ -60,7 +59,7 @@ class ComparisonTray extends Component
     public function render(): View
     {
         $showComparison = \App\Models\Setting::get('design_show_comparison', true)
-            && !request()->routeIs('comparison');
+            && ! request()->routeIs('comparison');
 
         return view('livewire.public.comparison-tray', [
             'showComparison' => $showComparison,

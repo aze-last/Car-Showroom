@@ -40,12 +40,12 @@ The application follows a **"Premium White"** aesthetic with high-contrast eleme
 ## Key Features
 - **Public Showroom:** Advanced filtering (Categories, Search, Sort) with multiple layout presets:
     - `Cinema`: High-impact hero with parallax and dynamic bento grid.
-    - `Marketplace`: Utility-focused grid for large inventories.
+    - `BMW M-Performance`: Motorsport-engineered interface with black canvas and bold typography.
     - `Minimalist`: Clean, editorial-style presentation.
 - **Auction House:** Real-time bidding, Bid Deposit verification (admin-verified proof of payment), and "My Garage" for winning bids.
-- **Vehicle Comparison:** Neutral side-by-side breakdown for up to 3 vehicles with a persistent tray.
+- **Vehicle Comparison:** Neutral side-by-side breakdown for up to 3 vehicles with a persistent, reactive global comparison tray, interactive empty slots that link back to the catalog, and automatic catalog redirection with toast notifications for picking assets.
 - **Admin Command Center:**
-    - **Inventory:** Full CRUD with QR code generation for quick status updates.
+    - **Inventory:** Full CRUD with QR code generation for quick status updates, including a dedicated "Guest Walk-in" checkout flow (capturing guest name, contact details, and handover photo proof).
     - **Auctions:** Lot management, bid monitoring, and deposit approval.
     - **Customization:** Live toggle for layouts, palettes, and hero features.
     - **Security:** Signed URLs for QR actions, Concurrency protection (DB locking).
@@ -53,6 +53,7 @@ The application follows a **"Premium White"** aesthetic with high-contrast eleme
 ## Project Workflow
 - **ULIDs:** `Unit` uses ULIDs for public routes (`/units/{ulid}`) to prevent ID scraping.
 - **Status Changes:** Mandatory use of explicit state logic (`STATUS_AVAILABLE`, `STATUS_SOLD`). Changes are logged with request context.
+- **Guest Walk-in Sales:** For walk-in buyers, `guest_name`, `guest_contact`, and `handover_image_path` (upload) are captured and saved directly on the `Unit` model when marked as sold.
 - **Storage:** Relative paths only. Use `Storage::url($path)`. No hardcoded `public/` paths.
 - **Testing:** Pest tests required for all logic changes.
 

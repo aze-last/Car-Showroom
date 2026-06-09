@@ -17,6 +17,8 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Livewire\Livewire;
 
+uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
+
 it('public access works', function (): void {
     $category = Category::factory()->create(['name' => 'Motorcycle']);
     $unit = Unit::factory()->create([

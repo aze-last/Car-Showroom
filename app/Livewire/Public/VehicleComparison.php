@@ -4,7 +4,6 @@ namespace App\Livewire\Public;
 
 use App\Models\Unit;
 use Illuminate\Contracts\View\View;
-use Livewire\Attributes\Session;
 use Livewire\Component;
 
 class VehicleComparison extends Component

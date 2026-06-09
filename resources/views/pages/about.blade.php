@@ -2,6 +2,29 @@
     use App\Models\Setting;
 @endphp
 
+@push('styles')
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+@endpush
+
+@push('scripts')
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script type="application/ld+json">
+    {!! json_encode([
+        '@context' => 'https://schema.org',
+        '@type' => 'AutoDealer',
+        'name' => Setting::get('shop_name', 'The Gallery'),
+        'image' => asset('favicon.svg'),
+        'telephone' => Setting::get('shop_phone', ''),
+        'email' => Setting::get('shop_email', ''),
+        'address' => [
+            '@type' => 'PostalAddress',
+            'streetAddress' => Setting::get('shop_address', ''),
+            'addressCountry' => 'PH'
+        ]
+    ], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) !!}
+    </script>
+@endpush
+
 <x-layouts.public-showroom :title="Setting::get('shop_name', 'The Gallery') . ' | About'">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-32 animate-showroom-fade-up">
         <!-- Editorial Hero -->

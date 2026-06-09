@@ -9,9 +9,9 @@
                 <div class="flex items-center gap-4 md:gap-6">
                     <div class="flex -space-x-3 md:-space-x-4">
                         @foreach($this->selectedUnits as $sUnit)
-                            <div class="h-10 w-10 md:h-14 md:w-14 rounded-full border-2 md:border-4 border-black bg-zinc-800 overflow-hidden shadow-2xl transition-transform hover:scale-110 hover:z-30 relative" wire:key="tray-{{ $sUnit->id }}">
+                            <div class="h-10 w-10 md:h-14 md:w-14 rounded-full border-2 md:border-4 border-black bg-zinc-800 overflow-hidden shadow-2xl transition-transform hover:scale-110 hover:z-30 relative" title="{{ $sUnit->name }}" wire:key="tray-{{ $sUnit->id }}">
                                 @if($sUnit->mainImage)
-                                    <img src="{{ Storage::url($sUnit->mainImage->url) }}" alt="" class="h-full w-full object-cover">
+                                    <img src="{{ Storage::url($sUnit->mainImage->url) }}" alt="{{ $sUnit->name }}" class="h-full w-full object-cover">
                                 @endif
                                 <button wire:click="toggleCompare({{ $sUnit->id }})" class="absolute inset-0 bg-red-600/80 opacity-0 hover:opacity-100 flex items-center justify-center transition-opacity">
                                     <svg viewBox="0 0 24 24" fill="none" class="h-4 w-4 md:h-5 md:w-5 text-white" stroke="currentColor" stroke-width="3"><path d="M18 6L6 18M6 6l12 12"/></svg>

@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SHOWROOM | Porsche 911 GT3 RS</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        @font-face {
+            font-family: 'BMWTypeNextLatin';
+            src: url('https://fonts.cdnfonts.com/css/bmw-type-next-pro') format('woff2');
+            font-weight: 700;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: 'BMWTypeNextLatin Light';
+            src: url('https://fonts.cdnfonts.com/css/bmw-type-next-pro') format('woff2');
+            font-weight: 300;
+            font-style: normal;
+        }
+        
+        body {
+            background-color: #000000;
+            color: #ffffff;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+
+        .m-stripe {
+            height: 4px;
+            width: 100%;
+            background: linear-gradient(to right, #0066b1 33%, #1c69d4 33% 66%, #e22718 66%);
+        }
+
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-error-container": "#ffdad6",
+                      "on-primary-container": "#636565",
+                      "surface-container": "#201f1f",
+                      "tertiary-fixed-dim": "#c6c6c7",
+                      "surface-elevated": "#262626",
+                      "on-primary": "#2f3131",
+                      "on-surface-variant": "#c4c7c8",
+                      "m-red": "#e22718",
+                      "hairline": "#3c3c3c",
+                      "secondary-fixed": "#d8e2ff",
+                      "on-secondary-fixed-variant": "#004494",
+                      "surface-variant": "#353434",
+                      "surface-container-low": "#1c1b1b",
+                      "primary-container": "#e2e2e2",
+                      "success": "#0fa336",
+                      "inverse-surface": "#e5e2e1",
+                      "surface-container-highest": "#353434",
+                      "error-container": "#93000a",
+                      "on-secondary-fixed": "#001a41",
+                      "on-surface": "#e5e2e1",
+                      "surface-tint": "#c6c6c7",
+                      "m-blue-light": "#0066b1",
+                      "muted": "#7e7e7e",
+                      "surface-soft": "#0d0d0d",
+                      "warning": "#f4b400",
+                      "outline": "#8e9192",
+                      "carbon-gray": "#2b2b2b",
+                      "body": "#bbbbbb",
+                      "on-background": "#e5e2e1",
+                      "on-primary-fixed": "#1a1c1c",
+                      "background": "#141313",
+                      "surface-dim": "#141313",
+                      "surface-card": "#1a1a1a",
+                      "hairline-strong": "#262626",
+                      "surface": "#141313",
+                      "outline-variant": "#444748",
+                      "on-secondary-container": "#d4e0ff",
+                      "primary-fixed-dim": "#c6c6c7",
+                      "surface-container-lowest": "#0e0e0e",
+                      "on-secondary": "#002e69",
+                      "surface-container-high": "#2a2a2a",
+                      "on-error": "#690005",
+                      "on-tertiary-container": "#636565",
+                      "ink": "#ffffff",
+                      "on-tertiary-fixed-variant": "#454747",
+                      "tertiary": "#ffffff",
+                      "m-blue-dark": "#1c69d4",
+                      "secondary-container": "#015fca",
+                      "inverse-on-surface": "#313030",
+                      "primary": "#ffffff",
+                      "secondary": "#adc6ff",
+                      "error": "#ffb4ab",
+                      "on-tertiary": "#2f3131",
+                      "inverse-primary": "#5d5f5f",
+                      "tertiary-container": "#e2e2e2",
+                      "canvas": "#000000",
+                      "secondary-fixed-dim": "#adc6ff",
+                      "primary-fixed": "#e2e2e2",
+                      "on-primary-fixed-variant": "#454747",
+                      "on-tertiary-fixed": "#1a1c1c",
+                      "body-strong": "#e6e6e6",
+                      "tertiary-fixed": "#e2e2e2",
+                      "surface-bright": "#3a3939"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0rem",
+                      "lg": "0rem",
+                      "xl": "0rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "xxl": "64px",
+                      "section": "96px",
+                      "md": "16px",
+                      "lg": "24px",
+                      "sm": "12px",
+                      "xxs": "4px",
+                      "xs": "8px",
+                      "xl": "40px"
+              },
+              "fontFamily": {
+                      "display-md": ["BMWTypeNextLatin", "sans-serif"],
+                      "display-sm": ["BMWTypeNextLatin", "sans-serif"],
+                      "display-lg": ["BMWTypeNextLatin", "sans-serif"],
+                      "caption": ["BMWTypeNextLatin", "sans-serif"],
+                      "display-xl": ["BMWTypeNextLatin", "sans-serif"],
+                      "body-sm": ["BMWTypeNextLatin Light", "sans-serif"],
+                      "title-md": ["BMWTypeNextLatin", "sans-serif"],
+                      "title-sm": ["BMWTypeNextLatin", "sans-serif"],
+                      "nav-link": ["BMWTypeNextLatin", "sans-serif"],
+                      "label-uppercase": ["BMWTypeNextLatin", "sans-serif"],
+                      "button": ["BMWTypeNextLatin", "sans-serif"],
+                      "body-md": ["BMWTypeNextLatin Light", "sans-serif"],
+                      "title-lg": ["BMWTypeNextLatin", "sans-serif"]
+              }
+            }
+          }
+        }
+      </script>
+</head>
+<body class="bg-canvas text-primary">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full h-16 bg-canvas border-b border-hairline flex justify-between items-center px-lg z-50">
+<div class="font-display-md text-display-md text-primary tracking-tighter italic">SHOWROOM</div>
+<div class="hidden md:flex gap-lg items-center">
+<a class="font-nav-link text-nav-link uppercase tracking-[1.5px] text-muted hover:text-primary transition-colors" href="#">Catalog</a>
+<a class="font-nav-link text-nav-link uppercase tracking-[1.5px] text-muted hover:text-primary transition-colors" href="#">Auctions</a>
+<a class="font-nav-link text-nav-link uppercase tracking-[1.5px] text-primary border-b-2 border-m-blue-light pb-1" href="#">Inventory</a>
+<a class="font-nav-link text-nav-link uppercase tracking-[1.5px] text-muted hover:text-primary transition-colors" href="#">Inquiries</a>
+</div>
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined text-primary cursor-pointer">notifications</span>
+<span class="material-symbols-outlined text-primary cursor-pointer">settings</span>
+<button class="font-button text-button uppercase px-md py-xs bg-primary text-on-primary">Admin</button>
+</div>
+</nav>
+<!-- SideNavBar (Minimalist Sidebar) -->
+<aside class="fixed left-0 top-16 h-[calc(100vh-64px)] w-20 md:w-64 bg-surface-soft border-r border-hairline flex flex-col py-md gap-xs z-40">
+<div class="px-md mb-xl hidden md:block">
+<div class="font-display-sm text-display-sm text-primary">M-Performance</div>
+<div class="font-caption text-caption uppercase text-muted">Munich Central</div>
+</div>
+<div class="flex flex-col gap-xxs px-xs">
+<a class="flex items-center gap-md p-sm text-muted hover:text-on-surface-variant hover:bg-surface-container-low transition-all" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-uppercase text-label-uppercase hidden md:block">Dashboard</span>
+</a>
+<a class="flex items-center gap-md p-sm text-primary bg-surface-card border-l-4 border-m-red" href="#">
+<span class="material-symbols-outlined">directions_car</span>
+<span class="font-label-uppercase text-label-uppercase hidden md:block">Units</span>
+</a>
+<a class="flex items-center gap-md p-sm text-muted hover:text-on-surface-variant hover:bg-surface-container-low transition-all" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span class="font-label-uppercase text-label-uppercase hidden md:block">Sales</span>
+</a>
+<a class="flex items-center gap-md p-sm text-muted hover:text-on-surface-variant hover:bg-surface-container-low transition-all" href="#">
+<span class="material-symbols-outlined">gavel</span>
+<span class="font-label-uppercase text-label-uppercase hidden md:block">Auction Control</span>
+</a>
+<a class="flex items-center gap-md p-sm text-muted hover:text-on-surface-variant hover:bg-surface-container-low transition-all" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-uppercase text-label-uppercase hidden md:block">Settings</span>
+</a>
+</div>
+<div class="mt-auto flex flex-col gap-xxs px-xs">
+<a class="flex items-center gap-md p-sm text-muted hover:text-on-surface-variant hover:bg-surface-container-low" href="#">
+<span class="material-symbols-outlined">help</span>
+<span class="font-label-uppercase text-label-uppercase hidden md:block">Support</span>
+</a>
+<a class="flex items-center gap-md p-sm text-muted hover:text-on-surface-variant hover:bg-surface-container-low" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-label-uppercase text-label-uppercase hidden md:block">Logout</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="ml-20 md:ml-64 pt-16 min-h-screen bg-canvas">
+<!-- Massive Gallery Section -->
+<section class="relative w-full h-[716px] overflow-hidden group">
+<div class="flex h-full w-full">
+<div class="w-full h-full relative shrink-0">
+<img class="w-full h-full object-cover grayscale-[0.2] hover:grayscale-0 transition-all duration-700" data-alt="A side-profile cinematic shot of a Porsche 911 GT3 RS in Guards Red, parked on a high-contrast asphalt track under dramatic overcast lighting. The car features aggressive carbon fiber aerodynamic elements and massive rear wing. The mood is technical and high-performance, emphasizing the sharp lines and motorsport engineering in a European dark-mode aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAHCpMtCnLKu4pLcJ8FN_Z1hQPy1oBRfw022i-KY1sywEyN3hFZDznRYiiEtUl7y5s9h9wa0hZ_CYVwb1ZoqmJfqi0sJwdGw8AnHGbt1iYzYY7nJQSnRP4PzojFEKKu-hvMmGKGf_L-L3VUvI2DIn5L6mRl5hUw8oxh_pPS1qw8DbrBvbIAinIAarcgmIVLrgreRuwYYP1L_gAokYPPeYcDX0_qxypDTiEMZ4LWmHsKBqICJwC_z_TeQxhNMJcWBvuScmqHbU8DJpHX"/>
+<div class="absolute inset-0 bg-gradient-to-t from-canvas via-transparent to-transparent opacity-60"></div>
+</div>
+</div>
+<!-- Hero Overlay Info -->
+<div class="absolute bottom-xl left-xl right-xl flex flex-col md:flex-row justify-between items-end gap-lg">
+<div>
+<h1 class="font-display-lg text-display-lg uppercase tracking-tight text-white mb-xxs">Porsche 911 GT3 RS</h1>
+<p class="font-label-uppercase text-label-uppercase text-m-blue-light">992 Generation • Weissach Package</p>
+</div>
+<div class="flex gap-md">
+<button class="material-symbols-outlined bg-white/10 p-md hover:bg-white/20 transition-colors border border-hairline">arrow_back</button>
+<button class="material-symbols-outlined bg-white/10 p-md hover:bg-white/20 transition-colors border border-hairline">arrow_forward</button>
+</div>
+</div>
+</section>
+<!-- M Stripe Divider -->
+<div class="m-stripe"></div>
+<!-- Technical Content Area -->
+<div class="flex flex-col xl:flex-row px-lg py-xxl gap-xxl">
+<!-- Specs & Details -->
+<div class="flex-grow space-y-section">
+<!-- Spec Grid -->
+<div>
+<h2 class="font-label-uppercase text-label-uppercase text-white mb-xl border-l-4 border-m-red pl-md">Technical Performance</h2>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-xxs">
+<div class="bg-surface-soft p-lg border border-hairline">
+<p class="font-label-uppercase text-label-uppercase text-muted mb-xs">0-100 KM/H</p>
+<p class="font-display-sm text-display-sm text-white">3.2s</p>
+</div>
+<div class="bg-surface-soft p-lg border border-hairline">
+<p class="font-label-uppercase text-label-uppercase text-muted mb-xs">MAX POWER</p>
+<p class="font-display-sm text-display-sm text-white">525 HP</p>
+</div>
+<div class="bg-surface-soft p-lg border border-hairline">
+<p class="font-label-uppercase text-label-uppercase text-muted mb-xs">TOP SPEED</p>
+<p class="font-display-sm text-display-sm text-white">296 KM/H</p>
+</div>
+<div class="bg-surface-soft p-lg border border-hairline">
+<p class="font-label-uppercase text-label-uppercase text-muted mb-xs">DRY WEIGHT</p>
+<p class="font-display-sm text-display-sm text-white">1,450 KG</p>
+</div>
+</div>
+</div>
+<!-- Bento Grid Details -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-lg">
+<div class="md:col-span-2 space-y-lg">
+<div class="bg-surface-card p-xl border border-hairline">
+<h3 class="font-title-lg text-title-lg uppercase text-white mb-md">Engineering Philosophy</h3>
+<p class="font-body-md text-body-md text-body leading-relaxed max-w-2xl">
+                                The 911 GT3 RS is designed for one thing: maximum performance on the track. With its 4.0-liter naturally aspirated flat-six engine, it delivers a visceral driving experience. The central radiator concept, a first for a street-legal 911, and the massive DRS-equipped rear wing provide unprecedented aerodynamic stability.
+                            </p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-lg">
+<div class="relative h-64 overflow-hidden border border-hairline group">
+<img class="w-full h-full object-cover grayscale transition-all group-hover:scale-105 duration-500" data-alt="Close-up technical shot of a carbon fiber aerodynamic wing and intake on a high-end sports car. The lighting is cold and clinical, highlighting the weave of the carbon fiber and the precision engineering of the mechanical joints. Deep blacks and grey tones dominate the palette with a focused, industrial aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAqr21ox3C9lhh7MLRKZBmpwGAwJkRV1TmqmH5MSY_3Sh_LiMebavmRmoc5Z9W_Ck4Ve7vyYitH4arUfgWcAHnU3ozeTWuhRNHkMvZ--0AeayVpwiB6OuIcwKX03gc-0lQQKAwc4Zenoj1eCzl8qryBZvz4HnOrmSgBo_VdjpnJDEDxzXM12K5N98oRhuZ3XHnU25V88Qu7jlxe11TNri4B-PdqOx3SARU-opMbN8RqT_KUEX3dzXbCU4PNaargnGoEQV9phgq_hkrh"/>
+<div class="absolute inset-0 bg-black/40 p-lg flex items-end">
+<span class="font-label-uppercase text-label-uppercase text-white">Lightweight Construction</span>
+</div>
+</div>
+<div class="relative h-64 overflow-hidden border border-hairline group">
+<img class="w-full h-full object-cover grayscale transition-all group-hover:scale-105 duration-500" data-alt="Interior driver-focused cockpit of a Porsche 911, showing the steering wheel with numerous dials and the Alcantara textures. High-contrast lighting focuses on the yellow 12 o'clock marker and the tactile buttons. The scene feels premium, technical, and urgent, captured in a modern European automotive photography style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC8NvxsQh-MwGZ-zVacRHj5kiOgaJCN8ldn9UzGXg0K6IClBuq_ASoqwae0W8eRgV94LIhd4JrN6C7HoLHZvTBDNDgXa2DH-F7idvuEh3JMrekyZMOsHwJrb1NCHPeqvpAaIR2vsrSZD2HfWByb-8rCwc05O2wjyHkPhvDd7eo3U6idVFq0INXiDQkFgGx_sk9Z6ryhjEmCSCfRQY-owWia1oZgAmTLVSXv8auZmGrvWjZYQPqW0x8TRKCCkcnEB3atW3z3jpN3u7mc"/>
+<div class="absolute inset-0 bg-black/40 p-lg flex items-end">
+<span class="font-label-uppercase text-label-uppercase text-white">Cockpit Ergonomics</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Sidebar Specs (Secondary) -->
+<div class="bg-surface-soft border border-hairline p-lg space-y-xl">
+<div>
+<h4 class="font-label-uppercase text-label-uppercase text-m-blue-light mb-md">Transmission</h4>
+<p class="font-title-sm text-title-sm text-white">7-Speed PDK</p>
+<p class="font-body-sm text-body-sm text-muted">Porsche Doppelkupplung</p>
+</div>
+<hr class="border-hairline"/>
+<div>
+<h4 class="font-label-uppercase text-label-uppercase text-m-blue-light mb-md">Chassis</h4>
+<p class="font-title-sm text-title-sm text-white">Adjustable Coilover</p>
+<p class="font-body-sm text-body-sm text-muted">Double Wishbone Front Axle</p>
+</div>
+<hr class="border-hairline"/>
+<div>
+<h4 class="font-label-uppercase text-label-uppercase text-m-blue-light mb-md">Braking</h4>
+<p class="font-title-sm text-title-sm text-white">PCCB Ceramic</p>
+<p class="font-body-sm text-body-sm text-muted">Yellow Caliper Finish</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Inquiry Panel (Sidebar Floating) -->
+<aside class="w-full xl:w-96 shrink-0 h-fit sticky top-24">
+<div class="bg-surface-card border border-hairline p-xl space-y-lg">
+<div class="space-y-xxs">
+<p class="font-caption text-caption text-muted uppercase">Market Listing</p>
+<h2 class="font-display-sm text-display-sm text-white">$345,900</h2>
+</div>
+<div class="space-y-md">
+<div class="flex justify-between border-b border-hairline-strong py-sm">
+<span class="font-body-sm text-body-sm text-muted">Mileage</span>
+<span class="font-label-uppercase text-label-uppercase text-white">124 Miles</span>
+</div>
+<div class="flex justify-between border-b border-hairline-strong py-sm">
+<span class="font-body-sm text-body-sm text-muted">Location</span>
+<span class="font-label-uppercase text-label-uppercase text-white">Munich, DE</span>
+</div>
+<div class="flex justify-between border-b border-hairline-strong py-sm">
+<span class="font-body-sm text-body-sm text-muted">Exterior</span>
+<span class="font-label-uppercase text-label-uppercase text-white">Guards Red</span>
+</div>
+</div>
+<div class="space-y-sm pt-md">
+<button class="w-full h-12 bg-white text-black font-button text-button uppercase border border-white hover:bg-transparent hover:text-white transition-all">
+                            Send Inquiry
+                        </button>
+<button class="w-full h-12 bg-transparent text-white font-button text-button uppercase border border-white hover:bg-white hover:text-black transition-all">
+                            Request Test Drive
+                        </button>
+</div>
+<div class="flex items-center gap-md pt-lg">
+<div class="w-10 h-10 rounded-full bg-surface-elevated flex items-center justify-center">
+<span class="material-symbols-outlined text-m-blue-light">person</span>
+</div>
+<div>
+<p class="font-label-uppercase text-label-uppercase text-white">Markus Wagner</p>
+<p class="font-caption text-caption text-muted uppercase">Sales Lead • M-Performance</p>
+</div>
+</div>
+</div>
+<!-- Secondary Info Cards -->
+<div class="mt-lg p-lg bg-surface-soft border border-hairline">
+<p class="font-caption text-caption text-muted uppercase flex items-center gap-xxs mb-xs">
+<span class="material-symbols-outlined text-sm">verified_user</span> 
+                        Warranty Available
+                    </p>
+<p class="font-body-sm text-body-sm text-body">Manufacturer Warranty until Nov 2026. Global shipping available upon request.</p>
+</div>
+</aside>
+</div>
+</main>
+<!-- Footer -->
+<footer class="ml-20 md:ml-64 bg-canvas border-t-4 border-m-blue-dark py-xl">
+<div class="flex flex-col items-center justify-center gap-md px-lg text-center">
+<div class="font-button text-button text-primary tracking-[3px]">SHOWROOM MOTORSPORT</div>
+<div class="flex gap-lg">
+<a class="font-caption text-caption uppercase text-muted hover:text-primary transition-opacity opacity-80 hover:opacity-100" href="#">Legal</a>
+<a class="font-caption text-caption uppercase text-muted hover:text-primary transition-opacity opacity-80 hover:opacity-100" href="#">Privacy</a>
+<a class="font-caption text-caption uppercase text-muted hover:text-primary transition-opacity opacity-80 hover:opacity-100" href="#">Terms of Service</a>
+<a class="font-caption text-caption uppercase text-muted hover:text-primary transition-opacity opacity-80 hover:opacity-100" href="#">Press</a>
+</div>
+<p class="font-caption text-caption uppercase text-muted mt-md">© 2024 SHOWROOM MOTORSPORT ENGINEERING. ALL RIGHTS RESERVED.</p>
+</div>
+</footer>
+<script>
+        // Micro-interactions for gallery
+        const images = document.querySelectorAll('main img');
+        images.forEach(img => {
+            img.addEventListener('mouseenter', () => {
+                img.classList.remove('grayscale');
+            });
+            img.addEventListener('mouseleave', () => {
+                if (img.dataset.alt.includes('interior')) return; // Keep interior colorful maybe?
+                img.classList.add('grayscale');
+            });
+        });
+    </script>
+</body></html>

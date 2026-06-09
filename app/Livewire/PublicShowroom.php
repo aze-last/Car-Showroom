@@ -51,7 +51,7 @@ class PublicShowroom extends Component
             $this->compareIds[] = $id;
             $this->dispatch('toast', message: "Added $name to Comparison", type: 'success');
         } else {
-            $this->dispatch('toast', message: "Comparison limit reached (max 3)", type: 'info');
+            $this->dispatch('toast', message: 'Comparison limit reached (max 3)', type: 'info');
         }
 
         session()->put('compare_ids', $this->compareIds);
@@ -176,6 +176,8 @@ class PublicShowroom extends Component
             }
         }
 
+        $shopName = \App\Models\Setting::get('shop_name', 'The Gallery');
+
         return view('livewire.public-showroom', [
             'categories' => $categories,
             'units' => $units,
@@ -189,7 +191,8 @@ class PublicShowroom extends Component
                 'showInquiries' => \App\Models\Setting::get('design_show_inquiries', true),
             ],
         ])->layout('components.layouts.public-showroom', [
-            'title' => 'Vehicle Showroom',
+            'title' => 'Premium Cars & Auctions | '.$shopName,
+            'description' => 'Discover elite vintage and modern luxury cars at '.$shopName.'. Participate in live auctions and view our certified vehicle showroom today ★',
         ]);
     }
 }
