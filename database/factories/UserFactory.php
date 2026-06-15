@@ -27,6 +27,9 @@ class UserFactory extends Factory
             'name' => fake()->name(),
             'job_title' => 'Showroom Staff',
             'email' => fake()->unique()->safeEmail(),
+            'google_id' => null,
+            'auth_provider' => 'password',
+            'avatar' => null,
             'phone' => null,
             'preferred_locale' => 'en_PH',
             'preferred_timezone' => 'Asia/Manila',
@@ -76,6 +79,16 @@ class UserFactory extends Factory
         return $this->state(fn (array $attributes) => [
             'is_admin' => false,
             'is_employee' => true,
+        ]);
+    }
+
+    public function withGoogle(?string $googleId = null): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'google_id' => $googleId ?? fake()->unique()->numerify('google-##########'),
+            'auth_provider' => 'google',
+            'password' => null,
+            'email_verified_at' => now(),
         ]);
     }
 }

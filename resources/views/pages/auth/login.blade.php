@@ -6,6 +6,17 @@
             </div>
         @endif
 
+        <x-auth.google-button class="mb-2" />
+
+        <div class="relative py-2">
+            <div class="absolute inset-0 flex items-center" aria-hidden="true">
+                <div class="w-full border-t border-zinc-100"></div>
+            </div>
+            <div class="relative flex justify-center text-[10px] font-black uppercase tracking-[0.2em]">
+                <span class="bg-white px-3 text-zinc-300">or</span>
+            </div>
+        </div>
+
         <form method="POST" action="{{ route('login.store') }}" class="space-y-6">
             @csrf
 

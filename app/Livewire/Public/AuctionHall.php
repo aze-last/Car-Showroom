@@ -2,13 +2,16 @@
 
 namespace App\Livewire\Public;
 
+use App\Concerns\EnforcesCollectorAuthentication;
 use App\Models\Auction;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithPagination;
 
 class AuctionHall extends Component
 {
+    use EnforcesCollectorAuthentication;
     use \Livewire\WithFileUploads, WithPagination;
 
     public ?Auction $selectedAuction = null;
@@ -19,8 +22,10 @@ class AuctionHall extends Component
 
     public function mount()
     {
-        if (auth()->check()) {
-            auth()->user()->unreadNotifications
+        if (Auth::check()) {
+            /** @var \App\Models\User $user */
+            $user = Auth::user();
+            $user->unreadNotifications
                 ->where('type', 'App\Notifications\BidPlacedNotification')
                 ->markAsRead();
         }
@@ -28,9 +33,7 @@ class AuctionHall extends Component
 
     public function openJoinModal(int $auctionId): void
     {
-        if (! auth()->check()) {
-            $this->redirectRoute('login');
-
+        if ($this->redirectIfGuest() || $this->redirectIfGoogleRequiredForAuctions()) {
             return;
         }
 
@@ -39,6 +42,10 @@ class AuctionHall extends Component
 
     public function submitDeposit(): void
     {
+        if ($this->redirectIfGuest() || $this->redirectIfGoogleRequiredForAuctions()) {
+            return;
+        }
+
         $this->validate([
             'proof_image' => ['required', 'image', 'max:5120'],
             'deposit_amount' => ['required', 'integer', 'min:1000'],
@@ -46,8 +53,8 @@ class AuctionHall extends Component
 
         $path = $this->proof_image->store('deposits/'.$this->selectedAuction->id, 'public');
 
-        $deposit = \App\Models\BidDeposit::create([
-            'user_id' => auth()->id(),
+        $deposit = \App\Models\BidDeposit::query()->create([
+            'user_id' => Auth::id(),
             'auction_id' => $this->selectedAuction->id,
             'amount' => $this->deposit_amount,
             'proof_image' => $path,
@@ -55,12 +62,12 @@ class AuctionHall extends Component
         ]);
 
         // Notify Admins
-        $admins = \App\Models\User::where('is_admin', true)->get();
+        $admins = \App\Models\User::query()->where('is_admin', true)->get();
         foreach ($admins as $admin) {
             $admin->notify(new \App\Notifications\DepositSubmittedNotification([
-                'message' => 'New deposit from '.auth()->user()->name.' for '.$this->selectedAuction->unit->name,
+                'message' => 'New deposit from '.Auth::user()->name.' for '.$this->selectedAuction->unit->name,
                 'auction_id' => $this->selectedAuction->id,
-                'user_name' => auth()->user()->name,
+                'user_name' => Auth::user()->name,
                 'amount' => $this->deposit_amount,
             ]));
         }

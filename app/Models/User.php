@@ -2,7 +2,8 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Enums\AuthProvider;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -10,7 +11,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable, TwoFactorAuthenticatable;
@@ -23,6 +24,9 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'google_id',
+        'auth_provider',
+        'avatar',
         'password',
     ];
 
@@ -48,6 +52,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'auth_provider' => AuthProvider::class,
             'is_admin' => 'boolean',
             'is_employee' => 'boolean',
         ];
@@ -76,6 +81,16 @@ class User extends Authenticatable
     public function isStaff(): bool
     {
         return $this->is_admin || $this->is_employee;
+    }
+
+    public function hasGoogleAccount(): bool
+    {
+        return $this->google_id !== null;
+    }
+
+    public function canParticipateInAuctions(): bool
+    {
+        return $this->isStaff() || $this->hasGoogleAccount();
     }
 
     /**

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\EnsureUserHasGoogleAccount;
 use App\Http\Middleware\EnsureUserIsAdmin;
 use App\Http\Middleware\EnsureUserIsStaff;
 use Illuminate\Foundation\Application;
@@ -16,6 +17,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->trustProxies(at: '*');
         $middleware->alias([
             'admin' => EnsureUserIsAdmin::class,
+            'google' => EnsureUserHasGoogleAccount::class,
             'staff' => EnsureUserIsStaff::class,
         ]);
     })

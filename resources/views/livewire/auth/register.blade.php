@@ -7,6 +7,17 @@
         </div>
 
         <form wire:submit="register" class="bg-white rounded-[32px] border border-gallery-outline/20 p-10 ambient-shadow space-y-6">
+            <x-auth.google-button label="Continue with Google" />
+
+            <div class="relative py-1">
+                <div class="absolute inset-0 flex items-center" aria-hidden="true">
+                    <div class="w-full border-t border-gallery-outline/20"></div>
+                </div>
+                <div class="relative flex justify-center text-[10px] font-bold uppercase tracking-widest">
+                    <span class="bg-white px-3 text-zinc-400">or register with email</span>
+                </div>
+            </div>
+
             <div class="space-y-2">
                 <label for="name" class="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Full Name</label>
                 <input wire:model="name" id="name" type="text" required class="w-full h-12 bg-gallery-surface-low border-none rounded-2xl px-6 text-sm font-medium focus:ring-2 focus:ring-black/5 transition-all">

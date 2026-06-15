@@ -2,14 +2,18 @@
 
 namespace App\Livewire\Public;
 
+use App\Concerns\EnforcesCollectorAuthentication;
 use App\Models\Auction;
 use App\Models\Bid;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 
 class AuctionRoom extends Component
 {
+    use EnforcesCollectorAuthentication;
+
     public Auction $auction;
 
     public ?int $bidAmount = null;
@@ -38,9 +42,7 @@ class AuctionRoom extends Component
 
     public function placeBid(): void
     {
-        if (! auth()->check()) {
-            $this->redirectRoute('login');
-
+        if ($this->redirectIfGuest() || $this->redirectIfGoogleRequiredForAuctions()) {
             return;
         }
 
@@ -58,7 +60,7 @@ class AuctionRoom extends Component
         ]);
 
         // Rate limiting: 10 bids per minute per user/IP
-        $rateLimitKey = 'bidding:'.(auth()->id() ?: request()->ip());
+        $rateLimitKey = 'bidding:'.(Auth::id() ?: request()->ip());
         if (\Illuminate\Support\Facades\RateLimiter::tooManyAttempts($rateLimitKey, 10)) {
             $this->addError('bidAmount', 'You are bidding too fast. Please wait a moment.');
 
@@ -68,7 +70,7 @@ class AuctionRoom extends Component
 
         DB::transaction(function () {
             // Lock the auction for update to prevent race conditions
-            $auction = Auction::where('id', $this->auction->id)->lockForUpdate()->first();
+            $auction = Auction::query()->where('id', $this->auction->id)->lockForUpdate()->first();
 
             if (! $auction->isLive()) {
                 $this->addError('bidAmount', 'This auction is no longer accepting bids.');
@@ -88,9 +90,9 @@ class AuctionRoom extends Component
                 return;
             }
 
-            Bid::create([
+            Bid::query()->create([
                 'auction_id' => $auction->id,
-                'user_id' => auth()->id(),
+                'user_id' => Auth::id(),
                 'amount_php' => $this->bidAmount,
             ]);
 
@@ -100,12 +102,12 @@ class AuctionRoom extends Component
 
             // Notify other collectors
             $otherBidders = $auction->bids()
-                ->where('user_id', '!=', auth()->id())
+                ->where('user_id', '!=', Auth::id())
                 ->pluck('user_id')
                 ->unique();
 
             foreach ($otherBidders as $bidderId) {
-                $user = \App\Models\User::find($bidderId);
+                $user = \App\Models\User::query()->find($bidderId);
                 if ($user) {
                     $user->notify(new \App\Notifications\BidPlacedNotification([
                         'message' => "New bid placed on {$auction->unit->name}: ₱".number_format($this->bidAmount),

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Auth\GoogleAuthController;
 use App\Livewire\AdminCategories;
 use App\Livewire\AdminDashboard;
 use App\Livewire\AdminEmployees;
@@ -21,7 +22,10 @@ use Illuminate\Support\Facades\Route;
  */
 Route::get('/register', \App\Livewire\Auth\Register::class)->name('register');
 
-Route::middleware(['auth'])->group(function () {
+Route::get('/auth/google/redirect', [GoogleAuthController::class, 'redirect'])->name('auth.google.redirect');
+Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])->name('auth.google.callback');
+
+Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/garage', \App\Livewire\Public\MyGarage::class)->name('garage');
 });
 
@@ -39,7 +43,7 @@ Route::get('/about', function () {
 })->name('about');
 
 Route::get('/sitemap.xml', function () {
-    $units = \App\Models\Unit::where('status', \App\Models\Unit::STATUS_AVAILABLE)->latest()->get();
+    $units = \App\Models\Unit::query()->where('status', \App\Models\Unit::STATUS_AVAILABLE)->latest()->get();
     $content = view('pages.sitemap', compact('units'))->render();
 
     return response($content, 200)
@@ -103,6 +107,7 @@ Route::middleware(['auth', 'verified'])
  * Unified Dashboard Redirector
  */
 Route::get('dashboard', function () {
+    /** @var \App\Models\User $user */
     $user = auth()->user();
 
     if ((bool) ($user?->is_admin ?? false)) {

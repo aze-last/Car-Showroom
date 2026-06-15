@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Public;
 
+use App\Concerns\EnforcesCollectorAuthentication;
 use App\Models\ChatMessage;
 use App\Models\Setting;
 use App\Models\Unit;
@@ -12,6 +13,8 @@ use Livewire\Component;
 
 class ChatInquiry extends Component
 {
+    use EnforcesCollectorAuthentication;
+
     #[Locked]
     public Unit $unit;
 
@@ -57,9 +60,7 @@ class ChatInquiry extends Component
 
     public function sendMessage(): void
     {
-        if (! auth()->check()) {
-            $this->redirect(route('login'));
-
+        if ($this->redirectIfGuest() || $this->redirectIfUnverified()) {
             return;
         }
 

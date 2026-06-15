@@ -2,9 +2,11 @@
 
 namespace App\Livewire;
 
+use App\Concerns\EnforcesCollectorAuthentication;
 use App\Models\Category;
 use App\Models\Unit;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Url;
 use Livewire\Component;
@@ -12,6 +14,7 @@ use Livewire\WithPagination;
 
 class PublicShowroom extends Component
 {
+    use EnforcesCollectorAuthentication;
     use WithPagination;
 
     #[Url(as: 'q', history: true)]
@@ -60,11 +63,12 @@ class PublicShowroom extends Component
 
     public function toggleSave(int $id)
     {
-        if (! auth()->check()) {
-            return redirect()->route('register');
+        if ($this->redirectIfGuest() || $this->redirectIfUnverified()) {
+            return;
         }
 
-        $user = auth()->user();
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
         if ($user->savedUnits()->where('unit_id', $id)->exists()) {
             $user->savedUnits()->detach($id);
         } else {

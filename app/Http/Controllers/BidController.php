@@ -15,7 +15,14 @@ class BidController extends Controller
      */
     public function store(Request $request, Auction $auction)
     {
+        /** @var \App\Models\User $user */
         $user = auth()->user();
+
+        if (! $user->canParticipateInAuctions()) {
+            return redirect()
+                ->route('auth.google.redirect')
+                ->with('status', 'Sign in with Google to participate in auctions.');
+        }
 
         // 1. Check if user is suspended
         if ($user->auctionStrike?->is_suspended && now()->lessThan($user->auctionStrike->suspended_until)) {
@@ -28,7 +35,7 @@ class BidController extends Controller
         }
 
         // 3. Check if user has an approved deposit for this auction
-        $hasApprovedDeposit = BidDeposit::where('user_id', $user->id)
+        $hasApprovedDeposit = BidDeposit::query()->where('user_id', $user->id)
             ->where('auction_id', $auction->id)
             ->where('status', 'approved')
             ->exists();
@@ -52,7 +59,7 @@ class BidController extends Controller
         // 5. Place the bid within a transaction to handle concurrency
         return DB::transaction(function () use ($request, $auction, $user) {
             // Lock the auction row for update to prevent race conditions
-            $auction = Auction::where('id', $auction->id)->lockForUpdate()->first();
+            $auction = Auction::query()->where('id', $auction->id)->lockForUpdate()->first();
 
             // Re-validate current price inside the lock
             $currentPrice = $auction->current_bid_php ?: $auction->starting_bid_php;
@@ -77,6 +84,15 @@ class BidController extends Controller
      */
     public function join(Request $request, Auction $auction)
     {
+        /** @var \App\Models\User $user */
+        $user = auth()->user();
+
+        if (! $user->canParticipateInAuctions()) {
+            return redirect()
+                ->route('auth.google.redirect')
+                ->with('status', 'Sign in with Google to participate in auctions.');
+        }
+
         $request->validate([
             'amount' => ['required', 'integer', 'min:1'], // Usually fixed or min amount
             'proof_image' => ['required', 'image', 'max:5120'], // 5MB
@@ -84,8 +100,8 @@ class BidController extends Controller
 
         $path = $request->file('proof_image')->store('deposits/'.$auction->id, 'public');
 
-        BidDeposit::create([
-            'user_id' => auth()->id(),
+        BidDeposit::query()->create([
+            'user_id' => $user->id,
             'auction_id' => $auction->id,
             'amount' => $request->amount,
             'proof_image' => $path,
