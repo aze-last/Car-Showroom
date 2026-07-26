@@ -4,7 +4,6 @@ namespace Tests\Feature;
 
 use App\Livewire\AdminUnitForm;
 use App\Livewire\PublicShowroom;
-use App\Livewire\UnitDetail;
 use App\Models\Category;
 use App\Models\Unit;
 use App\Models\User;
@@ -43,5 +42,3 @@ test('admin can toggle featured status', function () {
 
     expect($unit->fresh()->is_featured)->toBeTrue();
 });
-
-

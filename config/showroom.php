@@ -65,6 +65,10 @@ return [
                 'name' => 'Nintendo 2001',
                 'description' => 'A brushed-periwinkle "console chrome" interface inspired by 2001 hardware aesthetics.',
             ],
+            'noir' => [
+                'name' => 'Gallery Noir',
+                'description' => 'Dark cinematic dealership — champagne gold accents, serif display type, slow Ken Burns motion.',
+            ],
         ],
     ],
 ];

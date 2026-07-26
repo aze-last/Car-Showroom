@@ -41,6 +41,20 @@
 
     --shadow-ambient: 0 10px 30px -10px rgba(24, 24, 27, 0.05);
     --shadow-lift: 0 20px 40px -15px rgba(24, 24, 27, 0.08);
+
+    /* Gallery Noir Tokens */
+    --font-noir-display: 'Cormorant Garamond', Georgia, serif;
+    --color-noir-canvas: #0a0a0a;
+    --color-noir-surface: #121212;
+    --color-noir-elevated: #1a1a1a;
+    --color-noir-line: rgba(255, 255, 255, 0.08);
+    --color-noir-line-strong: rgba(255, 255, 255, 0.16);
+    --color-noir-ink: #f4f1ea;
+    --color-noir-body: #a8a49b;
+    --color-noir-muted: #6b675f;
+    --color-noir-gold: #c9a961;
+    --color-noir-gold-bright: #e3c87f;
+    --color-noir-gold-dim: #8a7440;
 }
 
 @layer theme {
@@ -261,5 +275,114 @@ select:focus[data-flux-control] {
     .animate-showroom-fade-up {
         animation: none !important;
         transition: none !important;
+    }
+}
+
+/* ============================================================
+   Gallery Noir preset — dark cinematic dealership
+   Custom keyframes justified: Ken Burns slow zoom, film grain
+   drift, and staggered gallery reveal cannot be expressed as
+   single-state Tailwind utilities (they need @keyframes).
+   Everything else uses Tailwind utilities in the Blade views.
+   ============================================================ */
+
+@keyframes noir-ken-burns {
+    0% {
+        transform: scale(1) translate(0, 0);
+    }
+    100% {
+        transform: scale(1.08) translate(-1%, 0.5%);
+    }
+}
+
+@keyframes noir-reveal {
+    from {
+        opacity: 0;
+        transform: translateY(24px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes noir-grain-drift {
+    0%, 100% { transform: translate(0, 0); }
+    25% { transform: translate(-2%, 1%); }
+    50% { transform: translate(1%, -1%); }
+    75% { transform: translate(-1%, 2%); }
+}
+
+@layer components {
+    .noir-ken-burns {
+        animation: noir-ken-burns 14s ease-out both;
+        will-change: transform;
+    }
+
+    .noir-reveal {
+        animation: noir-reveal 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    /* Staggered grid entrance — delay capped at 8 items so big
+       grids don't feel sluggish; items 9+ share the last delay */
+    .noir-stagger > * {
+        animation: noir-reveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+    .noir-stagger > :nth-child(1) { animation-delay: 0.05s; }
+    .noir-stagger > :nth-child(2) { animation-delay: 0.12s; }
+    .noir-stagger > :nth-child(3) { animation-delay: 0.19s; }
+    .noir-stagger > :nth-child(4) { animation-delay: 0.26s; }
+    .noir-stagger > :nth-child(5) { animation-delay: 0.33s; }
+    .noir-stagger > :nth-child(6) { animation-delay: 0.40s; }
+    .noir-stagger > :nth-child(7) { animation-delay: 0.47s; }
+    .noir-stagger > :nth-child(n + 8) { animation-delay: 0.54s; }
+
+    /* Film-grain overlay — pure CSS noise via layered radial dots,
+       no external texture asset required */
+    .noir-grain {
+        pointer-events: none;
+        position: absolute;
+        inset: -10%;
+        opacity: 0.35;
+        background-image:
+            radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+            radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+        background-size: 3px 3px, 5px 5px;
+        background-position: 0 0, 1px 2px;
+        animation: noir-grain-drift 9s steps(4) infinite;
+    }
+
+    /* Status pill glow — subtle, not a form control */
+    .noir-pill-available {
+        color: var(--color-noir-gold-bright);
+        border: 1px solid rgba(201, 169, 97, 0.4);
+        background: rgba(201, 169, 97, 0.08);
+        box-shadow: 0 0 18px rgba(201, 169, 97, 0.18);
+    }
+
+    .noir-pill-sold {
+        color: #8f8b83;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: rgba(255, 255, 255, 0.04);
+    }
+
+    /* Visible custom focus ring for dark surfaces */
+    .theme-noir a:focus-visible,
+    .theme-noir button:focus-visible,
+    .theme-noir input:focus-visible,
+    .theme-noir select:focus-visible,
+    .theme-noir [tabindex]:focus-visible {
+        outline: 2px solid var(--color-noir-gold);
+        outline-offset: 3px;
+        border-radius: 2px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .noir-ken-burns,
+    .noir-reveal,
+    .noir-stagger > *,
+    .noir-grain {
+        animation: none !important;
     }
 }

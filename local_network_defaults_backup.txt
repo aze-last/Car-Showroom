@@ -1,3 +1,13 @@
+# Local LAN Development Defaults Backup
+# Save this file to quickly revert from Ngrok back to your local network IP
+
+--- .env DEFAULTS ---
+
+APP_URL=http://192.168.254.194:8000
+GOOGLE_REDIRECT_URI=http://192.168.254.194:8000/auth/google/callback
+
+--- vite.config.js DEFAULTS ---
+
 import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
 import tailwindcss from "@tailwindcss/vite";
@@ -11,12 +21,12 @@ export default defineConfig({
         tailwindcss(),
     ],
     server: {
-        host: 'localhost',
+        host: '192.168.254.194',
         port: 5173,
         strictPort: true,
         cors: true,
         hmr: {
-            host: 'localhost',
+            host: '192.168.254.194',
         },
         watch: {
             ignored: ['**/storage/framework/views/**'],

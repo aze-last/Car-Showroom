@@ -86,10 +86,45 @@
                 .theme-nintendo-2001 .text-zinc-900, .theme-nintendo-2001 .text-black { color: #21242e !important; }
                 .theme-nintendo-2001 .rounded-3xl, .theme-nintendo-2001 .rounded-2xl, .theme-nintendo-2001 .rounded-xl { border-radius: 4px !important; }
             </style>
+        @elseif($designLayout === 'noir')
+            <style>
+                @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap');
+
+                body.theme-noir {
+                    background-color: #0a0a0a !important;
+                    color: #f4f1ea !important;
+                }
+
+                /* Header overrides */
+                .theme-noir header { background-color: rgba(10, 10, 10, 0.85) !important; backdrop-filter: blur(16px); border-bottom: 1px solid rgba(255,255,255,0.08) !important; }
+                .theme-noir header a.text-black, .theme-noir header span.text-black { color: #f4f1ea !important; border-bottom-color: #c9a961 !important; }
+                .theme-noir header a.text-zinc-500 { color: #8f8b83 !important; }
+                .theme-noir header a.text-zinc-500:hover { color: #f4f1ea !important; }
+                .theme-noir header button svg { stroke: #f4f1ea !important; }
+                .theme-noir header .bg-black { background-color: #c9a961 !important; color: #000000 !important; }
+                .theme-noir header p.text-black { color: #f4f1ea !important; }
+
+                /* Footer */
+                .theme-noir footer { background-color: #0a0a0a !important; border-top: 1px solid rgba(255,255,255,0.08) !important; }
+
+                /* Global surface overrides for shared pages (Auction/About/Garage) */
+                .theme-noir .bg-white { background-color: #121212 !important; border-color: rgba(255,255,255,0.08) !important; color: #f4f1ea !important; }
+                .theme-noir .bg-zinc-50 { background-color: #0f0f0f !important; border-color: rgba(255,255,255,0.06) !important; }
+                .theme-noir .text-zinc-900, .theme-noir .text-black { color: #f4f1ea !important; }
+                .theme-noir .text-zinc-500, .theme-noir .text-zinc-600 { color: #a8a49b !important; }
+                .theme-noir .border-zinc-100, .theme-noir .border-zinc-200 { border-color: rgba(255,255,255,0.08) !important; }
+                .theme-noir .shadow-sm, .theme-noir .shadow-md, .theme-noir .shadow-lg, .theme-noir .shadow-xl { box-shadow: none !important; }
+
+                /* Display serif on major page headings */
+                .theme-noir h1, .theme-noir h2 { font-family: 'Cormorant Garamond', Georgia, serif; }
+
+                /* Mobile menu panel on dark */
+                .theme-noir header .bg-white { background-color: #0f0f0f !important; border-color: rgba(255,255,255,0.08) !important; }
+            </style>
         @endif
     </head>
 
-    <body class="min-h-screen antialiased {{ $designLayout === 'bmw_m' ? 'theme-bmw-m font-inter' : ($designLayout === 'nintendo_2001' ? 'theme-nintendo-2001' : 'bg-gallery-background text-zinc-900 font-hanken') }}" x-data="{ mobileMenuOpen: false }">
+    <body class="min-h-screen antialiased {{ $designLayout === 'bmw_m' ? 'theme-bmw-m font-inter' : ($designLayout === 'nintendo_2001' ? 'theme-nintendo-2001' : ($designLayout === 'noir' ? 'theme-noir font-hanken' : 'bg-gallery-background text-zinc-900 font-hanken')) }}" x-data="{ mobileMenuOpen: false }">
 
         <header class="fixed top-0 w-full z-50 transition-all duration-300 {{ $designLayout === 'bmw_m' ? 'bg-black/95 border-b border-[#3c3c3c]' : 'bg-gallery-surface/90 backdrop-blur-md' }}">
             <div class="flex justify-between items-center w-full px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto h-20">

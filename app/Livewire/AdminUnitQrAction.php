@@ -10,6 +10,7 @@ use BaconQrCode\Renderer\RendererStyle\RendererStyle;
 use BaconQrCode\Writer;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Gate;
+use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 
@@ -35,11 +36,15 @@ class AdminUnitQrAction extends Component
 
     public $handover_image;
 
+    #[Url]
+    public ?string $action = null;
+
     public function mount(Unit $unit): void
     {
         Gate::authorize('changeStatus', $unit);
 
         $this->unit = $unit->load('category');
+        $this->action = request()->query('action');
         $this->refreshUnitData();
         $this->generateQrSvg();
     }

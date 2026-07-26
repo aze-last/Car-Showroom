@@ -33,6 +33,8 @@
     @include('livewire.public.presets.details_bmw_m')
 @elseif($designLayout === 'nintendo_2001')
     @include('livewire.public.presets.details_nintendo_2001')
+@elseif($designLayout === 'noir')
+    @include('livewire.public.presets.details_noir')
 @else
     <main class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 flex flex-col lg:flex-row gap-16 relative animate-showroom-fade-up">
     <!-- Main Content Column -->
