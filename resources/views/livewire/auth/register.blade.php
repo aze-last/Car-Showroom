@@ -31,13 +31,13 @@
             </div>
 
             <div class="space-y-2">
-                <label for="password" class="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Security Key</label>
+                <label for="password" class="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Password</label>
                 <input wire:model="password" id="password" type="password" required class="w-full h-12 !bg-white border-none rounded-2xl px-6 text-sm font-medium !text-black focus:ring-2 focus:ring-black/5 transition-all" style="background-color: #ffffff !important; color: #000000 !important;">
                 @error('password') <span class="text-red-500 text-[10px] font-bold uppercase tracking-widest">{{ $message }}</span> @enderror
             </div>
 
             <div class="space-y-2">
-                <label for="password_confirmation" class="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Confirm Security Key</label>
+                <label for="password_confirmation" class="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Confirm Password</label>
                 <input wire:model="password_confirmation" id="password_confirmation" type="password" required class="w-full h-12 !bg-white border-none rounded-2xl px-6 text-sm font-medium !text-black focus:ring-2 focus:ring-black/5 transition-all" style="background-color: #ffffff !important; color: #000000 !important;">
             </div>
 
