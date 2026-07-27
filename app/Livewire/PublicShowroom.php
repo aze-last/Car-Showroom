@@ -74,6 +74,22 @@ class PublicShowroom extends Component
         } else {
             $user->savedUnits()->attach($id);
         }
+
+        unset($this->savedUnitIds);
+    }
+
+    /**
+     * @return array<int, int>
+     */
+    #[\Livewire\Attributes\Computed]
+    public function savedUnitIds(): array
+    {
+        /** @var \App\Models\User|null $user */
+        $user = Auth::user();
+
+        return $user
+            ? $user->savedUnits()->pluck('units.id')->all()
+            : [];
     }
 
     public function clearCompare(): void

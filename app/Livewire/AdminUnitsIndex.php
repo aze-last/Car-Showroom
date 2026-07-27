@@ -16,6 +16,9 @@ class AdminUnitsIndex extends Component
 {
     use WithPagination;
 
+    #[Url(as: 'view', history: true)]
+    public string $viewMode = 'active';
+
     #[Url(as: 'q', history: true)]
     public string $search = '';
 
@@ -31,6 +34,21 @@ class AdminUnitsIndex extends Component
     public ?int $unitToDeleteId = null;
 
     public ?string $unitToDeleteName = null;
+
+    public ?int $selectedHandoverUnitId = null;
+
+    public function updatedViewMode(): void
+    {
+        $this->resetPage();
+    }
+
+    public function setViewMode(string $mode): void
+    {
+        if (in_array($mode, ['active', 'sold', 'trashed'], true)) {
+            $this->viewMode = $mode;
+            $this->resetPage();
+        }
+    }
 
     public function updatedSearch(): void
     {
@@ -64,8 +82,25 @@ class AdminUnitsIndex extends Component
 
     public function resetFilters(): void
     {
-        $this->reset(['search', 'categoryId', 'status', 'includeTrashed']);
+        $this->reset(['search', 'categoryId', 'status', 'includeTrashed', 'viewMode']);
         $this->resetPage();
+    }
+
+    public function relistAsAvailable(int $unitId, \App\Services\UnitStatusService $statusService): void
+    {
+        $unit = Unit::query()->findOrFail($unitId);
+        Gate::authorize('update', $unit);
+
+        $result = $statusService->setAvailable(
+            unit: $unit,
+            userId: (int) auth()->id(),
+            requestId: request()->header('X-Request-ID'),
+            reason: 'Relisted from Sold Archive via Admin Panel',
+            ipAddress: request()->ip(),
+            userAgent: request()->userAgent(),
+        );
+
+        session()->flash($result['changed'] ? 'status' : 'info', $result['message']);
     }
 
     public function confirmDelete(int $unitId): void
@@ -149,35 +184,44 @@ class AdminUnitsIndex extends Component
     {
         Gate::authorize('viewAny', Unit::class);
 
-        if (! $this->canManageTrash()) {
-            $this->includeTrashed = false;
+        if (! $this->canManageTrash() && $this->viewMode === 'trashed') {
+            $this->viewMode = 'active';
+        }
+
+        $categories = Category::query()
+            ->orderBy('name')
+            ->get();
+
+        $activeCount = Unit::query()->where('status', Unit::STATUS_AVAILABLE)->count();
+        $soldCount = Unit::query()->where('status', Unit::STATUS_SOLD)->count();
+        $trashedCount = $this->canManageTrash() ? Unit::onlyTrashed()->count() : 0;
+
+        $query = Unit::query()->with(['category', 'mainImage']);
+
+        if ($this->viewMode === 'sold') {
+            $query->where('status', Unit::STATUS_SOLD);
+        } elseif ($this->viewMode === 'trashed' && $this->canManageTrash()) {
+            $query->onlyTrashed();
+        } else { // active
+            $query->where('status', Unit::STATUS_AVAILABLE);
         }
 
         $statusFilter = in_array($this->status, Unit::statuses(), true)
             ? $this->status
             : '';
 
-        $categories = Category::query()
-            ->orderBy('name')
-            ->get();
-
-        $units = Unit::query()
-            ->with(['category', 'mainImage'])
-            ->when(
-                $this->canManageTrash() && $this->includeTrashed,
-                fn ($query) => $query->withTrashed(),
-            )
+        $units = $query
             ->when(
                 $this->search !== '',
-                fn ($query) => $query->where('name', 'like', '%'.$this->search.'%'),
+                fn ($q) => $q->where('name', 'like', '%'.$this->search.'%'),
             )
             ->when(
                 $this->categoryId !== null,
-                fn ($query) => $query->where('category_id', $this->categoryId),
+                fn ($q) => $q->where('category_id', $this->categoryId),
             )
             ->when(
-                $statusFilter !== '',
-                fn ($query) => $query->where('status', $statusFilter),
+                $statusFilter !== '' && $this->viewMode === 'active',
+                fn ($q) => $q->where('status', $statusFilter),
             )
             ->latest('updated_at')
             ->paginate(15);
@@ -189,11 +233,19 @@ class AdminUnitsIndex extends Component
             ->limit(3)
             ->get();
 
+        $selectedHandoverUnit = $this->selectedHandoverUnitId
+            ? Unit::query()->find($this->selectedHandoverUnitId)
+            : null;
+
         return view('livewire.admin-units-index', [
             'categories' => $categories,
             'units' => $units,
+            'activeCount' => $activeCount,
+            'soldCount' => $soldCount,
+            'trashedCount' => $trashedCount,
             'recentStatusChanges' => $recentStatusChanges,
             'canManageTrash' => $this->canManageTrash(),
+            'selectedHandoverUnit' => $selectedHandoverUnit,
         ])->layout('layouts.admin-panel', [
             'title' => 'Unit Management',
         ]);

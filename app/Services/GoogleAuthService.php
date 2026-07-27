@@ -44,6 +44,7 @@ class GoogleAuthService
             'auth_provider' => AuthProvider::Google,
             'avatar' => $googleUser->getAvatar(),
             'password' => null,
+            'terms_accepted_at' => now(),
         ]);
 
         $user->markEmailAsVerified();

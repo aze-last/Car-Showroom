@@ -97,6 +97,14 @@ test('google-linked collectors can place bids', function () {
     $user = User::factory()->withGoogle()->create();
     $auction = createLiveAuction();
 
+    \App\Models\BidDeposit::query()->create([
+        'user_id' => $user->id,
+        'auction_id' => $auction->id,
+        'amount' => 50_000,
+        'proof_image' => 'deposits/test.jpg',
+        'status' => 'approved',
+    ]);
+
     $this->actingAs($user);
 
     Livewire::test(\App\Livewire\Public\AuctionRoom::class, ['auction' => $auction])

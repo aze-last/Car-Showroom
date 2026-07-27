@@ -27,10 +27,10 @@ class AdminAuctionsIndex extends Component
     public function render(): View
     {
         $stats = [
-            'active_value' => Auction::where('status', 'live')->with('unit')->get()->sum(fn ($a) => $a->current_bid_php ?: $a->starting_bid_php),
+            'active_value' => Auction::whereIn('status', ['live', 'active'])->where('end_at', '>', now())->with('unit')->get()->sum(fn ($a) => $a->current_bid_php ?: $a->starting_bid_php),
             'total_bids' => \App\Models\Bid::count(),
-            'success_rate' => Auction::whereIn('status', ['completed', 'cancelled'])->count() > 0
-                ? (Auction::where('status', 'completed')->count() / Auction::whereIn('status', ['completed', 'cancelled'])->count()) * 100
+            'success_rate' => Auction::whereIn('status', ['completed', 'reserve_not_met', 'cancelled'])->count() > 0
+                ? (Auction::where('status', 'completed')->count() / Auction::whereIn('status', ['completed', 'reserve_not_met', 'cancelled'])->count()) * 100
                 : 0,
         ];
 

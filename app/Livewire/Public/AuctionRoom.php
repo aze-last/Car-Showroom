@@ -5,6 +5,8 @@ namespace App\Livewire\Public;
 use App\Concerns\EnforcesCollectorAuthentication;
 use App\Models\Auction;
 use App\Models\Bid;
+use App\Models\BidDeposit;
+use App\Models\UserAuctionStrike;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -53,10 +55,28 @@ class AuctionRoom extends Component
             return;
         }
 
-        $minBid = ($this->auction->current_bid_php ?: $this->auction->starting_bid_php) + 10000;
+        // Fast pre-checks for UX feedback (re-verified inside the transaction below).
+        if (! $this->userHasApprovedDeposit()) {
+            $this->addError('bidAmount', 'You need an approved deposit to bid on this lot.');
+
+            return;
+        }
+
+        if ($suspensionError = $this->userSuspensionError()) {
+            $this->addError('bidAmount', $suspensionError);
+
+            return;
+        }
+
+        $currentPrice = $this->auction->current_bid_php ?: $this->auction->starting_bid_php;
+        $minBid = $currentPrice + 10000;
+        $maxBid = (int) floor($currentPrice * 1.5);
 
         $validated = $this->validate([
-            'bidAmount' => ['required', 'integer', 'min:'.$minBid],
+            'bidAmount' => ['required', 'integer', 'min:'.$minBid, 'max:'.$maxBid],
+        ], [
+            'bidAmount.min' => 'Minimum bid increment is ₱10,000 (₱'.number_format($minBid).').',
+            'bidAmount.max' => 'Maximum bid jump is 50% above the current price (₱'.number_format($maxBid).').',
         ]);
 
         // Rate limiting: 10 bids per minute per user/IP
@@ -80,6 +100,20 @@ class AuctionRoom extends Component
 
             if (now()->greaterThan($auction->end_at)) {
                 $this->addError('bidAmount', 'Auction has already ended.');
+
+                return;
+            }
+
+            // Re-verify account state inside the lock: deposit approval or
+            // suspension could have changed between form load and submit.
+            if (! $this->userHasApprovedDeposit()) {
+                $this->addError('bidAmount', 'You need an approved deposit to bid on this lot.');
+
+                return;
+            }
+
+            if ($suspensionError = $this->userSuspensionError()) {
+                $this->addError('bidAmount', $suspensionError);
 
                 return;
             }
@@ -129,6 +163,30 @@ class AuctionRoom extends Component
             $this->bidAmount = $this->auction->current_bid_php + 50000;
             $this->message = 'Bid placed successfully!';
         });
+    }
+
+    protected function userHasApprovedDeposit(): bool
+    {
+        return BidDeposit::query()
+            ->where('user_id', Auth::id())
+            ->where('auction_id', $this->auction->id)
+            ->where('status', 'approved')
+            ->exists();
+    }
+
+    protected function userSuspensionError(): ?string
+    {
+        $strike = UserAuctionStrike::query()
+            ->where('user_id', Auth::id())
+            ->first();
+
+        if ($strike?->is_suspended && $strike->suspended_until && now()->lessThan($strike->suspended_until)) {
+            return 'Your account is suspended from bidding until '
+                .$strike->suspended_until->format('M d, Y H:i')
+                .' due to repeated non-payment.';
+        }
+
+        return null;
     }
 
     public function render(): View

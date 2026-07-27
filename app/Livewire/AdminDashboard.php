@@ -2,6 +2,8 @@
 
 namespace App\Livewire;
 
+use App\Models\Auction;
+use App\Models\BidDeposit;
 use App\Models\Unit;
 use App\Models\UnitStatusLog;
 use Illuminate\Contracts\View\View;
@@ -47,14 +49,33 @@ class AdminDashboard extends Component
             ->sum('price_php');
         $salesTrend = $salesLastMonth > 0 ? (($salesThisMonth - $salesLastMonth) / $salesLastMonth) * 100 : 0;
 
+        // Distinct open conversations (user + unit pairs). Counted in PHP because
+        // COUNT(DISTINCT col_a, col_b) is MySQL-only and tests run on sqlite.
         $activeInquiriesCount = \App\Models\ChatMessage::query()
             ->where('is_from_admin', false)
             ->whereNull('read_at')
-            ->distinct(['user_id', 'unit_id'])
+            ->select('user_id', 'unit_id')
+            ->groupBy('user_id', 'unit_id')
+            ->get()
             ->count();
 
-        $activeAuctionsCount = \App\Models\Auction::query()
-            ->where('status', 'live')
+        $activeAuctionsCount = Auction::query()
+            ->whereIn('status', ['live', 'active'])
+            ->where('end_at', '>', now())
+            ->count();
+
+        $nextAuctionEndingAt = Auction::query()
+            ->whereIn('status', ['live', 'active'])
+            ->where('end_at', '>', now())
+            ->orderBy('end_at')
+            ->value('end_at');
+
+        $pendingDepositsCount = BidDeposit::query()
+            ->where('status', 'pending')
+            ->count();
+
+        $resolvedDepositsCount = BidDeposit::query()
+            ->where('status', '!=', 'pending')
             ->count();
 
         $availablePercentage = $totalUnits > 0
@@ -119,6 +140,9 @@ class AdminDashboard extends Component
             'salesTrend' => $salesTrend,
             'activeInquiriesCount' => $activeInquiriesCount,
             'activeAuctionsCount' => $activeAuctionsCount,
+            'nextAuctionEndingAt' => $nextAuctionEndingAt,
+            'pendingDepositsCount' => $pendingDepositsCount,
+            'resolvedDepositsCount' => $resolvedDepositsCount,
             'availablePercentage' => $availablePercentage,
             'velocityData' => $velocityData,
             'chartPath' => $curvePath,

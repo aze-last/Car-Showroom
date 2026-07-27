@@ -68,11 +68,13 @@
             
             <!-- Thumbnails (Kept for manual navigation/anchors) -->
             @if($unit->images->count() > 1)
-                <div class="p-4 flex gap-4 overflow-x-auto bg-gallery-surface-lowest border-t border-gallery-outline/10 hide-scrollbar">
+                <div class="p-4 flex gap-4 overflow-x-auto bg-gallery-surface-lowest border-t border-gallery-outline/10 hide-scrollbar" role="group" aria-label="Photo thumbnails">
                     @foreach ($unit->images as $index => $image)
                         <button
-                            onclick="document.getElementById('cinema-carousel').scrollTo({ left: {{ $index }} * document.getElementById('cinema-carousel').offsetWidth, behavior: 'smooth' })"
-                            class="w-32 h-20 rounded-2xl overflow-hidden flex-shrink-0 border-2 transition-all duration-300 {{ $currentImageIndex === $index ? 'border-black shadow-lg scale-95' : 'border-transparent opacity-50 hover:opacity-100' }}"
+                            x-data
+                            @click="document.getElementById('cinema-carousel').scrollTo({ left: {{ $index }} * document.getElementById('cinema-carousel').offsetWidth, behavior: 'smooth' })"
+                            aria-label="Show photo {{ $index + 1 }} of {{ $unit->images->count() }}"
+                            class="w-32 h-20 rounded-2xl overflow-hidden flex-shrink-0 border-2 cursor-pointer transition-all duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-900 {{ $currentImageIndex === $index ? 'border-black shadow-lg scale-95' : 'border-transparent opacity-50 hover:opacity-100 focus-visible:opacity-100' }}"
                         >
                             <img src="{{ Storage::url($image->url) }}" alt="" class="h-full w-full object-cover">
                         </button>

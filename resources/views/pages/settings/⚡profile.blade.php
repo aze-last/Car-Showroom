@@ -20,7 +20,7 @@ new class extends Component {
      */
     public function rendering($view): void
     {
-        $title = auth()->user()->isStaff() ? 'Curator Profile' : 'Account Identity';
+        $title = 'My Profile';
         $view->layout('layouts.admin-panel', ['title' => $title]);
     }
 
@@ -146,7 +146,7 @@ new class extends Component {
                 </button>
 
                 <x-action-message class="text-emerald-600 font-black text-[10px] uppercase tracking-[0.2em]" on="profile-updated">
-                    {{ __('Registry Updated') }}
+                    {{ __('Profile Updated') }}
                 </x-action-message>
             </div>
         </form>

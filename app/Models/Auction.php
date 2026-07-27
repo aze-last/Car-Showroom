@@ -11,6 +11,32 @@ class Auction extends Model
 {
     use HasFactory;
 
+    public const STATUS_SCHEDULED = 'scheduled';
+
+    public const STATUS_LIVE = 'live';
+
+    public const STATUS_ACTIVE = 'active';
+
+    public const STATUS_COMPLETED = 'completed';
+
+    public const STATUS_RESERVE_NOT_MET = 'reserve_not_met';
+
+    public const STATUS_CANCELLED = 'cancelled';
+
+    /**
+     * Valid status values (the DB column is a plain string; enforcement lives here).
+     *
+     * @var list<string>
+     */
+    public const STATUSES = [
+        self::STATUS_SCHEDULED,
+        self::STATUS_LIVE,
+        self::STATUS_ACTIVE,
+        self::STATUS_COMPLETED,
+        self::STATUS_RESERVE_NOT_MET,
+        self::STATUS_CANCELLED,
+    ];
+
     protected $fillable = [
         'unit_id',
         'title',
@@ -69,5 +95,17 @@ class Auction extends Model
     public function isLive(): bool
     {
         return $this->status === 'live' || $this->status === 'active';
+    }
+
+    /**
+     * True when a reserve price is set and the given amount does not meet it.
+     */
+    public function reserveNotMetBy(?int $amount): bool
+    {
+        if (! $this->reserve_price_php) {
+            return false; // No reserve (null or 0) — any winning bid stands.
+        }
+
+        return ($amount ?? 0) < $this->reserve_price_php;
     }
 }

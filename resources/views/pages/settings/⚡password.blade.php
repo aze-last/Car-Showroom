@@ -14,7 +14,7 @@ new class extends Component {
      */
     public function rendering($view): void
     {
-        $title = auth()->user()->isStaff() ? 'Credentials' : 'Security Settings';
+        $title = auth()->user()->isStaff() ? 'Password & Security' : 'Password & Security';
         $view->layout('layouts.admin-panel', ['title' => $title]);
     }
 
@@ -53,7 +53,7 @@ new class extends Component {
 
     <flux:heading class="sr-only">{{ __('Password Settings') }}</flux:heading>
 
-    <x-pages::settings.layout :heading="__('Update Password')" :subheading="__('Secure your registry access with a long, complex credential.')">
+    <x-pages::settings.layout :heading="__('Update Password')" :subheading="__('Keep your account secure with a strong, unique password.')">
         <form method="POST" wire:submit="updatePassword" class="mt-6 space-y-8">
             <div>
                 <label class="block text-xs font-black uppercase tracking-widest text-zinc-400 mb-2">{{ __('Current Password') }}</label>
@@ -78,7 +78,7 @@ new class extends Component {
                 @error('password') <p class="mt-2 text-xs font-bold text-red-600 uppercase tracking-widest">{{ $message }}</p> @enderror
             </div>
             <div>
-                <label class="block text-xs font-black uppercase tracking-widest text-zinc-400 mb-2">{{ __('Confirm Registry Key') }}</label>
+                <label class="block text-xs font-black uppercase tracking-widest text-zinc-400 mb-2">{{ __('Confirm New Password') }}</label>
                 <input
                     wire:model="password_confirmation"
                     type="password"
@@ -96,11 +96,11 @@ new class extends Component {
                     data-test="update-password-button"
                 >
                     <span wire:loading wire:target="updatePassword" class="h-4 w-4 animate-spin rounded-full border-2 border-white/20 border-t-white mr-2"></span>
-                    {{ __('Apply Key Change') }}
+                    {{ __('Update Password') }}
                 </button>
 
                 <x-action-message class="text-emerald-600 font-black text-[10px] uppercase tracking-[0.2em]" on="password-updated">
-                    {{ __('Credentials Secured') }}
+                    {{ __('Password Updated') }}
                 </x-action-message>
             </div>
         </form>

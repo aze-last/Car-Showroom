@@ -69,7 +69,7 @@ class AdminAuctionForm extends Component
             'end_at' => ['required', 'date', 'after:start_at'],
             'reserve_price_php' => ['required', 'integer', 'min:0'],
             'starting_bid_php' => ['required', 'integer', 'min:0'],
-            'status' => ['required', 'in:scheduled,live,completed,cancelled'],
+            'status' => ['required', \Illuminate\Validation\Rule::in(Auction::STATUSES)],
             'is_featured' => ['boolean'],
         ]);
 

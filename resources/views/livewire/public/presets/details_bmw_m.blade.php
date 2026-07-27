@@ -183,10 +183,15 @@
                     @endif
 
                     @if(\App\Models\Setting::get('design_show_comparison', true))
-                        <button wire:click="toggleCompare({{ $unit->id }})" class="w-full h-12 bg-transparent text-white font-saira label-uppercase border border-[#3c3c3c] hover:border-white transition-colors flex items-center justify-center gap-2">
-                            <svg viewBox="0 0 24 24" fill="none" class="h-4 w-4" stroke="currentColor" stroke-width="2.5"><path d="M7 16V4M7 4L3 8M7 4L11 8M17 8V20M17 20L13 16M17 20L21 16" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                            <span>{{ in_array($unit->id, $compareIds) ? 'Selected' : 'Compare' }}</span>
-                        </button>
+                        <div x-data="{ showTooltip: false }" class="relative">
+                            <button wire:click="toggleCompare({{ $unit->id }})" @mouseenter="showTooltip = true" @mouseleave="showTooltip = false" class="w-full h-12 bg-transparent text-white font-saira label-uppercase border border-[#3c3c3c] hover:border-white transition-colors flex items-center justify-center gap-2">
+                                <svg viewBox="0 0 24 24" fill="none" class="h-4 w-4" stroke="currentColor" stroke-width="2.5"><path d="M7 16V4M7 4L3 8M7 4L11 8M17 8V20M17 20L13 16M17 20L21 16" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                <span>{{ in_array($unit->id, $compareIds) ? 'Selected' : 'Compare' }}</span>
+                            </button>
+                            <div x-show="showTooltip" x-transition class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 bg-white text-black text-xs font-bold rounded-lg whitespace-nowrap z-50 pointer-events-none">
+                                {{ in_array($unit->id, $compareIds) ? 'Remove from comparison' : 'Add to comparison' }}
+                            </div>
+                        </div>
                     @endif
                 </div>
                 

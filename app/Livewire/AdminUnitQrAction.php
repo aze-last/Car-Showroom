@@ -10,6 +10,7 @@ use BaconQrCode\Renderer\RendererStyle\RendererStyle;
 use BaconQrCode\Writer;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Gate;
+use Livewire\Attributes\Computed;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithFileUploads;
@@ -26,7 +27,7 @@ class AdminUnitQrAction extends Component
 
     public ?string $reason = null;
 
-    public bool $is_guest = false;
+    public bool $is_guest = true;
 
     public ?int $buyer_id = null;
 
@@ -35,6 +36,8 @@ class AdminUnitQrAction extends Component
     public ?string $guest_contact = null;
 
     public $handover_image;
+
+    public string $collector_search = '';
 
     #[Url]
     public ?string $action = null;
@@ -47,6 +50,28 @@ class AdminUnitQrAction extends Component
         $this->action = request()->query('action');
         $this->refreshUnitData();
         $this->generateQrSvg();
+    }
+
+    #[Computed]
+    public function users()
+    {
+        if ($this->is_guest) {
+            return collect();
+        }
+
+        $query = \App\Models\User::query()
+            ->customers()
+            ->orderBy('name');
+
+        if (! empty(trim($this->collector_search))) {
+            $search = '%' . trim($this->collector_search) . '%';
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', $search)
+                    ->orWhere('email', 'like', $search);
+            });
+        }
+
+        return $query->limit(50)->get();
     }
 
     public function markAsSold(\App\Services\UnitStatusService $statusService): void
@@ -94,6 +119,12 @@ class AdminUnitQrAction extends Component
         }
 
         $this->reason = null;
+        $this->guest_name = null;
+        $this->guest_contact = null;
+        $this->handover_image = null;
+        $this->buyer_id = null;
+        $this->collector_search = '';
+        $this->is_guest = true;
         $this->refreshUnitData();
 
         session()->flash($result['changed'] ? 'status' : 'info', $result['message']);
@@ -137,7 +168,7 @@ class AdminUnitQrAction extends Component
     public function render(): View
     {
         return view('livewire.admin-unit-qr-action', [
-            'users' => \App\Models\User::query()->orderBy('name')->get(),
+            'users' => $this->users,
         ])->layout('layouts.admin-panel', [
             'title' => 'Unit Status Action',
         ]);

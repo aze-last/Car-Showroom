@@ -79,22 +79,22 @@ new class extends Component {
             <div class="p-6 rounded-2xl border border-zinc-100 bg-zinc-50/50">
                 <div class="flex items-center justify-between gap-4">
                     <div class="flex-1">
-                        <h3 class="text-xs font-black uppercase tracking-widest !text-zinc-900">{{ __('Export Data') }}</h3>
-                        <p class="mt-1 text-[11px] font-bold !text-zinc-500">{{ __('Generate a ZIP file containing your database and all vehicle images.') }}</p>
+                        <h3 class="text-xs font-black uppercase tracking-widest !text-zinc-900">{{ __('Download Backup') }}</h3>
+                        <p class="mt-1 text-[11px] font-bold !text-zinc-500">{{ __('Save a complete backup of your database and all vehicle images to your computer.') }}</p>
                     </div>
                     <flux:button wire:click="downloadBackup" variant="filled" class="bg-zinc-900 text-white hover:bg-zinc-800">
-                        {{ __('Download ZIP') }}
+                        {{ __('Download Backup') }}
                     </flux:button>
                 </div>
             </div>
 
             <!-- Restore Section -->
             <div class="p-6 rounded-2xl border border-zinc-100 bg-zinc-50/50">
-                <h3 class="text-xs font-black uppercase tracking-widest !text-zinc-900 mb-4">{{ __('Import Data') }}</h3>
+                <h3 class="text-xs font-black uppercase tracking-widest !text-zinc-900 mb-4">{{ __('Restore from Backup') }}</h3>
                 
                 <div class="space-y-4">
                     <div>
-                        <label class="block text-xs font-black uppercase tracking-widest text-zinc-400 mb-2">{{ __('Backup ZIP File') }}</label>
+                        <label class="block text-xs font-black uppercase tracking-widest text-zinc-400 mb-2">{{ __('Select Backup File') }}</label>
                         <input 
                             type="file" 
                             wire:model="backupFile" 

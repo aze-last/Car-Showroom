@@ -34,6 +34,7 @@ class UserFactory extends Factory
             'preferred_locale' => 'en_PH',
             'preferred_timezone' => 'Asia/Manila',
             'email_verified_at' => now(),
+            'terms_accepted_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
             'is_admin' => false,
             'is_employee' => false,

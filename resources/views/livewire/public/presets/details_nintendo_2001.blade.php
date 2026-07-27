@@ -206,10 +206,15 @@
                         @endif
 
                         @if(\App\Models\Setting::get('design_show_comparison', true))
-                            <button wire:click="toggleCompare({{ $unit->id }})" class="w-full h-12 bg-[#21242e] text-white nintendo-label border-2 border-[#5a5f8c] flex items-center justify-center gap-3 hover:bg-[#3d4f97] transition-all transform active:translate-y-1">
-                                <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5 text-[#9fbee7]" stroke="currentColor" stroke-width="3"><path d="M7 16V4M7 4L3 8M7 4L11 8M17 8V20M17 20L13 16M17 20L21 16" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                                <span>{{ in_array($unit->id, $compareIds) ? 'SELECTED' : 'COMPARE SYSTEM' }}</span>
-                            </button>
+                            <div x-data="{ showTooltip: false }" class="relative">
+                                <button wire:click="toggleCompare({{ $unit->id }})" @mouseenter="showTooltip = true" @mouseleave="showTooltip = false" class="w-full h-12 bg-[#21242e] text-white nintendo-label border-2 border-[#5a5f8c] flex items-center justify-center gap-3 hover:bg-[#3d4f97] transition-all transform active:translate-y-1">
+                                    <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5 text-[#9fbee7]" stroke="currentColor" stroke-width="3"><path d="M7 16V4M7 4L3 8M7 4L11 8M17 8V20M17 20L13 16M17 20L21 16" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                    <span>{{ in_array($unit->id, $compareIds) ? 'SELECTED' : 'COMPARE SYSTEM' }}</span>
+                                </button>
+                                <div x-show="showTooltip" x-transition class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 bg-[#f68d1f] text-[#21242e] text-xs font-bold rounded-lg whitespace-nowrap z-50 pointer-events-none">
+                                    {{ in_array($unit->id, $compareIds) ? 'Remove from comparison' : 'Add to comparison' }}
+                                </div>
+                            </div>
                         @endif
                     </div>
 

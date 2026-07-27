@@ -27,6 +27,8 @@
                 required
                 autofocus
                 autocomplete="name"
+                class="!bg-white !text-black"
+                style="background-color: #ffffff !important; color: #000000 !important;"
                 :placeholder="__('Full name')"
             />
 
@@ -38,6 +40,8 @@
                 type="email"
                 required
                 autocomplete="email"
+                class="!bg-white !text-black"
+                style="background-color: #ffffff !important; color: #000000 !important;"
                 placeholder="email@example.com"
             />
 
@@ -48,6 +52,8 @@
                 type="password"
                 required
                 autocomplete="new-password"
+                class="!bg-white !text-black"
+                style="background-color: #ffffff !important; color: #000000 !important;"
                 :placeholder="__('Password')"
                 viewable
             />
@@ -59,6 +65,8 @@
                 type="password"
                 required
                 autocomplete="new-password"
+                class="!bg-white !text-black"
+                style="background-color: #ffffff !important; color: #000000 !important;"
                 :placeholder="__('Confirm password')"
                 viewable
             />

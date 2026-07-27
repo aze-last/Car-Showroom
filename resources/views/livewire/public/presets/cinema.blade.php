@@ -3,16 +3,18 @@
     <h1 class="sr-only">{{ $designSettings['headline'] }}</h1>
     <!-- 1. Cinema Hero Section with Smooth Slider -->
     @if($featuredUnits->isNotEmpty())
-        <section 
-            x-data="{ 
+        <section
+            x-data="{
                 active: 0,
                 count: {{ $featuredUnits->count() }},
                 autoplay: null,
                 init() {
+                    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
                     this.autoplay = setInterval(() => {
                         this.active = (this.active + 1) % this.count
                     }, 5000)
                 },
+                destroy() { this.stopAutoplay() },
                 stopAutoplay() { clearInterval(this.autoplay) }
             }"
             class="cinema-hero w-full relative h-[85vh] min-h-[600px] overflow-hidden bg-black flex items-center justify-center"
@@ -31,9 +33,10 @@
                     wire:key="hero-slide-{{ $heroUnit->id }}"
                 >
                     @if($heroUnit->mainImage)
-                        <img 
-                            src="{{ Storage::url($heroUnit->mainImage->url) }}" 
-                            alt="{{ $heroUnit->name }}" 
+                        <img
+                            src="{{ Storage::url($heroUnit->mainImage->url) }}"
+                            alt="{{ $heroUnit->name }}"
+                            @if($index === 0) fetchpriority="high" loading="eager" @else loading="lazy" @endif
                             class="hero-parallax-img w-full h-full object-cover opacity-60"
                         >
                     @endif
@@ -65,7 +68,7 @@
                                 x-transition:enter="transition ease-out duration-1000 delay-700"
                                 x-transition:enter-start="opacity-0"
                                 x-transition:enter-end="opacity-100"
-                                class="cinema-hero-content flex flex-col md:flex-row items-center gap-8 text-white/70"
+                                class="cinema-hero-content flex flex-col md:flex-row items-center gap-8 text-white/85"
                             >
                                 <p class="text-lg md:text-xl font-medium tracking-wide border-l-2 border-brand-primary pl-6">
                                     {{ $heroUnit->category?->name }} • {{ $heroUnit->formattedPrice() }}
@@ -82,13 +85,20 @@
             @endforeach
 
             <!-- Slider Pagination Dots -->
-            <div class="absolute bottom-32 left-1/2 -translate-x-1/2 z-30 flex gap-3">
+            <div class="absolute bottom-32 left-1/2 -translate-x-1/2 z-30 flex" role="tablist" aria-label="Featured slides">
                 @foreach($featuredUnits as $index => $heroUnit)
-                    <button 
+                    <button
                         @click="active = {{ $index }}; stopAutoplay()"
-                        class="w-2 h-2 rounded-full transition-all duration-500"
-                        :class="active === {{ $index }} ? 'bg-white w-8' : 'bg-white/30 hover:bg-white/50'"
-                    ></button>
+                        aria-label="Go to slide {{ $index + 1 }} of {{ $featuredUnits->count() }}: {{ $heroUnit->name }}"
+                        :aria-selected="active === {{ $index }} ? 'true' : 'false'"
+                        role="tab"
+                        class="group/dot cursor-pointer flex items-center justify-center min-w-11 min-h-11 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white rounded-full"
+                    >
+                        <span
+                            class="h-2 rounded-full transition-all duration-500 group-hover/dot:bg-white/60"
+                            :class="active === {{ $index }} ? 'bg-white w-8' : 'bg-white/30 w-2'"
+                        ></span>
+                    </button>
                 @endforeach
             </div>
 
@@ -125,17 +135,18 @@
 
             <div class="flex items-center gap-4 w-full md:w-auto">
                 <div class="relative flex-1 md:w-64 group">
-                    <svg viewBox="0 0 24 24" fill="none" class="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400 transition-colors group-focus-within:text-black" stroke="currentColor" stroke-width="3"><circle cx="11" cy="11" r="7"/><path d="M20 20L16.65 16.65" stroke-linecap="round"/></svg>
-                    <input 
+                    <svg viewBox="0 0 24 24" fill="none" class="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400 transition-colors group-focus-within:text-black" stroke="currentColor" stroke-width="3" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20L16.65 16.65" stroke-linecap="round"/></svg>
+                    <input
                         wire:model.live.debounce.300ms="search"
-                        type="text" 
-                        placeholder="Search collection..." 
-                        class="w-full bg-zinc-100/50 border-none rounded-2xl pl-12 pr-6 py-3 text-[14px] font-bold uppercase tracking-widest placeholder:text-zinc-400 focus:ring-2 focus:ring-black/5 focus:bg-white transition-all"
+                        type="search"
+                        aria-label="Search collection"
+                        placeholder="Search collection..."
+                        class="w-full bg-zinc-100/50 border-none rounded-2xl pl-12 pr-6 py-3 text-[14px] font-bold uppercase tracking-widest placeholder:text-zinc-500 focus:ring-2 focus:ring-black/5 focus:bg-white transition-all"
                     >
                 </div>
                 <div class="h-8 w-px bg-zinc-200 hidden md:block"></div>
                 <div class="flex items-center gap-3">
-                    <select wire:model.live="sortBy" class="bg-transparent border-none text-[12px] font-black text-black focus:ring-0 p-0 cursor-pointer uppercase tracking-[0.15em]">
+                    <select wire:model.live="sortBy" aria-label="Sort collection" class="bg-transparent border-none text-[12px] font-black text-black focus:ring-0 p-0 cursor-pointer uppercase tracking-[0.15em]">
                         <option value="newest">Recent</option>    
                         <option value="price_desc">Premium</option> 
                         <option value="price_asc">Essential</option> 
@@ -146,8 +157,12 @@
     </nav>
 
     <!-- 3. Dynamic Bento Grid Showcase -->
-    <section class="w-full px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto py-24 mb-32">   
-        <div class="showroom-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-8 auto-rows-[420px]"> 
+    <section class="w-full px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto py-24 mb-32">
+        <div
+            wire:loading.class="opacity-40 pointer-events-none"
+            wire:target="search, categoryId, sortBy, gotoPage, nextPage, previousPage, clearCategoryFilter, resetFilters"
+            class="showroom-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-8 auto-rows-[420px] transition-opacity duration-300"
+        >
             @forelse ($units as $index => $unit)
                 @php
                     $isLarge = $index === 0 && $categoryId === null && $search === '';
@@ -170,9 +185,9 @@
                                 >
                             @endif
 
-                            <!-- Quick-Specs Reveal on Hover -->
-                            <div class="absolute inset-0 z-20 bg-black/80 backdrop-blur-md opacity-0 group-hover:opacity-100 transition-all duration-500 flex flex-col justify-center p-12 text-white pointer-events-none">
-                                <div class="space-y-6 transform translate-y-8 group-hover:translate-y-0 transition-transform duration-500">
+                            <!-- Quick-Specs Reveal on Hover/Focus (full specs remain on the detail page for touch users) -->
+                            <div class="absolute inset-0 z-20 bg-black/80 backdrop-blur-md opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-all duration-500 flex flex-col justify-center p-12 text-white pointer-events-none">
+                                <div class="space-y-6 transform translate-y-8 group-hover:translate-y-0 group-focus-within:translate-y-0 transition-transform duration-500">
                                     <h4 class="text-xs font-bold uppercase tracking-[0.4em] text-brand-primary">Technical Brief</h4>
                                     <div class="grid grid-cols-2 gap-y-6 gap-x-8">
                                         <div>
@@ -219,29 +234,48 @@
                                 </div>
                                 <div class="text-right shrink-0">
                                     <span class="text-xl md:text-2xl font-bold text-black tracking-tight block">{{ $unit->formattedPrice() }}</span>
-                                    <span class="text-[8px] font-bold uppercase tracking-widest text-zinc-300">Listed Price</span>
+                                    <span class="text-[8px] font-bold uppercase tracking-widest text-zinc-500">Listed Price</span>
                                 </div>
                             </div>
 
                             <div class="flex justify-between items-center mt-10">
                                 <div class="flex gap-2 relative z-30">
-                                    <button 
-                                        wire:click.stop="toggleSave({{ $unit->id }})"
-                                        class="w-12 h-12 rounded-2xl border border-zinc-100 flex items-center justify-center transition-all duration-300 {{ auth()->check() && auth()->user()->savedUnits()->where('unit_id', $unit->id)->exists() ? 'bg-red-50 border-red-100 text-red-600' : 'text-zinc-300 hover:text-black hover:bg-zinc-50' }}"
-                                    >
-                                        <svg viewBox="0 0 24 24" fill="{{ auth()->check() && auth()->user()->savedUnits()->where('unit_id', $unit->id)->exists() ? 'currentColor' : 'none' }}" class="h-5 w-5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
-                                    </button>
-                                    @if($designSettings['showComparison'])
-                                        <button 
-                                            wire:click.stop="toggleCompare({{ $unit->id }})"
-                                            class="w-12 h-12 rounded-2xl border border-zinc-100 flex items-center justify-center transition-all duration-300 {{ in_array($unit->id, $compareIds) ? 'bg-black border-black text-white' : 'text-zinc-300 hover:text-black hover:bg-zinc-50' }}"
+                                    @php $isSaved = in_array($unit->id, $this->savedUnitIds); @endphp
+                                    <div x-data="{ showTooltip: false }" class="relative">
+                                        <button
+                                            wire:click.stop="toggleSave({{ $unit->id }})"
+                                            aria-label="{{ $isSaved ? 'Remove '.$unit->name.' from saved' : 'Save '.$unit->name }}"
+                                            aria-pressed="{{ $isSaved ? 'true' : 'false' }}"
+                                            @mouseenter="showTooltip = true"
+                                            @mouseleave="showTooltip = false"
+                                            class="w-12 h-12 rounded-2xl border border-zinc-100 flex items-center justify-center cursor-pointer transition-all duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-900 {{ $isSaved ? 'bg-red-50 border-red-100 text-red-600' : 'text-zinc-300 hover:text-black hover:bg-zinc-50' }}"
                                         >
-                                            @if(in_array($unit->id, $compareIds))
-                                                <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                                            @else
-                                                <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                                            @endif
+                                            <svg viewBox="0 0 24 24" fill="{{ $isSaved ? 'currentColor' : 'none' }}" class="h-5 w-5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
                                         </button>
+                                        <div x-show="showTooltip" x-transition class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 bg-zinc-900 text-white text-xs font-bold rounded-lg whitespace-nowrap z-50 pointer-events-none">
+                                            {{ $isSaved ? 'Remove from saved' : 'Save for later' }}
+                                        </div>
+                                    </div>
+                                    @if($designSettings['showComparison'])
+                                        <div x-data="{ showTooltip: false }" class="relative">
+                                            <button
+                                                wire:click.stop="toggleCompare({{ $unit->id }})"
+                                                aria-label="{{ in_array($unit->id, $compareIds) ? 'Remove '.$unit->name.' from comparison' : 'Add '.$unit->name.' to comparison' }}"
+                                                aria-pressed="{{ in_array($unit->id, $compareIds) ? 'true' : 'false' }}"
+                                                @mouseenter="showTooltip = true"
+                                                @mouseleave="showTooltip = false"
+                                                class="w-12 h-12 rounded-2xl border border-zinc-100 flex items-center justify-center cursor-pointer transition-all duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-900 {{ in_array($unit->id, $compareIds) ? 'bg-black border-black text-white' : 'text-zinc-300 hover:text-black hover:bg-zinc-50' }}"
+                                            >
+                                                @if(in_array($unit->id, $compareIds))
+                                                    <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                                @else
+                                                    <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                                                @endif
+                                            </button>
+                                            <div x-show="showTooltip" x-transition class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 bg-zinc-900 text-white text-xs font-bold rounded-lg whitespace-nowrap z-50 pointer-events-none">
+                                                {{ in_array($unit->id, $compareIds) ? 'Remove from comparison' : 'Add to comparison' }}
+                                            </div>
+                                        </div>
                                     @endif
                                 </div>
                                 <a href="{{ route('units.show', $unit) }}" wire:navigate class="group/btn relative overflow-hidden bg-black text-white px-8 py-4 rounded-2xl font-bold uppercase tracking-widest text-[10px] transition-all hover:scale-105 active:scale-95 after:absolute after:inset-0 after:z-10">

@@ -61,11 +61,12 @@
                                         'live' => 'bg-red-50 text-red-600 border-red-100',
                                         'scheduled' => 'bg-zinc-50 text-zinc-600 border-zinc-100',
                                         'completed' => 'bg-emerald-50 text-emerald-600 border-emerald-100',
+                                        'reserve_not_met' => 'bg-amber-50 text-amber-600 border-amber-100',
                                         'cancelled' => 'bg-orange-50 text-orange-600 border-orange-100',
                                     ];
                                 @endphp
                                 <span class="px-2 py-0.5 rounded-full text-[8px] font-bold uppercase tracking-widest border {{ $statusClasses[$auction->status] ?? $statusClasses['scheduled'] }}">
-                                    {{ $auction->status }}
+                                    {{ str_replace('_', ' ', $auction->status) }}
                                 </span>
                             </div>
                             <h3 class="font-bold text-black text-lg tracking-tight truncate">{{ $auction->unit->name }}</h3>
@@ -140,11 +141,12 @@
                                         'live' => 'bg-red-50 text-red-600 border-red-100',
                                         'scheduled' => 'bg-zinc-50 text-zinc-600 border-zinc-100',
                                         'completed' => 'bg-emerald-50 text-emerald-600 border-emerald-100',
+                                        'reserve_not_met' => 'bg-amber-50 text-amber-600 border-amber-100',
                                         'cancelled' => 'bg-orange-50 text-orange-600 border-orange-100',
                                     ];
                                 @endphp
                                 <span class="px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest border {{ $statusClasses[$auction->status] ?? $statusClasses['scheduled'] }}">
-                                    {{ $auction->status }}
+                                    {{ str_replace('_', ' ', $auction->status) }}
                                 </span>
                             </td>
                             <td class="px-6 py-5">

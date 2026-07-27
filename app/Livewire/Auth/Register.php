@@ -18,12 +18,17 @@ class Register extends Component
 
     public string $password_confirmation = '';
 
+    public bool $terms = false;
+
     public function register()
     {
         $this->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
+            'terms' => 'accepted',
+        ], [
+            'terms.accepted' => 'You must agree to the Terms of Service and Privacy Policy.',
         ]);
 
         // Rate limiting: 3 registrations per hour per IP
@@ -39,6 +44,7 @@ class Register extends Component
             'name' => $this->name,
             'email' => $this->email,
             'password' => Hash::make($this->password),
+            'terms_accepted_at' => now(),
         ]);
 
         Auth::login($user);

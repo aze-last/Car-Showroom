@@ -163,8 +163,8 @@ new class extends Component {
     {
         if ($this->twoFactorEnabled) {
             return [
-                'title' => __('Two-Factor Authentication Enabled'),
-                'description' => __('Two-factor authentication is now enabled. Scan the QR code or enter the setup key in your authenticator app.'),
+                'title' => __('Two-Step Verification Enabled'),
+                'description' => __('Your two-step verification is ready! Save the code to your authenticator app before closing.'),
                 'buttonText' => __('Close'),
             ];
         }
@@ -178,8 +178,8 @@ new class extends Component {
         }
 
         return [
-            'title' => __('Enable Two-Factor Authentication'),
-            'description' => __('To finish enabling two-factor authentication, scan the QR code or enter the setup key in your authenticator app.'),
+            'title' => __('Enable Two-Step Verification'),
+            'description' => __('Scan the QR code with your authenticator app, or manually enter the key shown below.'),
             'buttonText' => __('Continue'),
         ];
     }
@@ -191,8 +191,8 @@ new class extends Component {
     <flux:heading class="sr-only">{{ __('Two-Factor Authentication Settings') }}</flux:heading>
 
     <x-pages::settings.layout
-        :heading="__('Two Factor Authentication')"
-        :subheading="__('Manage your two-factor authentication settings')"
+        :heading="__('Two-Step Verification')"
+        :subheading="__('Enable or disable two-step login security')"
     >
         <div class="flex flex-col w-full mx-auto space-y-6 text-sm" wire:cloak>
             @if ($twoFactorEnabled)
@@ -202,7 +202,7 @@ new class extends Component {
                     </div>
 
                     <flux:text class="!text-zinc-900 font-medium">
-                        {{ __('With two-factor authentication enabled, you will be prompted for a secure, random pin during login, which you can retrieve from the TOTP-supported application on your phone.') }}
+                        {{ __('With two-step verification enabled, you will be asked for a code from an authenticator app (like Google Authenticator or Authy) each time you log in.') }}
                     </flux:text>
 
                     <livewire:pages::settings.two-factor.recovery-codes :$requiresConfirmation />
@@ -225,7 +225,7 @@ new class extends Component {
                     </div>
 
                     <flux:text variant="subtle" class="!text-zinc-500 font-medium">
-                        {{ __('When you enable two-factor authentication, you will be prompted for a secure pin during login. This pin can be retrieved from a TOTP-supported application on your phone.') }}
+                        {{ __('Two-step verification adds security by requiring a code from an authenticator app during login. Apps like Google Authenticator, Microsoft Authenticator, or Authy work great.') }}
                     </flux:text>
 
                     <flux:button

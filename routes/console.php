@@ -3,6 +3,9 @@
 use App\Services\ZmotoCatalogImporter;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Schedule;
+
+Schedule::command('auction:check-deadlines')->everyMinute();
 
 Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());

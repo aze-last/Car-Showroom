@@ -20,25 +20,25 @@
 
             <div class="space-y-2">
                 <label for="name" class="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Full Name</label>
-                <input wire:model="name" id="name" type="text" required class="w-full h-12 bg-gallery-surface-low border-none rounded-2xl px-6 text-sm font-medium focus:ring-2 focus:ring-black/5 transition-all">
+                <input wire:model="name" id="name" type="text" required class="w-full h-12 !bg-white border-none rounded-2xl px-6 text-sm font-medium !text-black focus:ring-2 focus:ring-black/5 transition-all" style="background-color: #ffffff !important; color: #000000 !important;">
                 @error('name') <span class="text-red-500 text-[10px] font-bold uppercase tracking-widest">{{ $message }}</span> @enderror
             </div>
 
             <div class="space-y-2">
                 <label for="email" class="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Email Address</label>
-                <input wire:model="email" id="email" type="email" required class="w-full h-12 bg-gallery-surface-low border-none rounded-2xl px-6 text-sm font-medium focus:ring-2 focus:ring-black/5 transition-all">
+                <input wire:model="email" id="email" type="email" required class="w-full h-12 !bg-white border-none rounded-2xl px-6 text-sm font-medium !text-black focus:ring-2 focus:ring-black/5 transition-all" style="background-color: #ffffff !important; color: #000000 !important;">
                 @error('email') <span class="text-red-500 text-[10px] font-bold uppercase tracking-widest">{{ $message }}</span> @enderror
             </div>
 
             <div class="space-y-2">
                 <label for="password" class="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Security Key</label>
-                <input wire:model="password" id="password" type="password" required class="w-full h-12 bg-gallery-surface-low border-none rounded-2xl px-6 text-sm font-medium focus:ring-2 focus:ring-black/5 transition-all">
+                <input wire:model="password" id="password" type="password" required class="w-full h-12 !bg-white border-none rounded-2xl px-6 text-sm font-medium !text-black focus:ring-2 focus:ring-black/5 transition-all" style="background-color: #ffffff !important; color: #000000 !important;">
                 @error('password') <span class="text-red-500 text-[10px] font-bold uppercase tracking-widest">{{ $message }}</span> @enderror
             </div>
 
             <div class="space-y-2">
                 <label for="password_confirmation" class="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Confirm Security Key</label>
-                <input wire:model="password_confirmation" id="password_confirmation" type="password" required class="w-full h-12 bg-gallery-surface-low border-none rounded-2xl px-6 text-sm font-medium focus:ring-2 focus:ring-black/5 transition-all">
+                <input wire:model="password_confirmation" id="password_confirmation" type="password" required class="w-full h-12 !bg-white border-none rounded-2xl px-6 text-sm font-medium !text-black focus:ring-2 focus:ring-black/5 transition-all" style="background-color: #ffffff !important; color: #000000 !important;">
             </div>
 
             <button type="submit" class="w-full h-14 bg-black text-white font-bold uppercase tracking-widest text-[11px] rounded-xl hover:opacity-90 transition-all duration-300 shadow-xl hover:shadow-2xl mt-4">

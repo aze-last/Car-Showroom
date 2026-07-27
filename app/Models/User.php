@@ -27,6 +27,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'google_id',
         'auth_provider',
         'avatar',
+        'terms_accepted_at',
         'password',
     ];
 
@@ -51,6 +52,7 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return [
             'email_verified_at' => 'datetime',
+            'terms_accepted_at' => 'datetime',
             'password' => 'hashed',
             'auth_provider' => AuthProvider::class,
             'is_admin' => 'boolean',
@@ -81,6 +83,17 @@ class User extends Authenticatable implements MustVerifyEmail
     public function isStaff(): bool
     {
         return $this->is_admin || $this->is_employee;
+    }
+
+    /**
+     * Scope a query to only include customer users (non-staff).
+     *
+     * @param \Illuminate\Database\Eloquent\Builder<User> $query
+     * @return \Illuminate\Database\Eloquent\Builder<User>
+     */
+    public function scopeCustomers($query)
+    {
+        return $query->where('is_admin', false)->where('is_employee', false);
     }
 
     public function hasGoogleAccount(): bool

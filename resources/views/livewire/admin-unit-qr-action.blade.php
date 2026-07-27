@@ -119,19 +119,25 @@
                             <div>
                                 <label class="block text-[10px] font-bold text-zinc-400 uppercase tracking-widest px-1 mb-3">Buyer Type</label>
                                 <flux:radio.group wire:model.live="is_guest" variant="segmented" class="w-full mb-4">
-                                    <flux:radio value="0" label="Registered Collector" class="text-xs sm:text-sm" />
-                                    <flux:radio value="1" label="Guest Walk-in" class="text-xs sm:text-sm" />
+                                    <flux:radio :value="false" label="Registered Collector" class="text-xs sm:text-sm" />
+                                    <flux:radio :value="true" label="Guest Walk-in" class="text-xs sm:text-sm" />
                                 </flux:radio.group>
                             </div>
 
                             @if(!$is_guest)
-                                <div class="space-y-2">
-                                    <label class="block text-[10px] font-bold text-zinc-400 uppercase tracking-widest px-1">Assign Collector</label>
-                                    <flux:select wire:model="buyer_id" searchable placeholder="Select Collector...">
-                                        @foreach($users as $user)
-                                            <flux:select.option value="{{ $user->id }}">{{ $user->name }} ({{ $user->email }})</flux:select.option>
-                                        @endforeach
-                                    </flux:select>
+                                <div class="space-y-4">
+                                    <div class="space-y-1">
+                                        <label class="block text-[10px] font-bold text-zinc-400 uppercase tracking-widest px-1">Filter Collector</label>
+                                        <flux:input wire:model.live.debounce.300ms="collector_search" placeholder="Search name or email..." class="w-full" />
+                                    </div>
+                                    <div class="space-y-2">
+                                        <label class="block text-[10px] font-bold text-zinc-400 uppercase tracking-widest px-1">Assign Collector</label>
+                                        <flux:select wire:model="buyer_id" searchable placeholder="Select Collector...">
+                                            @foreach($this->users as $user)
+                                                <flux:select.option value="{{ $user->id }}">{{ $user->name }} ({{ $user->email }})</flux:select.option>
+                                            @endforeach
+                                        </flux:select>
+                                    </div>
                                 </div>
                             @else
                                 <div class="space-y-4 bg-gallery-surface-low p-4 sm:p-6 rounded-2xl border border-gallery-outline/5">

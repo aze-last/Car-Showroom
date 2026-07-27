@@ -127,12 +127,19 @@
                     </button>
                 @endif
                 @if(App\Models\Setting::get('design_show_comparison', true))
-                    <button
-                        wire:click="toggleCompare({{ $unit->id }})"
-                        class="w-full cursor-pointer border border-noir-line-strong text-noir-ink font-bold uppercase tracking-[0.3em] text-[11px] py-5 hover:border-noir-gold hover:text-noir-gold-bright transition-colors duration-300"
-                    >
-                        {{ in_array($unit->id, $compareIds) ? 'In Comparison' : 'Compare' }}
-                    </button>
+                    <div x-data="{ showTooltip: false }" class="relative">
+                        <button
+                            wire:click="toggleCompare({{ $unit->id }})"
+                            @mouseenter="showTooltip = true"
+                            @mouseleave="showTooltip = false"
+                            class="w-full cursor-pointer border border-noir-line-strong text-noir-ink font-bold uppercase tracking-[0.3em] text-[11px] py-5 hover:border-noir-gold hover:text-noir-gold-bright transition-colors duration-300"
+                        >
+                            {{ in_array($unit->id, $compareIds) ? 'In Comparison' : 'Compare' }}
+                        </button>
+                        <div x-show="showTooltip" x-transition class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 bg-noir-gold text-noir-canvas text-xs font-bold rounded-lg whitespace-nowrap z-50 pointer-events-none">
+                            {{ in_array($unit->id, $compareIds) ? 'Remove from comparison' : 'Add to comparison' }}
+                        </div>
+                    </div>
                 @endif
             </div>
 
