@@ -22,6 +22,14 @@ use Illuminate\Support\Facades\Route;
  */
 Route::get('/register', \App\Livewire\Auth\Register::class)->name('register');
 
+Route::get('/logout', function (\Illuminate\Http\Request $request) {
+    \Illuminate\Support\Facades\Auth::guard('web')->logout();
+    $request->session()->invalidate();
+    $request->session()->regenerateToken();
+
+    return redirect()->route('home');
+});
+
 Route::get('/auth/google/redirect', [GoogleAuthController::class, 'redirect'])->name('auth.google.redirect');
 Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])->name('auth.google.callback');
 
