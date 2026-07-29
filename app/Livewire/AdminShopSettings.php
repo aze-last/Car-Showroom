@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Concerns\HandlesLivewireErrors;
 use App\Models\Setting;
 use App\Models\Unit;
 use Illuminate\Support\Facades\Storage;
@@ -10,6 +11,7 @@ use Livewire\WithFileUploads;
 
 class AdminShopSettings extends Component
 {
+    use HandlesLivewireErrors;
     use WithFileUploads;
 
     public string $activeTab = 'identity';
@@ -145,66 +147,74 @@ class AdminShopSettings extends Component
             'hero_subtitle' => 'required|string|max:255',
         ]);
 
-        if ($this->logo) {
-            $path = $this->logo->store('branding', 'public');
-            $oldLogo = Setting::get('shop_logo');
-            if ($oldLogo) {
-                Storage::disk('public')->delete($oldLogo);
+        $saved = $this->safely(function () {
+            if ($this->logo) {
+                $path = $this->logo->store('branding', 'public');
+                $oldLogo = Setting::get('shop_logo');
+                if ($oldLogo) {
+                    Storage::disk('public')->delete($oldLogo);
+                }
+                Setting::set('shop_logo', $path);
+                $this->current_logo_url = Storage::url($path);
+                $this->logo = null;
             }
-            Setting::set('shop_logo', $path);
-            $this->current_logo_url = Storage::url($path);
-            $this->logo = null;
-        }
 
-        if ($this->design_logo) {
-            $path = $this->design_logo->store('customization', 'public');
-            $oldDesignLogo = Setting::get('design_logo_path');
-            if ($oldDesignLogo) {
-                Storage::disk('public')->delete($oldDesignLogo);
+            if ($this->design_logo) {
+                $path = $this->design_logo->store('customization', 'public');
+                $oldDesignLogo = Setting::get('design_logo_path');
+                if ($oldDesignLogo) {
+                    Storage::disk('public')->delete($oldDesignLogo);
+                }
+                Setting::set('design_logo_path', $path);
+                $this->current_design_logo_url = Storage::url($path);
+                $this->design_logo = null;
             }
-            Setting::set('design_logo_path', $path);
-            $this->current_design_logo_url = Storage::url($path);
-            $this->design_logo = null;
+
+            // Persist Identity
+            Setting::set('legal_name', $this->legal_name);
+            Setting::set('dba_name', $this->dba_name);
+            Setting::set('shop_name', $this->dba_name);
+            Setting::set('shop_phone', $this->shop_phone);
+            Setting::set('sales_inquiry_email', $this->sales_inquiry_email);
+            Setting::set('shop_email', $this->sales_inquiry_email);
+            Setting::set('service_inquiry_email', $this->service_inquiry_email);
+            Setting::set('legal_inquiry_email', $this->legal_inquiry_email);
+
+            // Persist Geography
+            Setting::set('shop_address', $this->shop_address);
+            Setting::set('shop_city', $this->shop_city);
+            Setting::set('shop_state', $this->shop_state);
+            Setting::set('shop_postal_code', $this->shop_postal_code);
+            Setting::set('map_latitude', $this->map_latitude);
+            Setting::set('map_longitude', $this->map_longitude);
+
+            $this->dispatch('update-map', lat: $this->map_latitude, lng: $this->map_longitude);
+
+            // Persist Socials
+            Setting::set('facebook_url', $this->facebook_url);
+            Setting::set('instagram_url', $this->instagram_url);
+            Setting::set('tiktok_url', $this->tiktok_url);
+
+            // Persist Appearance
+            Setting::set('design_palette', $this->palette);
+            Setting::set('design_layout', $this->layout_preset);
+            Setting::set('design_hero_unit_id', $this->hero_unit_id);
+            Setting::set('design_hero_headline', $this->hero_headline);
+            Setting::set('design_hero_subtitle', $this->hero_subtitle);
+            Setting::set('design_show_auctions', $this->show_auctions, 'boolean');
+            Setting::set('design_show_comparison', $this->show_comparison, 'boolean');
+            Setting::set('design_show_inquiries', $this->show_inquiries, 'boolean');
+
+            // Persist Infrastructure
+            Setting::set('primary_color', $this->primary_color);
+            Setting::set('accent_tone', $this->accent_tone);
+
+            return true;
+        }, 'Could not save the settings. Please try again.');
+
+        if ($saved === null) {
+            return;
         }
-
-        // Persist Identity
-        Setting::set('legal_name', $this->legal_name);
-        Setting::set('dba_name', $this->dba_name);
-        Setting::set('shop_name', $this->dba_name);
-        Setting::set('shop_phone', $this->shop_phone);
-        Setting::set('sales_inquiry_email', $this->sales_inquiry_email);
-        Setting::set('shop_email', $this->sales_inquiry_email);
-        Setting::set('service_inquiry_email', $this->service_inquiry_email);
-        Setting::set('legal_inquiry_email', $this->legal_inquiry_email);
-
-        // Persist Geography
-        Setting::set('shop_address', $this->shop_address);
-        Setting::set('shop_city', $this->shop_city);
-        Setting::set('shop_state', $this->shop_state);
-        Setting::set('shop_postal_code', $this->shop_postal_code);
-        Setting::set('map_latitude', $this->map_latitude);
-        Setting::set('map_longitude', $this->map_longitude);
-
-        $this->dispatch('update-map', lat: $this->map_latitude, lng: $this->map_longitude);
-
-        // Persist Socials
-        Setting::set('facebook_url', $this->facebook_url);
-        Setting::set('instagram_url', $this->instagram_url);
-        Setting::set('tiktok_url', $this->tiktok_url);
-
-        // Persist Appearance
-        Setting::set('design_palette', $this->palette);
-        Setting::set('design_layout', $this->layout_preset);
-        Setting::set('design_hero_unit_id', $this->hero_unit_id);
-        Setting::set('design_hero_headline', $this->hero_headline);
-        Setting::set('design_hero_subtitle', $this->hero_subtitle);
-        Setting::set('design_show_auctions', $this->show_auctions, 'boolean');
-        Setting::set('design_show_comparison', $this->show_comparison, 'boolean');
-        Setting::set('design_show_inquiries', $this->show_inquiries, 'boolean');
-
-        // Persist Infrastructure
-        Setting::set('primary_color', $this->primary_color);
-        Setting::set('accent_tone', $this->accent_tone);
 
         session()->flash('status', 'System Master configurations updated successfully.');
     }

@@ -3,6 +3,7 @@
 namespace App\Livewire\Public;
 
 use App\Concerns\EnforcesCollectorAuthentication;
+use App\Concerns\HandlesLivewireErrors;
 use App\Models\Auction;
 use App\Models\Bid;
 use App\Models\BidDeposit;
@@ -15,6 +16,7 @@ use Livewire\Component;
 class AuctionRoom extends Component
 {
     use EnforcesCollectorAuthentication;
+    use HandlesLivewireErrors;
 
     public Auction $auction;
 
@@ -88,7 +90,7 @@ class AuctionRoom extends Component
         }
         \Illuminate\Support\Facades\RateLimiter::hit($rateLimitKey, 60);
 
-        DB::transaction(function () {
+        $this->safely(fn () => DB::transaction(function () {
             // Lock the auction for update to prevent race conditions
             $auction = Auction::query()->where('id', $this->auction->id)->lockForUpdate()->first();
 
@@ -162,7 +164,10 @@ class AuctionRoom extends Component
             $this->auction = $auction->fresh(['unit.category', 'unit.images', 'bids.user']);
             $this->bidAmount = $this->auction->current_bid_php + 50000;
             $this->message = 'Bid placed successfully!';
-        });
+        }), 'Could not place your bid. Please try again.', [
+            'auction_id' => $this->auction->id,
+            'bid_amount' => $this->bidAmount,
+        ]);
     }
 
     protected function userHasApprovedDeposit(): bool

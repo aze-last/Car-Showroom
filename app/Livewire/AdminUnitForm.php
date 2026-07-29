@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Concerns\HandlesLivewireErrors;
 use App\Models\Category;
 use App\Models\Unit;
 use App\Models\UnitImage;
@@ -20,6 +21,7 @@ use Livewire\WithFileUploads;
 
 class AdminUnitForm extends Component
 {
+    use HandlesLivewireErrors;
     use WithFileUploads;
 
     public ?Unit $unit = null;
@@ -104,25 +106,36 @@ class AdminUnitForm extends Component
 
         Gate::authorize('changeStatus', $this->unit);
 
-        $result = $statusService->setSold(
+        $result = $this->safely(fn () => $statusService->setSold(
             unit: $this->unit,
             userId: (int) auth()->id(),
             reason: $this->statusReason,
             ipAddress: request()->ip(),
             userAgent: request()->userAgent(),
-        );
+        ), 'Could not mark the unit as sold. Please try again.', ['unit_id' => $this->unit->id]);
+
+        if ($result === null) {
+            return;
+        }
 
         if ($result && $this->buyer_id) {
-            $this->unit->update(['buyer_id' => $this->buyer_id]);
+            // The sale is already recorded — buyer assignment / notification
+            // failures are reported without undoing the status change.
+            $this->safely(function () {
+                $this->unit->update(['buyer_id' => $this->buyer_id]);
 
-            $buyer = \App\Models\User::find($this->buyer_id);
-            if ($buyer) {
-                $buyer->notify(new \App\Notifications\UnitAcquiredNotification([
-                    'message' => "Congratulations! You have successfully acquired the {$this->unit->name}.",
-                    'unit_id' => $this->unit->id,
-                    'unit_name' => $this->unit->name,
-                ]));
-            }
+                $buyer = \App\Models\User::find($this->buyer_id);
+                if ($buyer) {
+                    $buyer->notify(new \App\Notifications\UnitAcquiredNotification([
+                        'message' => "Congratulations! You have successfully acquired the {$this->unit->name}.",
+                        'unit_id' => $this->unit->id,
+                        'unit_name' => $this->unit->name,
+                    ]));
+                }
+            }, 'Unit marked as sold, but the buyer could not be assigned or notified.', [
+                'unit_id' => $this->unit->id,
+                'buyer_id' => $this->buyer_id,
+            ]);
         }
 
         $this->statusReason = null;
@@ -139,13 +152,17 @@ class AdminUnitForm extends Component
 
         Gate::authorize('changeStatus', $this->unit);
 
-        $result = $statusService->setAvailable(
+        $result = $this->safely(fn () => $statusService->setAvailable(
             unit: $this->unit,
             userId: (int) auth()->id(),
             reason: $this->statusReason,
             ipAddress: request()->ip(),
             userAgent: request()->userAgent(),
-        );
+        ), 'Could not mark the unit as available. Please try again.', ['unit_id' => $this->unit->id]);
+
+        if ($result === null) {
+            return;
+        }
 
         $this->statusReason = null;
         $this->loadStatusAndQrMeta();
@@ -188,56 +205,71 @@ class AdminUnitForm extends Component
             $this->unit = new Unit;
         }
 
-        $oldData = $isNew ? [] : $this->unit->toArray();
+        $saved = $this->safely(function () use ($storageService, $logService, $validated, $isNew) {
+            $oldData = $isNew ? [] : $this->unit->toArray();
 
-        $this->unit->fill([
-            'category_id' => $validated['category_id'],
-            'name' => $validated['name'],
-            'price_php' => $validated['price_php'],
-            'description' => $validated['description'],
-            'show_price' => $validated['show_price'],
-            'is_featured' => $validated['is_featured'],
-            'year' => $validated['year'],
-            'mileage' => $validated['mileage'],
-            'transmission' => $validated['transmission'],
-            'fuel_type' => $validated['fuel_type'],
+            $this->unit->fill([
+                'category_id' => $validated['category_id'],
+                'name' => $validated['name'],
+                'price_php' => $validated['price_php'],
+                'description' => $validated['description'],
+                'show_price' => $validated['show_price'],
+                'is_featured' => $validated['is_featured'],
+                'year' => $validated['year'],
+                'mileage' => $validated['mileage'],
+                'transmission' => $validated['transmission'],
+                'fuel_type' => $validated['fuel_type'],
+            ]);
+
+            $this->unit->save();
+
+            // Process removals
+            foreach ($this->existingImages as $imageData) {
+                if ($imageData['remove']) {
+                    $image = UnitImage::find($imageData['id']);
+                    if ($image) {
+                        $storageService->delete($image->url);
+                        $image->delete();
+                    }
+                } else {
+                    // Update sort order for existing
+                    UnitImage::where('id', $imageData['id'])
+                        ->update(['sort_order' => $imageData['sort_order']]);
+                }
+            }
+
+            // Process new uploads
+            foreach ($this->newImages as $index => $file) {
+                $path = $storageService->store($file, "units/{$this->unit->id}");
+                UnitImage::create([
+                    'unit_id' => $this->unit->id,
+                    'url' => $path,
+                    'sort_order' => $this->newImageSortOrders[$index] ?? 0,
+                ]);
+            }
+
+            // Log changes
+            if ($isNew) {
+                $logService->logCreation($this->unit, auth()->id());
+            } else {
+                $changes = $this->unit->getChanges();
+                if (! empty($changes)) {
+                    $logService->logUpdate($this->unit, auth()->id(), $oldData, $changes);
+                }
+            }
+
+            return true;
+        }, 'Could not save the unit. Please check your images and try again.', [
+            'unit_id' => $isNew ? null : $this->unit->id,
         ]);
 
-        $this->unit->save();
-
-        // Process removals
-        foreach ($this->existingImages as $imageData) {
-            if ($imageData['remove']) {
-                $image = UnitImage::find($imageData['id']);
-                if ($image) {
-                    $storageService->delete($image->url);
-                    $image->delete();
-                }
-            } else {
-                // Update sort order for existing
-                UnitImage::where('id', $imageData['id'])
-                    ->update(['sort_order' => $imageData['sort_order']]);
+        if ($saved === null) {
+            if ($isNew && ! $this->unit->exists) {
+                // Keep the form in "create" mode if nothing was persisted.
+                $this->unit = null;
             }
-        }
 
-        // Process new uploads
-        foreach ($this->newImages as $index => $file) {
-            $path = $storageService->store($file, "units/{$this->unit->id}");
-            UnitImage::create([
-                'unit_id' => $this->unit->id,
-                'url' => $path,
-                'sort_order' => $this->newImageSortOrders[$index] ?? 0,
-            ]);
-        }
-
-        // Log changes
-        if ($isNew) {
-            $logService->logCreation($this->unit, auth()->id());
-        } else {
-            $changes = $this->unit->getChanges();
-            if (! empty($changes)) {
-                $logService->logUpdate($this->unit, auth()->id(), $oldData, $changes);
-            }
+            return;
         }
 
         session()->flash('status', 'Unit saved successfully.');

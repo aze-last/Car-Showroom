@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Concerns\HandlesLivewireErrors;
 use App\Models\Category;
 use App\Models\Unit;
 use Illuminate\Contracts\View\View;
@@ -11,6 +12,7 @@ use Livewire\WithPagination;
 
 class AdminCategories extends Component
 {
+    use HandlesLivewireErrors;
     use WithPagination;
 
     public string $name = '';
@@ -25,7 +27,15 @@ class AdminCategories extends Component
             'name' => ['required', 'string', 'max:255', 'unique:categories,name'],
         ]);
 
-        Category::query()->create($validated);
+        $created = $this->safely(
+            fn () => Category::query()->create($validated),
+            'Could not create the category. Please try again.',
+        );
+
+        if ($created === null) {
+            return;
+        }
+
         $this->reset('name');
 
         session()->flash('status', 'Category created.');
@@ -60,7 +70,16 @@ class AdminCategories extends Component
         ]);
 
         $category = Category::query()->findOrFail($this->editingCategoryId);
-        $category->update(['name' => $this->editingName]);
+
+        $updated = $this->safely(
+            fn () => $category->update(['name' => $this->editingName]),
+            'Could not update the category. Please try again.',
+            ['category_id' => $category->id],
+        );
+
+        if ($updated === null) {
+            return;
+        }
 
         $this->reset(['editingCategoryId', 'editingName']);
         session()->flash('status', 'Category updated.');
@@ -80,7 +99,15 @@ class AdminCategories extends Component
             return;
         }
 
-        $category->delete();
+        $deleted = $this->safely(
+            fn () => $category->delete(),
+            'Could not delete the category. Please try again.',
+            ['category_id' => $category->id],
+        );
+
+        if ($deleted === null) {
+            return;
+        }
 
         if ($this->editingCategoryId === $categoryId) {
             $this->cancelEditing();

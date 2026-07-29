@@ -3,6 +3,7 @@
 namespace App\Livewire\Public;
 
 use App\Concerns\EnforcesCollectorAuthentication;
+use App\Concerns\HandlesLivewireErrors;
 use App\Models\ChatMessage;
 use App\Models\Setting;
 use App\Models\Unit;
@@ -14,6 +15,7 @@ use Livewire\Component;
 class ChatInquiry extends Component
 {
     use EnforcesCollectorAuthentication;
+    use HandlesLivewireErrors;
 
     #[Locked]
     public Unit $unit;
@@ -66,16 +68,23 @@ class ChatInquiry extends Component
 
         $this->validate(['body' => 'required|string|max:1000']);
 
-        $message = ChatMessage::create([
+        $created = $this->safely(fn () => ChatMessage::create([
             'user_id' => auth()->id(),
             'unit_id' => $this->unit->id,
             'body' => $this->body,
             'is_from_admin' => false,
-        ]);
+        ]), 'Could not send your message. Please try again.', ['unit_id' => $this->unit->id]);
 
-        // Notify Admins
-        $admins = \App\Models\User::where('is_admin', true)->get();
-        \Illuminate\Support\Facades\Notification::send($admins, new \App\Notifications\UserSentMessageNotification(auth()->user(), $this->unit, $this->body));
+        if ($created === null) {
+            return;
+        }
+
+        // Notify Admins — the message is already saved; notification failures
+        // are logged without discarding it.
+        $this->safely(function () {
+            $admins = \App\Models\User::where('is_admin', true)->get();
+            \Illuminate\Support\Facades\Notification::send($admins, new \App\Notifications\UserSentMessageNotification(auth()->user(), $this->unit, $this->body));
+        }, 'Message sent, but the gallery could not be notified.', ['unit_id' => $this->unit->id]);
 
         $this->body = '';
         $this->dispatch('message-sent');
@@ -110,17 +119,20 @@ class ChatInquiry extends Component
             $secondsSinceLastMessage = $lastMessage->created_at->diffInSeconds(now());
 
             if ($secondsSinceLastMessage >= 30) {
-                $shopName = Setting::get('shop_name', 'The Gallery');
+                // Poll-driven; log failures silently instead of toasting every poll.
+                $this->safely(function () {
+                    $shopName = Setting::get('shop_name', 'The Gallery');
 
-                ChatMessage::create([
-                    'user_id' => auth()->id(),
-                    'unit_id' => $this->unit->id,
-                    'body' => "Greetings from {$shopName}. Our curators are currently assisting other collectors. Please leave your specific questions, and we will prioritize your inquiry shortly.",
-                    'is_from_admin' => true,
-                    'is_automated' => true,
-                ]);
+                    ChatMessage::create([
+                        'user_id' => auth()->id(),
+                        'unit_id' => $this->unit->id,
+                        'body' => "Greetings from {$shopName}. Our curators are currently assisting other collectors. Please leave your specific questions, and we will prioritize your inquiry shortly.",
+                        'is_from_admin' => true,
+                        'is_automated' => true,
+                    ]);
 
-                $this->dispatch('message-received');
+                    $this->dispatch('message-received');
+                }, null, ['unit_id' => $this->unit->id]);
             }
         }
     }

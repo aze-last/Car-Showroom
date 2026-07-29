@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Concerns\HandlesLivewireErrors;
 use App\Models\Auction;
 use App\Models\Unit;
 use Illuminate\Contracts\View\View;
@@ -10,6 +11,8 @@ use Livewire\Component;
 
 class AdminAuctionForm extends Component
 {
+    use HandlesLivewireErrors;
+
     public ?Auction $auction = null;
 
     public bool $isEdit = false;
@@ -73,12 +76,23 @@ class AdminAuctionForm extends Component
             'is_featured' => ['boolean'],
         ]);
 
-        if ($this->isEdit) {
-            $this->auction->update($validated);
-            session()->flash('status', 'Auction updated successfully.');
-        } else {
-            Auction::create($validated);
-            session()->flash('status', 'Auction scheduled successfully.');
+        $saved = $this->safely(function () use ($validated) {
+            if ($this->isEdit) {
+                $this->auction->update($validated);
+                session()->flash('status', 'Auction updated successfully.');
+            } else {
+                Auction::create($validated);
+                session()->flash('status', 'Auction scheduled successfully.');
+            }
+
+            return true;
+        }, 'Could not save the auction. Please try again.', [
+            'auction_id' => $this->auction?->id,
+            'unit_id' => $this->unit_id,
+        ]);
+
+        if ($saved === null) {
+            return;
         }
 
         $this->redirectRoute('admin.auctions.index');

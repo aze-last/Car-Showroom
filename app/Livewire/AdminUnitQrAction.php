@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Concerns\HandlesLivewireErrors;
 use App\Models\Unit;
 use App\Models\UnitStatusLog;
 use BaconQrCode\Renderer\Image\SvgImageBackEnd;
@@ -17,6 +18,7 @@ use Livewire\WithFileUploads;
 
 class AdminUnitQrAction extends Component
 {
+    use HandlesLivewireErrors;
     use WithFileUploads;
 
     public Unit $unit;
@@ -64,7 +66,7 @@ class AdminUnitQrAction extends Component
             ->orderBy('name');
 
         if (! empty(trim($this->collector_search))) {
-            $search = '%' . trim($this->collector_search) . '%';
+            $search = '%'.trim($this->collector_search).'%';
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', $search)
                     ->orWhere('email', 'like', $search);
@@ -90,32 +92,47 @@ class AdminUnitQrAction extends Component
             ]);
         }
 
-        $result = $statusService->setSold(
+        $result = $this->safely(fn () => $statusService->setSold(
             unit: $this->unit,
             userId: (int) auth()->id(),
             reason: $this->reason,
             ipAddress: request()->ip(),
             userAgent: request()->userAgent(),
-        );
+        ), 'Could not mark the unit as sold. Please try again.', ['unit_id' => $this->unit->id]);
+
+        if ($result === null) {
+            return;
+        }
 
         if ($result && $this->is_guest) {
-            $path = $this->handover_image->store('units/handovers', 'public');
-            $this->unit->update([
-                'guest_name' => $this->guest_name,
-                'guest_contact' => $this->guest_contact,
-                'handover_image_path' => $path,
+            // The sale is already recorded — handover capture failures are
+            // reported without undoing the status change.
+            $this->safely(function () {
+                $path = $this->handover_image->store('units/handovers', 'public');
+                $this->unit->update([
+                    'guest_name' => $this->guest_name,
+                    'guest_contact' => $this->guest_contact,
+                    'handover_image_path' => $path,
+                ]);
+            }, 'Unit marked as sold, but the handover details could not be saved. Please edit the unit to add them.', [
+                'unit_id' => $this->unit->id,
             ]);
         } elseif ($result && $this->buyer_id) {
-            $this->unit->update(['buyer_id' => $this->buyer_id]);
+            $this->safely(function () {
+                $this->unit->update(['buyer_id' => $this->buyer_id]);
 
-            $buyer = \App\Models\User::find($this->buyer_id);
-            if ($buyer) {
-                $buyer->notify(new \App\Notifications\UnitAcquiredNotification([
-                    'message' => "Congratulations! You have successfully acquired the {$this->unit->name}.",
-                    'unit_id' => $this->unit->id,
-                    'unit_name' => $this->unit->name,
-                ]));
-            }
+                $buyer = \App\Models\User::find($this->buyer_id);
+                if ($buyer) {
+                    $buyer->notify(new \App\Notifications\UnitAcquiredNotification([
+                        'message' => "Congratulations! You have successfully acquired the {$this->unit->name}.",
+                        'unit_id' => $this->unit->id,
+                        'unit_name' => $this->unit->name,
+                    ]));
+                }
+            }, 'Unit marked as sold, but the buyer could not be assigned or notified.', [
+                'unit_id' => $this->unit->id,
+                'buyer_id' => $this->buyer_id,
+            ]);
         }
 
         $this->reason = null;
@@ -134,13 +151,17 @@ class AdminUnitQrAction extends Component
     {
         Gate::authorize('changeStatus', $this->unit);
 
-        $result = $statusService->setAvailable(
+        $result = $this->safely(fn () => $statusService->setAvailable(
             unit: $this->unit,
             userId: (int) auth()->id(),
             reason: $this->reason,
             ipAddress: request()->ip(),
             userAgent: request()->userAgent(),
-        );
+        ), 'Could not mark the unit as available. Please try again.', ['unit_id' => $this->unit->id]);
+
+        if ($result === null) {
+            return;
+        }
 
         $this->reason = null;
         $this->refreshUnitData();

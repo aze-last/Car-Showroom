@@ -2,21 +2,31 @@
 
 namespace App\Livewire\Public;
 
+use App\Concerns\HandlesLivewireErrors;
 use Livewire\Component;
 
 class NotificationBell extends Component
 {
+    use HandlesLivewireErrors;
+
     public function markAsRead($notificationId)
     {
         if (auth()->check()) {
-            auth()->user()->notifications()->findOrFail($notificationId)->markAsRead();
+            $notification = auth()->user()->notifications()->findOrFail($notificationId);
+
+            $this->safely(fn () => $notification->markAsRead(), 'Could not update the notification.', [
+                'notification_id' => $notificationId,
+            ]);
         }
     }
 
     public function markAllAsRead()
     {
         if (auth()->check()) {
-            auth()->user()->unreadNotifications->markAsRead();
+            $this->safely(
+                fn () => auth()->user()->unreadNotifications->markAsRead(),
+                'Could not update your notifications.',
+            );
         }
     }
 
@@ -27,7 +37,11 @@ class NotificationBell extends Component
         }
 
         $notification = auth()->user()->notifications()->findOrFail($notificationId);
-        $notification->markAsRead();
+
+        // Navigation matters more than read-marking; log failures silently.
+        $this->safely(fn () => $notification->markAsRead(), null, [
+            'notification_id' => $notificationId,
+        ]);
 
         $actionUrl = $notification->data['action_url'] ?? null;
 

@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Concerns\HandlesLivewireErrors;
 use App\Models\Setting;
 use App\Models\Unit;
 use Illuminate\Support\Facades\Storage;
@@ -10,6 +11,7 @@ use Livewire\WithFileUploads;
 
 class AdminCustomization extends Component
 {
+    use HandlesLivewireErrors;
     use WithFileUploads;
 
     public $palette;
@@ -53,23 +55,31 @@ class AdminCustomization extends Component
             'hero_subtitle' => 'required|string|max:255',
         ]);
 
-        if ($this->logo) {
-            // Delete old logo
-            if ($this->logo_path) {
-                Storage::delete($this->logo_path);
+        $saved = $this->safely(function () {
+            if ($this->logo) {
+                // Delete old logo
+                if ($this->logo_path) {
+                    Storage::delete($this->logo_path);
+                }
+                $this->logo_path = $this->logo->store('customization', 'public');
+                Setting::set('design_logo_path', $this->logo_path);
             }
-            $this->logo_path = $this->logo->store('customization', 'public');
-            Setting::set('design_logo_path', $this->logo_path);
-        }
 
-        Setting::set('design_palette', $this->palette);
-        Setting::set('design_layout', $this->layout);
-        Setting::set('design_hero_unit_id', $this->hero_unit_id);
-        Setting::set('design_hero_headline', $this->hero_headline);
-        Setting::set('design_hero_subtitle', $this->hero_subtitle);
-        Setting::set('design_show_auctions', $this->show_auctions, 'boolean');
-        Setting::set('design_show_comparison', $this->show_comparison, 'boolean');
-        Setting::set('design_show_inquiries', $this->show_inquiries, 'boolean');
+            Setting::set('design_palette', $this->palette);
+            Setting::set('design_layout', $this->layout);
+            Setting::set('design_hero_unit_id', $this->hero_unit_id);
+            Setting::set('design_hero_headline', $this->hero_headline);
+            Setting::set('design_hero_subtitle', $this->hero_subtitle);
+            Setting::set('design_show_auctions', $this->show_auctions, 'boolean');
+            Setting::set('design_show_comparison', $this->show_comparison, 'boolean');
+            Setting::set('design_show_inquiries', $this->show_inquiries, 'boolean');
+
+            return true;
+        }, 'Could not save design settings. Please try again.');
+
+        if ($saved === null) {
+            return null;
+        }
 
         session()->flash('status', 'Design settings updated successfully.');
 

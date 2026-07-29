@@ -3,6 +3,7 @@
 namespace App\Livewire\Public;
 
 use App\Concerns\EnforcesCollectorAuthentication;
+use App\Concerns\HandlesLivewireErrors;
 use App\Models\Auction;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
@@ -12,6 +13,7 @@ use Livewire\WithPagination;
 class AuctionHall extends Component
 {
     use EnforcesCollectorAuthentication;
+    use HandlesLivewireErrors;
     use \Livewire\WithFileUploads, WithPagination;
 
     public ?Auction $selectedAuction = null;
@@ -23,11 +25,14 @@ class AuctionHall extends Component
     public function mount()
     {
         if (Auth::check()) {
-            /** @var \App\Models\User $user */
-            $user = Auth::user();
-            $user->unreadNotifications
-                ->where('type', 'App\Notifications\BidPlacedNotification')
-                ->markAsRead();
+            // Non-critical: don't let a failed read-marking break the page.
+            $this->safely(function () {
+                /** @var \App\Models\User $user */
+                $user = Auth::user();
+                $user->unreadNotifications
+                    ->where('type', 'App\Notifications\BidPlacedNotification')
+                    ->markAsRead();
+            }, 'Could not update your notifications.');
         }
     }
 
@@ -51,26 +56,41 @@ class AuctionHall extends Component
             'deposit_amount' => ['required', 'integer', 'min:1000'],
         ]);
 
-        $path = $this->proof_image->store('deposits/'.$this->selectedAuction->id, 'public');
+        $submitted = $this->safely(function () {
+            $path = $this->proof_image->store('deposits/'.$this->selectedAuction->id, 'public');
 
-        $deposit = \App\Models\BidDeposit::query()->create([
-            'user_id' => Auth::id(),
-            'auction_id' => $this->selectedAuction->id,
-            'amount' => $this->deposit_amount,
-            'proof_image' => $path,
-            'status' => 'pending',
+            \App\Models\BidDeposit::query()->create([
+                'user_id' => Auth::id(),
+                'auction_id' => $this->selectedAuction->id,
+                'amount' => $this->deposit_amount,
+                'proof_image' => $path,
+                'status' => 'pending',
+            ]);
+
+            return true;
+        }, 'Could not submit your deposit. Please try again.', [
+            'auction_id' => $this->selectedAuction?->id,
         ]);
 
-        // Notify Admins
-        $admins = \App\Models\User::query()->where('is_admin', true)->get();
-        foreach ($admins as $admin) {
-            $admin->notify(new \App\Notifications\DepositSubmittedNotification([
-                'message' => 'New deposit from '.Auth::user()->name.' for '.$this->selectedAuction->unit->name,
-                'auction_id' => $this->selectedAuction->id,
-                'user_name' => Auth::user()->name,
-                'amount' => $this->deposit_amount,
-            ]));
+        if ($submitted === null) {
+            return;
         }
+
+        // Notify Admins — the deposit is already saved; notification failures
+        // are logged without discarding the submission.
+        $this->safely(function () {
+            $admins = \App\Models\User::query()->where('is_admin', true)->get();
+            foreach ($admins as $admin) {
+                $admin->notify(new \App\Notifications\DepositSubmittedNotification([
+                    'message' => 'New deposit from '.Auth::user()->name.' for '.$this->selectedAuction->unit->name,
+                    'auction_id' => $this->selectedAuction->id,
+                    'user_name' => Auth::user()->name,
+                    'amount' => $this->deposit_amount,
+                ]));
+            }
+        }, 'Deposit submitted, but admins could not be notified.', [
+            'auction_id' => $this->selectedAuction?->id,
+        ]);
 
         $this->proof_image = null;
 

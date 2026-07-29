@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Concerns\HandlesLivewireErrors;
 use App\Models\Auction;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Gate;
@@ -10,6 +11,7 @@ use Livewire\WithPagination;
 
 class AdminAuctionsIndex extends Component
 {
+    use HandlesLivewireErrors;
     use WithPagination;
 
     public function mount(): void
@@ -20,7 +22,17 @@ class AdminAuctionsIndex extends Component
     public function delete(int $id): void
     {
         Gate::authorize('access-admin');
-        Auction::findOrFail($id)->delete();
+
+        $deleted = $this->safely(
+            fn () => Auction::findOrFail($id)->delete(),
+            'Could not delete the auction. Please try again.',
+            ['auction_id' => $id],
+        );
+
+        if ($deleted === null) {
+            return;
+        }
+
         session()->flash('status', 'Auction deleted successfully.');
     }
 

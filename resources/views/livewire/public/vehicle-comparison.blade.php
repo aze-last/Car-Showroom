@@ -6,49 +6,49 @@
     <!-- Header -->
     <header class="flex flex-col md:flex-row justify-between items-end gap-8">
         <div>
-            <h1 class="text-6xl font-bold tracking-tighter text-black mb-4">Comparison Gallery</h1>
+            <h1 class="text-6xl font-bold tracking-tighter text-white mb-4">Comparison Gallery</h1>
             <p class="text-lg font-medium text-zinc-400 max-w-2xl">A detailed, side-by-side analysis of performance, heritage, and engineering across your selected collection.</p>
         </div>
-        <button onclick="window.print()" class="px-8 py-4 border border-gallery-outline/30 rounded-full font-bold text-[11px] uppercase tracking-widest text-black hover:bg-gallery-surface-low transition-all duration-500 no-print">
+        <button onclick="window.print()" class="px-8 py-4 border border-zinc-800 rounded-full font-bold text-[11px] uppercase tracking-widest text-zinc-200 hover:bg-zinc-800 transition-all duration-500 no-print">
             Export Specification
         </button>
     </header>
 
     <!-- Comparison Table -->
-    <div class="motion-table bg-white rounded-[48px] border border-gallery-outline/20 ambient-shadow overflow-hidden">
+    <div class="motion-table bg-zinc-900 rounded-[48px] border border-zinc-800 ambient-shadow overflow-hidden text-zinc-100">
         <!-- Sticky Headers -->   
-        <div class="grid grid-cols-1 md:grid-cols-4 border-b border-gallery-outline/10 sticky top-0 bg-white/90 backdrop-blur-md z-40">
+        <div class="grid grid-cols-1 md:grid-cols-4 border-b border-zinc-800 sticky top-0 bg-zinc-900/90 backdrop-blur-md z-40">
             <div class="p-10 flex items-end">
-                <span class="text-[11px] font-bold text-zinc-300 uppercase tracking-[0.4em]">Configuration</span>
+                <span class="text-[11px] font-bold text-zinc-400 uppercase tracking-[0.4em]">Configuration</span>
             </div>
             
             @foreach($units as $unit)
-                <div class="p-10 border-l border-gallery-outline/10 flex flex-col items-center text-center group relative">
+                <div class="p-10 border-l border-zinc-800 flex flex-col items-center text-center group relative">
                     <a href="{{ route('units.show', $unit) }}" wire:navigate class="absolute inset-0 z-10"></a>
                     <button 
                         wire:click="removeFromComparison({{ $unit->id }})" 
-                        class="absolute top-4 right-4 h-8 w-8 rounded-full bg-zinc-50 text-zinc-300 hover:bg-black hover:text-white transition-all flex items-center justify-center no-print z-20"
+                        class="absolute top-4 right-4 h-8 w-8 rounded-full bg-zinc-800 text-zinc-400 hover:bg-red-600 hover:text-white transition-all flex items-center justify-center no-print z-20"
                     >
                         <svg viewBox="0 0 24 24" fill="none" class="h-4 w-4" stroke="currentColor" stroke-width="3"><path d="M18 6L6 18M6 6l12 12" stroke-linecap="round"/></svg>
                     </button>
 
-                    <div class="w-full aspect-[4/3] rounded-[32px] overflow-hidden mb-8 bg-gallery-surface-low shadow-sm">
+                    <div class="w-full aspect-[4/3] rounded-[32px] overflow-hidden mb-8 bg-zinc-800 shadow-sm">
                         @if($unit->mainImage)
                             <img src="{{ Storage::url($unit->mainImage->url) }}" class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110">
                         @endif
                     </div>
-                    <h3 class="text-2xl font-bold text-black tracking-tight mb-1 group-hover:text-zinc-500 transition-colors">{{ $unit->name }}</h3>  
+                    <h3 class="text-2xl font-bold text-white tracking-tight mb-1 group-hover:text-zinc-300 transition-colors">{{ $unit->name }}</h3>  
                     <p class="text-[11px] font-bold text-zinc-400 uppercase tracking-widest">{{ $unit->year }} • {{ $unit->category?->name }}</p>
                 </div>
             @endforeach
 
             {{-- Empty Slots --}}
             @for($i = count($units); $i < 3; $i++)
-                <a href="{{ route('home') }}" wire:navigate class="p-10 border-l border-gallery-outline/10 flex flex-col items-center justify-center text-center hover:bg-zinc-50/55 transition-all duration-300 group cursor-pointer relative">
-                    <div class="w-full aspect-[4/3] rounded-[32px] border-2 border-dashed border-zinc-200 group-hover:border-black mb-8 flex items-center justify-center transition-colors">
-                        <svg viewBox="0 0 24 24" fill="none" class="h-10 w-10 text-zinc-400 group-hover:text-black transition-colors" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14" stroke-linecap="round"/></svg>
+                <a href="{{ route('home') }}" wire:navigate class="p-10 border-l border-zinc-800 flex flex-col items-center justify-center text-center hover:bg-zinc-800/40 transition-all duration-300 group cursor-pointer relative">
+                    <div class="w-full aspect-[4/3] rounded-[32px] border-2 border-dashed border-zinc-700 group-hover:border-white mb-8 flex items-center justify-center transition-colors">
+                        <svg viewBox="0 0 24 24" fill="none" class="h-10 w-10 text-zinc-500 group-hover:text-white transition-colors" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14" stroke-linecap="round"/></svg>
                     </div>
-                    <span class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 group-hover:text-black transition-colors">Select Asset</span>
+                    <span class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 group-hover:text-white transition-colors">Select Asset</span>
                 </a>
             @endfor
         </div>
@@ -56,70 +56,70 @@
         <!-- Data Rows -->
         <div class="flex flex-col">
             {{-- Category: Financials --}}
-            <div class="motion-row grid grid-cols-1 md:grid-cols-4 bg-gallery-surface-low/50 border-b border-gallery-outline/10">
+            <div class="motion-row grid grid-cols-1 md:grid-cols-4 bg-zinc-950/60 border-b border-zinc-800">
                 <div class="md:col-span-4 p-6 pl-10">
-                    <span class="text-[11px] font-bold text-black uppercase tracking-[0.3em]">Acquisition Parameters</span> 
+                    <span class="text-[11px] font-bold text-emerald-400 uppercase tracking-[0.3em]">Acquisition Parameters</span> 
                 </div>
             </div>
 
-            <div class="motion-row grid grid-cols-1 md:grid-cols-4 border-b border-gallery-outline/5 group">
-                <div class="p-8 pl-10 flex items-center text-[13px] font-bold text-zinc-400 uppercase tracking-widest group-hover:bg-gallery-surface-low transition-colors">Exhibit Price</div>
+            <div class="motion-row grid grid-cols-1 md:grid-cols-4 border-b border-zinc-800/60 group">
+                <div class="p-8 pl-10 flex items-center text-[13px] font-bold text-zinc-400 uppercase tracking-widest group-hover:bg-zinc-800/30 transition-colors">Exhibit Price</div>
                 @foreach($units as $unit)
-                    <div class="p-8 border-l border-gallery-outline/5 flex items-center justify-center text-xl font-bold text-black group-hover:bg-gallery-surface-low transition-colors">
+                    <div class="p-8 border-l border-zinc-800/60 flex items-center justify-center text-xl font-bold text-white group-hover:bg-zinc-800/30 transition-colors">
                         {{ $unit->formattedPrice() }}
                     </div>
                 @endforeach
-                @for($i = count($units); $i < 3; $i++) <div class="p-8 border-l border-gallery-outline/5 bg-gallery-surface-low/10"></div> @endfor
+                @for($i = count($units); $i < 3; $i++) <div class="p-8 border-l border-zinc-800/60 bg-zinc-950/30"></div> @endfor
             </div>
 
             {{-- Category: Technical Specs --}}
-            <div class="motion-row grid grid-cols-1 md:grid-cols-4 bg-gallery-surface-low/50 border-b border-gallery-outline/10">
+            <div class="motion-row grid grid-cols-1 md:grid-cols-4 bg-zinc-950/60 border-b border-zinc-800">
                 <div class="md:col-span-4 p-6 pl-10">
-                    <span class="text-[11px] font-bold text-black uppercase tracking-[0.3em]">Engineering Profile</span> 
+                    <span class="text-[11px] font-bold text-emerald-400 uppercase tracking-[0.3em]">Engineering Profile</span> 
                 </div>
             </div>
 
-            <div class="motion-row grid grid-cols-1 md:grid-cols-4 border-b border-gallery-outline/5 group">
-                <div class="p-8 pl-10 flex items-center text-[13px] font-bold text-zinc-400 uppercase tracking-widest group-hover:bg-gallery-surface-low transition-colors">Transmission</div>
+            <div class="motion-row grid grid-cols-1 md:grid-cols-4 border-b border-zinc-800/60 group">
+                <div class="p-8 pl-10 flex items-center text-[13px] font-bold text-zinc-400 uppercase tracking-widest group-hover:bg-zinc-800/30 transition-colors">Transmission</div>
                 @foreach($units as $unit)
-                    <div class="p-8 border-l border-gallery-outline/5 flex items-center justify-center text-sm font-medium text-black group-hover:bg-gallery-surface-low transition-colors">
+                    <div class="p-8 border-l border-zinc-800/60 flex items-center justify-center text-sm font-medium text-zinc-200 group-hover:bg-zinc-800/30 transition-colors">
                         {{ $unit->transmission ?? 'Automatic' }}
                     </div>
                 @endforeach
-                @for($i = count($units); $i < 3; $i++) <div class="p-8 border-l border-gallery-outline/5 bg-gallery-surface-low/10"></div> @endfor
+                @for($i = count($units); $i < 3; $i++) <div class="p-8 border-l border-zinc-800/60 bg-zinc-950/30"></div> @endfor
             </div>
 
-            <div class="motion-row grid grid-cols-1 md:grid-cols-4 border-b border-gallery-outline/5 group">
-                <div class="p-8 pl-10 flex items-center text-[13px] font-bold text-zinc-400 uppercase tracking-widest group-hover:bg-gallery-surface-low transition-colors">Mileage</div>
+            <div class="motion-row grid grid-cols-1 md:grid-cols-4 border-b border-zinc-800/60 group">
+                <div class="p-8 pl-10 flex items-center text-[13px] font-bold text-zinc-400 uppercase tracking-widest group-hover:bg-zinc-800/30 transition-colors">Mileage</div>
                 @foreach($units as $unit)
-                    <div class="p-8 border-l border-gallery-outline/5 flex items-center justify-center text-sm font-medium text-black group-hover:bg-gallery-surface-low transition-colors">
+                    <div class="p-8 border-l border-zinc-800/60 flex items-center justify-center text-sm font-medium text-zinc-200 group-hover:bg-zinc-800/30 transition-colors">
                         {{ number_format($unit->mileage) }} mi
                     </div>
                 @endforeach
-                @for($i = count($units); $i < 3; $i++) <div class="p-8 border-l border-gallery-outline/5 bg-gallery-surface-low/10"></div> @endfor
+                @for($i = count($units); $i < 3; $i++) <div class="p-8 border-l border-zinc-800/60 bg-zinc-950/30"></div> @endfor
             </div>
 
-            <div class="motion-row grid grid-cols-1 md:grid-cols-4 border-b border-gallery-outline/5 group">
-                <div class="p-8 pl-10 flex items-center text-[13px] font-bold text-zinc-400 uppercase tracking-widest group-hover:bg-gallery-surface-low transition-colors">Fuel Heritage</div>
+            <div class="motion-row grid grid-cols-1 md:grid-cols-4 border-b border-zinc-800/60 group">
+                <div class="p-8 pl-10 flex items-center text-[13px] font-bold text-zinc-400 uppercase tracking-widest group-hover:bg-zinc-800/30 transition-colors">Fuel Heritage</div>
                 @foreach($units as $unit)
-                    <div class="p-8 border-l border-gallery-outline/5 flex items-center justify-center text-sm font-medium text-black group-hover:bg-gallery-surface-low transition-colors">
+                    <div class="p-8 border-l border-zinc-800/60 flex items-center justify-center text-sm font-medium text-zinc-200 group-hover:bg-zinc-800/30 transition-colors">
                         {{ $unit->fuel_type ?? 'Petrol' }}
                     </div>
                 @endforeach
-                @for($i = count($units); $i < 3; $i++) <div class="p-8 border-l border-gallery-outline/5 bg-gallery-surface-low/10"></div> @endfor
+                @for($i = count($units); $i < 3; $i++) <div class="p-8 border-l border-zinc-800/60 bg-zinc-950/30"></div> @endfor
             </div>
 
             {{-- Actions --}}
-            <div class="motion-row grid grid-cols-1 md:grid-cols-4 border-t border-gallery-outline/10 no-print">
-                <div class="p-8 pl-10 flex items-center text-[11px] font-bold text-zinc-300 uppercase tracking-widest bg-gallery-surface-low/20">Final Inquiry</div>
+            <div class="motion-row grid grid-cols-1 md:grid-cols-4 border-t border-zinc-800 no-print">
+                <div class="p-8 pl-10 flex items-center text-[11px] font-bold text-zinc-400 uppercase tracking-widest bg-zinc-950/40">Final Inquiry</div>
                 @foreach($units as $unit)
-                    <div class="p-8 border-l border-gallery-outline/10 flex items-center justify-center group-hover:bg-gallery-surface-low transition-colors">
-                        <a href="{{ route('units.show', $unit) }}" class="px-8 py-3 bg-black text-white rounded-full font-bold text-[10px] uppercase tracking-widest hover:scale-105 transition-all shadow-xl">
+                    <div class="p-8 border-l border-zinc-800 flex items-center justify-center group-hover:bg-zinc-800/30 transition-colors">
+                        <a href="{{ route('units.show', $unit) }}" class="px-8 py-3 bg-white text-black rounded-full font-bold text-[10px] uppercase tracking-widest hover:scale-105 transition-all shadow-xl">
                             View Exhibit
                         </a>
                     </div>
                 @endforeach
-                @for($i = count($units); $i < 3; $i++) <div class="p-8 border-l border-gallery-outline/10 bg-gallery-surface-low/10"></div> @endfor
+                @for($i = count($units); $i < 3; $i++) <div class="p-8 border-l border-zinc-800 bg-zinc-950/30"></div> @endfor
             </div>
         </div>
     </div>

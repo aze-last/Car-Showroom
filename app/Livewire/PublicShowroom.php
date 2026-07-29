@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Concerns\EnforcesCollectorAuthentication;
+use App\Concerns\HandlesLivewireErrors;
 use App\Models\Category;
 use App\Models\Unit;
 use Illuminate\Contracts\View\View;
@@ -15,6 +16,7 @@ use Livewire\WithPagination;
 class PublicShowroom extends Component
 {
     use EnforcesCollectorAuthentication;
+    use HandlesLivewireErrors;
     use WithPagination;
 
     #[Url(as: 'q', history: true)]
@@ -69,10 +71,19 @@ class PublicShowroom extends Component
 
         /** @var \App\Models\User $user */
         $user = Auth::user();
-        if ($user->savedUnits()->where('unit_id', $id)->exists()) {
-            $user->savedUnits()->detach($id);
-        } else {
-            $user->savedUnits()->attach($id);
+
+        $toggled = $this->safely(function () use ($user, $id) {
+            if ($user->savedUnits()->where('unit_id', $id)->exists()) {
+                $user->savedUnits()->detach($id);
+            } else {
+                $user->savedUnits()->attach($id);
+            }
+
+            return true;
+        }, 'Could not update your garage. Please try again.', ['unit_id' => $id]);
+
+        if ($toggled === null) {
+            return;
         }
 
         unset($this->savedUnitIds);

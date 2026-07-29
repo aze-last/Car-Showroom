@@ -2,15 +2,22 @@
 
 namespace App\Livewire\Public;
 
+use App\Concerns\HandlesLivewireErrors;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 
 class MyGarage extends Component
 {
+    use HandlesLivewireErrors;
+
     public function removeUnit(int $unitId)
     {
-        Auth::user()->savedUnits()->detach($unitId);
+        $this->safely(
+            fn () => Auth::user()->savedUnits()->detach($unitId),
+            'Could not remove the unit from your garage. Please try again.',
+            ['unit_id' => $unitId],
+        );
     }
 
     #[Layout('components.layouts.public-showroom')]

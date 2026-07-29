@@ -181,6 +181,8 @@
             </div>
         </main>
 
+        @include('partials.toast-center')
+
         @fluxScripts
         <script>
             function forceLightTheme() {

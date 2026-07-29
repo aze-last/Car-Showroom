@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Concerns\HandlesLivewireErrors;
 use App\Models\Inquiry;
 use Illuminate\Contracts\View\View;
 use Livewire\Attributes\Url;
@@ -10,6 +11,7 @@ use Livewire\WithPagination;
 
 class AdminInquiriesIndex extends Component
 {
+    use HandlesLivewireErrors;
     use WithPagination;
 
     #[Url(as: 'q', history: true)]
@@ -41,14 +43,31 @@ class AdminInquiriesIndex extends Component
     public function setStatus(int $id, string $status): void
     {
         $inquiry = Inquiry::query()->findOrFail($id);
-        $inquiry->update(['status' => $status]);
+
+        $updated = $this->safely(
+            fn () => $inquiry->update(['status' => $status]),
+            'Could not update the inquiry status. Please try again.',
+            ['inquiry_id' => $inquiry->id],
+        );
+
+        if ($updated === null) {
+            return;
+        }
 
         session()->flash('status', 'Inquiry status updated to '.ucfirst($status));
     }
 
     public function delete(int $id): void
     {
-        Inquiry::query()->findOrFail($id)->delete();
+        $deleted = $this->safely(
+            fn () => Inquiry::query()->findOrFail($id)->delete(),
+            'Could not delete the inquiry. Please try again.',
+            ['inquiry_id' => $id],
+        );
+
+        if ($deleted === null) {
+            return;
+        }
 
         if ($this->selectedInquiryId === $id) {
             $this->selectedInquiryId = Inquiry::query()->latest()->first()?->id;

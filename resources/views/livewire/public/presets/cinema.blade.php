@@ -169,7 +169,7 @@
                     $colSpan = $isLarge ? 'lg:col-span-4' : 'lg:col-span-2';
                 @endphp
                 <article 
-                    class="{{ $colSpan }} showroom-item relative group bg-transparent rounded-[40px] overflow-visible transition-all duration-700"
+                    class="{{ $colSpan }} showroom-item relative z-10 hover:z-40 group bg-transparent rounded-[40px] overflow-visible transition-all duration-700"
                     wire:key="unit-{{ $unit->id }}"
                 >
                     <a href="{{ route('units.show', $unit) }}" wire:navigate class="absolute inset-0 z-30 rounded-[40px]"></a>
@@ -239,7 +239,7 @@
                             </div>
 
                             <div class="flex justify-between items-center mt-10">
-                                <div class="flex gap-2 relative z-30">
+                                <div class="flex gap-2 relative z-40">
                                     @php $isSaved = in_array($unit->id, $this->savedUnitIds); @endphp
                                     <div x-data="{ showTooltip: false }" class="relative">
                                         <button

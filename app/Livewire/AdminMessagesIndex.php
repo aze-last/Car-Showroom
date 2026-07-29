@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Concerns\HandlesLivewireErrors;
 use App\Models\ChatMessage;
 use App\Models\Unit;
 use App\Models\User;
@@ -13,6 +14,8 @@ use Livewire\Component;
 
 class AdminMessagesIndex extends Component
 {
+    use HandlesLivewireErrors;
+
     public $selectedUserId = null;
 
     public $selectedUnitId = null;
@@ -31,13 +34,16 @@ class AdminMessagesIndex extends Component
         $this->selectedUserId = $userId;
         $this->selectedUnitId = $unitId;
 
-        // Mark messages as read
-        ChatMessage::query()
+        // Mark messages as read — non-critical; failure shouldn't block viewing.
+        $this->safely(fn () => ChatMessage::query()
             ->where('user_id', $userId)
             ->where('unit_id', $unitId)
             ->where('is_from_admin', false)
             ->whereNull('read_at')
-            ->update(['read_at' => now()]);
+            ->update(['read_at' => now()]), 'Could not mark messages as read.', [
+                'thread_user_id' => $userId,
+                'unit_id' => $unitId,
+            ]);
     }
 
     public function sendReply(): void
@@ -48,17 +54,30 @@ class AdminMessagesIndex extends Component
 
         $this->validate(['replyBody' => 'required|string|max:2000']);
 
-        ChatMessage::create([
+        $created = $this->safely(fn () => ChatMessage::create([
             'user_id' => $this->selectedUserId,
             'unit_id' => $this->selectedUnitId,
             'body' => $this->replyBody,
             'is_from_admin' => true,
+        ]), 'Could not send your reply. Please try again.', [
+            'thread_user_id' => $this->selectedUserId,
+            'unit_id' => $this->selectedUnitId,
         ]);
 
-        // Send notification
-        $user = User::find($this->selectedUserId);
-        $unit = Unit::find($this->selectedUnitId);
-        $user->notify(new AdminRepliedToInquiry($unit, Str::limit($this->replyBody, 50)));
+        if ($created === null) {
+            return;
+        }
+
+        // Send notification — the reply is already saved, so a notification
+        // failure is logged without discarding the message.
+        $this->safely(function () {
+            $user = User::find($this->selectedUserId);
+            $unit = Unit::find($this->selectedUnitId);
+            $user->notify(new AdminRepliedToInquiry($unit, Str::limit($this->replyBody, 50)));
+        }, 'Reply sent, but the collector could not be notified.', [
+            'thread_user_id' => $this->selectedUserId,
+            'unit_id' => $this->selectedUnitId,
+        ]);
 
         $this->replyBody = '';
     }

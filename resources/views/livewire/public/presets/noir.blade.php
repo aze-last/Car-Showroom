@@ -191,7 +191,7 @@
 
         <div class="noir-stagger grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-8 gap-y-16">
             @forelse ($units as $unit)
-                <article class="group relative" wire:key="noir-unit-{{ $unit->id }}">
+                <article class="group relative z-10 hover:z-40" wire:key="noir-unit-{{ $unit->id }}">
                     <a href="{{ route('units.show', $unit) }}" wire:navigate
                        class="block cursor-pointer"
                        aria-label="View {{ $unit->name }}">

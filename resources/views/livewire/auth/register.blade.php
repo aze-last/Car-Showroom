@@ -41,6 +41,19 @@
                 <input wire:model="password_confirmation" id="password_confirmation" type="password" required class="w-full h-12 !bg-white border-none rounded-2xl px-6 text-sm font-medium !text-black focus:ring-2 focus:ring-black/5 transition-all" style="background-color: #ffffff !important; color: #000000 !important;">
             </div>
 
+            <div class="space-y-2 pt-2">
+                <label for="terms" class="flex items-start gap-3 cursor-pointer">
+                    <input wire:model="terms" id="terms" type="checkbox" class="mt-0.5 h-4 w-4 shrink-0 rounded border-zinc-300 text-black focus:ring-2 focus:ring-black/5 cursor-pointer">
+                    <span class="text-[11px] font-medium text-zinc-500 leading-relaxed">
+                        I agree to the
+                        <a href="{{ route('terms') }}" wire:navigate class="font-bold text-black underline underline-offset-2 decoration-zinc-300 hover:decoration-black transition-colors">Terms of Service</a>
+                        and
+                        <a href="{{ route('privacy') }}" wire:navigate class="font-bold text-black underline underline-offset-2 decoration-zinc-300 hover:decoration-black transition-colors">Privacy Policy</a>
+                    </span>
+                </label>
+                @error('terms') <span class="text-red-500 text-[10px] font-bold uppercase tracking-widest">{{ $message }}</span> @enderror
+            </div>
+
             <button type="submit" class="w-full h-14 bg-black text-white font-bold uppercase tracking-widest text-[11px] rounded-xl hover:opacity-90 transition-all duration-300 shadow-xl hover:shadow-2xl mt-4">
                 Enter The Gallery
             </button>

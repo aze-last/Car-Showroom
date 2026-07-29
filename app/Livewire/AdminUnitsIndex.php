@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Concerns\HandlesLivewireErrors;
 use App\Models\Category;
 use App\Models\Unit;
 use App\Models\UnitStatusLog;
@@ -14,6 +15,7 @@ use Livewire\WithPagination;
 
 class AdminUnitsIndex extends Component
 {
+    use HandlesLivewireErrors;
     use WithPagination;
 
     #[Url(as: 'view', history: true)]
@@ -91,14 +93,18 @@ class AdminUnitsIndex extends Component
         $unit = Unit::query()->findOrFail($unitId);
         Gate::authorize('update', $unit);
 
-        $result = $statusService->setAvailable(
+        $result = $this->safely(fn () => $statusService->setAvailable(
             unit: $unit,
             userId: (int) auth()->id(),
             requestId: request()->header('X-Request-ID'),
             reason: 'Relisted from Sold Archive via Admin Panel',
             ipAddress: request()->ip(),
             userAgent: request()->userAgent(),
-        );
+        ), 'Could not relist the unit. Please try again.', ['unit_id' => $unit->id]);
+
+        if ($result === null) {
+            return;
+        }
 
         session()->flash($result['changed'] ? 'status' : 'info', $result['message']);
     }
@@ -135,18 +141,26 @@ class AdminUnitsIndex extends Component
             return;
         }
 
-        /** @var UnitInventoryLogService $inventoryLogService */
-        $inventoryLogService = app(UnitInventoryLogService::class);
-        $inventoryLogService->record(
-            unit: $unit,
-            userId: (int) auth()->id(),
-            action: UnitStatusLog::ACTION_DELETE,
-            changes: ['deleted_at' => now()->toDateTimeString()],
-            ipAddress: request()->ip(),
-            userAgent: request()->userAgent(),
-        );
+        $deleted = $this->safely(function () use ($unit) {
+            /** @var UnitInventoryLogService $inventoryLogService */
+            $inventoryLogService = app(UnitInventoryLogService::class);
+            $inventoryLogService->record(
+                unit: $unit,
+                userId: (int) auth()->id(),
+                action: UnitStatusLog::ACTION_DELETE,
+                changes: ['deleted_at' => now()->toDateTimeString()],
+                ipAddress: request()->ip(),
+                userAgent: request()->userAgent(),
+            );
 
-        $unit->delete();
+            $unit->delete();
+
+            return true;
+        }, 'Could not delete the unit. Please try again.', ['unit_id' => $unit->id]);
+
+        if ($deleted === null) {
+            return;
+        }
 
         session()->flash('status', 'Unit deleted.');
     }
@@ -164,18 +178,26 @@ class AdminUnitsIndex extends Component
             return;
         }
 
-        $unit->restore();
+        $restored = $this->safely(function () use ($unit) {
+            $unit->restore();
 
-        /** @var UnitInventoryLogService $inventoryLogService */
-        $inventoryLogService = app(UnitInventoryLogService::class);
-        $inventoryLogService->record(
-            unit: $unit,
-            userId: (int) auth()->id(),
-            action: UnitStatusLog::ACTION_RESTORE,
-            changes: ['restored_at' => now()->toDateTimeString()],
-            ipAddress: request()->ip(),
-            userAgent: request()->userAgent(),
-        );
+            /** @var UnitInventoryLogService $inventoryLogService */
+            $inventoryLogService = app(UnitInventoryLogService::class);
+            $inventoryLogService->record(
+                unit: $unit,
+                userId: (int) auth()->id(),
+                action: UnitStatusLog::ACTION_RESTORE,
+                changes: ['restored_at' => now()->toDateTimeString()],
+                ipAddress: request()->ip(),
+                userAgent: request()->userAgent(),
+            );
+
+            return true;
+        }, 'Could not restore the unit. Please try again.', ['unit_id' => $unit->id]);
+
+        if ($restored === null) {
+            return;
+        }
 
         session()->flash('status', 'Unit restored.');
     }

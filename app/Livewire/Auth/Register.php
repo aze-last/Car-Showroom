@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Auth;
 
+use App\Concerns\HandlesLivewireErrors;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -10,6 +11,8 @@ use Livewire\Component;
 
 class Register extends Component
 {
+    use HandlesLivewireErrors;
+
     public string $name = '';
 
     public string $email = '';
@@ -40,12 +43,16 @@ class Register extends Component
         }
         \Illuminate\Support\Facades\RateLimiter::hit($rateLimitKey, 3600);
 
-        $user = User::create([
+        $user = $this->safely(fn () => User::create([
             'name' => $this->name,
             'email' => $this->email,
             'password' => Hash::make($this->password),
             'terms_accepted_at' => now(),
-        ]);
+        ]), 'Could not create your account. Please try again.');
+
+        if ($user === null) {
+            return;
+        }
 
         Auth::login($user);
 

@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Concerns\HandlesLivewireErrors;
 use App\Models\User;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Gate;
@@ -13,6 +14,7 @@ use Livewire\WithPagination;
 
 class AdminEmployees extends Component
 {
+    use HandlesLivewireErrors;
     use WithPagination;
 
     public string $name = '';
@@ -58,20 +60,28 @@ class AdminEmployees extends Component
             'preferred_timezone' => ['required', 'string', 'max:64'],
         ]);
 
-        $employee = new User;
-        $employee->forceFill([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'password' => Hash::make($validated['password']),
-            'email_verified_at' => now(),
-            'is_admin' => false,
-            'is_employee' => true,
-            'job_title' => $validated['job_title'],
-            'phone' => $validated['phone'] !== '' ? $validated['phone'] : null,
-            'preferred_locale' => $validated['preferred_locale'],
-            'preferred_timezone' => $validated['preferred_timezone'],
-        ]);
-        $employee->save();
+        $saved = $this->safely(function () use ($validated) {
+            $employee = new User;
+            $employee->forceFill([
+                'name' => $validated['name'],
+                'email' => $validated['email'],
+                'password' => Hash::make($validated['password']),
+                'email_verified_at' => now(),
+                'is_admin' => false,
+                'is_employee' => true,
+                'job_title' => $validated['job_title'],
+                'phone' => $validated['phone'] !== '' ? $validated['phone'] : null,
+                'preferred_locale' => $validated['preferred_locale'],
+                'preferred_timezone' => $validated['preferred_timezone'],
+            ]);
+            $employee->save();
+
+            return true;
+        }, 'Could not create the employee account. Please try again.');
+
+        if ($saved === null) {
+            return;
+        }
 
         $this->dispatch('employee-created');
 
@@ -96,7 +106,16 @@ class AdminEmployees extends Component
             return;
         }
 
-        $employee->delete();
+        $deleted = $this->safely(
+            fn () => $employee->delete(),
+            'Could not delete the employee account. Please try again.',
+            ['employee_id' => $employee->id],
+        );
+
+        if ($deleted === null) {
+            return;
+        }
+
         $this->resetPage();
 
         session()->flash('status', 'Employee account deleted successfully.');
