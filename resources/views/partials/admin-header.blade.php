@@ -26,11 +26,11 @@
                 </div>
                 
                 <flux:menu.item href="{{ route('profile.edit') }}" wire:navigate icon="user" class="rounded-xl font-bold text-xs py-3 uppercase tracking-widest">
-                    Curator Profile
+                    Manage Profile
                 </flux:menu.item>
                 
                 <flux:menu.item href="{{ route('user-password.edit') }}" wire:navigate icon="key" class="rounded-xl font-bold text-xs py-3 uppercase tracking-widest">
-                    Credentials
+                    Manage Password
                 </flux:menu.item>
 
                 <flux:separator variant="subtle" class="my-2" />
@@ -38,7 +38,7 @@
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
                     <flux:menu.item as="button" type="submit" icon="arrow-right-start-on-rectangle" class="rounded-xl font-bold text-xs py-3 uppercase tracking-widest text-red-600 hover:bg-red-50" onclick="event.preventDefault(); this.closest('form').submit();">
-                        Terminate Session
+                        logout
                     </flux:menu.item>
                 </form>
             </flux:menu>
