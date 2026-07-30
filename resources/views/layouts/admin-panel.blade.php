@@ -128,6 +128,13 @@
                         </li>
 
                         <li>
+                            <a href="{{ route('admin.customers.index') }}" class="flex items-center gap-4 px-4 py-4 rounded-2xl transition-all {{ request()->routeIs('admin.customers.*') ? 'bg-white text-black ambient-shadow font-bold' : 'text-zinc-400 hover:text-black' }}">
+                                <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                                <span class="text-[12px] uppercase tracking-widest">Customers</span>
+                            </a>
+                        </li>
+
+                        <li>
                             <a href="{{ route('admin.deposits.index') }}" class="relative flex items-center gap-4 px-4 py-4 rounded-2xl transition-all {{ request()->routeIs('admin.deposits.*') ? 'bg-white text-black ambient-shadow font-bold' : 'text-zinc-400 hover:text-black' }}">
                                 <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="2"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" stroke-linecap="round" stroke-linejoin="round"/></svg>
                                 <span class="text-[12px] uppercase tracking-widest">Deposits</span>

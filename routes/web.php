@@ -94,6 +94,7 @@ Route::middleware(['auth', 'verified'])
         Route::middleware(['admin'])->group(function (): void {
             Route::get('/', AdminDashboard::class)->name('dashboard');
             Route::get('/categories', AdminCategories::class)->name('categories.index');
+            Route::get('/customers', \App\Livewire\AdminCustomersIndex::class)->name('customers.index');
             Route::get('/employees', AdminEmployees::class)->middleware('owner')->name('employees.index');
             Route::get('/inquiries', AdminInquiriesIndex::class)->name('inquiries.index');
             Route::get('/auctions', \App\Livewire\AdminAuctionsIndex::class)->name('auctions.index');

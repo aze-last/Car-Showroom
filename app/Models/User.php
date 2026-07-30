@@ -57,7 +57,13 @@ class User extends Authenticatable implements MustVerifyEmail
             'auth_provider' => AuthProvider::class,
             'is_admin' => 'boolean',
             'is_employee' => 'boolean',
+            'is_blocked' => 'boolean',
         ];
+    }
+
+    public function isBlocked(): bool
+    {
+        return (bool) $this->is_blocked;
     }
 
     /**
@@ -118,6 +124,10 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function canParticipateInAuctions(): bool
     {
+        if ($this->isBlocked()) {
+            return false;
+        }
+
         return $this->isStaff() || $this->hasGoogleAccount();
     }
 
@@ -137,6 +147,11 @@ class User extends Authenticatable implements MustVerifyEmail
     public function bidDeposits(): HasMany
     {
         return $this->hasMany(BidDeposit::class);
+    }
+
+    public function chatMessages(): HasMany
+    {
+        return $this->hasMany(ChatMessage::class);
     }
 
     public function auctionStrike(): \Illuminate\Database\Eloquent\Relations\HasOne
