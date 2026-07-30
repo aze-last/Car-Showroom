@@ -40,10 +40,12 @@
 
     <!-- Chat Area -->
     <div class="flex-1 flex flex-col bg-white rounded-[40px] border border-zinc-100 shadow-sm overflow-hidden relative">
-        @if($selectedUserId && $selectedUnitId)
-            @php
-                $activeThread = $threads->where('user.id', $selectedUserId)->where('unit.id', $selectedUnitId)->first();
-            @endphp
+        @php
+            $activeThread = $selectedUserId && $selectedUnitId 
+                ? $threads->first(fn($t) => $t['user']->id == $selectedUserId && $t['unit']->id == $selectedUnitId)
+                : null;
+        @endphp
+        @if($activeThread)
             <!-- Chat Header -->
             <div class="p-8 border-b border-zinc-50 flex justify-between items-center bg-zinc-50/50">
                 <div class="flex items-center gap-4">

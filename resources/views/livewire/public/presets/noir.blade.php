@@ -177,6 +177,8 @@
                     <option value="newest">Latest</option>
                     <option value="price_desc">Premium</option>
                     <option value="price_asc">Essential</option>
+                    <option value="most_viewed">Most Viewed</option>
+                    <option value="most_favorited">Most Favorited</option>
                 </select>
             </div>
         </div>
@@ -231,7 +233,13 @@
 
                     {{-- Secondary actions below card --}}
                     <div class="flex items-center justify-between mt-4">
-                        <span class="text-[9px] font-bold uppercase tracking-[0.3em] text-noir-muted">Ref #{{ substr($unit->public_id, -6) }}</span>
+                        <span class="text-[9px] font-bold uppercase tracking-[0.3em] text-noir-muted flex items-center gap-3">
+                            <span>Ref #{{ substr($unit->public_id, -6) }}</span>
+                            <span class="inline-flex items-center gap-1" title="{{ number_format($unit->views_count ?? 0) }} views">
+                                <svg viewBox="0 0 24 24" fill="none" class="h-3 w-3" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                {{ $unit->formattedViewCount() }}
+                            </span>
+                        </span>
                         <div class="flex gap-3">
                             @php $isSaved = in_array($unit->id, $this->savedUnitIds); @endphp
                             <div x-data="{ showTooltip: false }" class="relative">

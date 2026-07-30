@@ -37,6 +37,8 @@ class AdminUserSeeder extends Seeder
                     'password' => Hash::make($password),
                     'email_verified_at' => now(),
                     'is_admin' => true,
+                    'is_employee' => true,
+                    'job_title' => 'Owner',
                 ]);
                 $created->save();
 
@@ -50,6 +52,16 @@ class AdminUserSeeder extends Seeder
 
             if (! $user->is_admin) {
                 $user->is_admin = true;
+                $updated = true;
+            }
+
+            if (! $user->is_employee) {
+                $user->is_employee = true;
+                $updated = true;
+            }
+
+            if ($user->job_title !== 'Owner') {
+                $user->job_title = 'Owner';
                 $updated = true;
             }
 

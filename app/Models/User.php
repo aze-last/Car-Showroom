@@ -85,10 +85,25 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->is_admin || $this->is_employee;
     }
 
+    public function isOwner(): bool
+    {
+        return $this->is_admin && $this->job_title === 'Owner';
+    }
+
+    public function isAdmin(): bool
+    {
+        return (bool) $this->is_admin;
+    }
+
+    public function isStaffOnly(): bool
+    {
+        return $this->is_employee && ! $this->is_admin;
+    }
+
     /**
      * Scope a query to only include customer users (non-staff).
      *
-     * @param \Illuminate\Database\Eloquent\Builder<User> $query
+     * @param  \Illuminate\Database\Eloquent\Builder<User>  $query
      * @return \Illuminate\Database\Eloquent\Builder<User>
      */
     public function scopeCustomers($query)

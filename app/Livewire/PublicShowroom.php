@@ -185,6 +185,7 @@ class PublicShowroom extends Component
         // 2. Main Catalog Units (All Available)
         $units = Unit::query()
             ->with(['category', 'mainImage'])
+            ->withCount('views')
             ->where('status', Unit::STATUS_AVAILABLE)
             ->when($this->search !== '', fn ($q) => $q->where('name', 'like', '%'.$this->search.'%'))
             ->when($this->categoryId !== null, fn ($q) => $q->where('category_id', $this->categoryId))
@@ -192,6 +193,8 @@ class PublicShowroom extends Component
             ->when($this->maxPrice !== null, fn ($q) => $q->where('price_php', '<=', $this->maxPrice))
             ->when($this->sortBy === 'price_asc', fn ($q) => $q->orderBy('price_php', 'asc'))
             ->when($this->sortBy === 'price_desc', fn ($q) => $q->orderBy('price_php', 'desc'))
+            ->when($this->sortBy === 'most_viewed', fn ($q) => $q->orderByDesc('views_count'))
+            ->when($this->sortBy === 'most_favorited', fn ($q) => $q->withCount('savedByUsers')->orderByDesc('saved_by_users_count'))
             ->when($this->sortBy === 'newest', fn ($q) => $q->orderByDesc('is_featured')->latest('updated_at'))
             ->paginate(12);
 

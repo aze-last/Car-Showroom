@@ -153,7 +153,13 @@
         <aside class="w-full xl:w-96 shrink-0 h-fit sticky top-28">
             <div class="bg-[#1a1a1a] border border-[#3c3c3c] p-10 space-y-8">
                 <div class="space-y-2">
-                    <p class="font-saira label-uppercase text-[#7e7e7e] text-xs">Market Listing</p>
+                    <p class="font-saira label-uppercase text-[#7e7e7e] text-xs flex items-center gap-3">
+                        <span>Market Listing</span>
+                        <span class="inline-flex items-center gap-1.5" title="{{ number_format($unit->views_count ?? 0) }} views">
+                            <svg viewBox="0 0 24 24" fill="none" class="h-3 w-3" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                            {{ $unit->formattedViewCount() }} views
+                        </span>
+                    </p>
                     <h2 class="font-saira display-sm text-white">{{ $unit->formattedPrice() }}</h2>
                 </div>
                 

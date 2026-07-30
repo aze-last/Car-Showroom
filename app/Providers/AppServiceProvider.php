@@ -65,5 +65,6 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(UnitStatusLog::class, UnitStatusLogPolicy::class);
 
         Gate::define('access-admin', fn (User $user): bool => $user->is_admin);
+        Gate::define('access-owner', fn (User $user): bool => $user->isOwner());
     }
 }

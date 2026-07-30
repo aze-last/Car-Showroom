@@ -117,7 +117,7 @@ it('admin users can create categories and units', function (): void {
     expect($unit->status)->toBe(Unit::STATUS_AVAILABLE);
 });
 
-it('employee staff can only access units and qr workflows in admin panel', function (): void {
+it('employee staff can only view units and scan qr in admin panel', function (): void {
     $employee = User::factory()->employee()->create();
     $unit = Unit::factory()->create();
 
@@ -131,11 +131,11 @@ it('employee staff can only access units and qr workflows in admin panel', funct
 
     $this->actingAs($employee)
         ->get('/admin/units/create')
-        ->assertOk();
+        ->assertForbidden();
 
     $this->actingAs($employee)
         ->get(route('admin.units.edit', $unit))
-        ->assertOk();
+        ->assertForbidden();
 
     $this->actingAs($employee)
         ->get('/admin')
@@ -248,19 +248,19 @@ it('admin user seeder syncs only configured emails', function (): void {
     expect(Hash::check('admin123', (string) $created?->password))->toBeTrue();
 });
 
-it('admin can create employee account with default profile settings', function (): void {
+it('owner can create employee account with job title dropdown', function (): void {
     config()->set('showroom.employee_defaults', [
-        'job_title' => 'Inventory Staff',
         'preferred_locale' => 'en_PH',
         'preferred_timezone' => 'Asia/Manila',
     ]);
 
-    $admin = User::factory()->admin()->create();
-    $this->actingAs($admin);
+    $owner = User::factory()->create(['is_admin' => true, 'is_employee' => true, 'job_title' => 'Owner']);
+    $this->actingAs($owner);
 
     Livewire::test(AdminEmployees::class)
         ->set('name', 'Employee One')
         ->set('email', 'employee.one@example.com')
+        ->set('job_title', 'Staff')
         ->set('password', 'employee123')
         ->set('password_confirmation', 'employee123')
         ->set('phone', '+639171234567')
@@ -271,32 +271,30 @@ it('admin can create employee account with default profile settings', function (
     expect($employee)->not()->toBeNull();
     expect($employee?->is_employee)->toBeTrue();
     expect($employee?->is_admin)->toBeFalse();
-    expect($employee?->job_title)->toBe('Inventory Staff');
+    expect($employee?->job_title)->toBe('Staff');
     expect($employee?->preferred_locale)->toBe('en_PH');
     expect($employee?->preferred_timezone)->toBe('Asia/Manila');
     expect(Hash::check('employee123', (string) $employee?->password))->toBeTrue();
     expect($employee?->email_verified_at)->not()->toBeNull();
 });
 
-it('admin can delete employee account from employee panel', function (): void {
-    $admin = User::factory()->admin()->create();
-    $employee = User::factory()->employee()->create();
+it('owner can update employee job title', function (): void {
+    $owner = User::factory()->create(['is_admin' => true, 'is_employee' => true, 'job_title' => 'Owner']);
+    $employee = User::factory()->employee()->create(['job_title' => 'Staff']);
 
-    $this->actingAs($admin);
+    $this->actingAs($owner);
 
     Livewire::test(AdminEmployees::class)
-        ->call('delete', $employee->id);
+        ->call('updateJobTitle', $employee->id, 'Admin');
 
-    expect(User::query()->whereKey($employee->id)->exists())->toBeFalse();
+    expect($employee->fresh()->job_title)->toBe('Admin');
+    expect($employee->fresh()->is_admin)->toBeTrue();
 });
 
-it('admin cannot delete non-employee account from employee panel', function (): void {
-    $admin = User::factory()->admin()->create();
+it('admin cannot access employee management panel', function (): void {
+    $admin = User::factory()->create(['is_admin' => true, 'is_employee' => true, 'job_title' => 'Admin']);
 
-    $this->actingAs($admin);
-
-    Livewire::test(AdminEmployees::class)
-        ->call('delete', $admin->id);
-
-    expect(User::query()->whereKey($admin->id)->exists())->toBeTrue();
+    $this->actingAs($admin)
+        ->get('/admin/employees')
+        ->assertForbidden();
 });

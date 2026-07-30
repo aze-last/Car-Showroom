@@ -2,11 +2,11 @@
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
         <div>
             <p class="text-[12px] font-bold text-zinc-400 uppercase tracking-widest mb-1">Human Resources</p>
-            <h2 class="text-3xl font-bold text-black">Staff Management</h2>
+            <h2 class="text-3xl font-bold text-black">Staff & Role Management</h2>
         </div>
         <button @click="showForm = true" class="lg:hidden w-full md:w-auto bg-black text-white font-bold text-[11px] uppercase tracking-widest py-4 px-8 rounded-2xl hover:opacity-90 transition-all flex items-center justify-center gap-2 ambient-shadow">
             <svg viewBox="0 0 24 24" fill="none" class="h-4 w-4" stroke="currentColor" stroke-width="3"><path d="M12 5v14M5 12h14" stroke-linecap="round"/></svg>
-            Add New Staff
+            Add New Account
         </button>
     </div>
 
@@ -14,6 +14,13 @@
         <div class="bg-emerald-50 border border-emerald-100 text-emerald-700 px-6 py-4 rounded-2xl text-sm font-bold flex items-center gap-3 animate-showroom-fade-up">
             <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17L4 12" stroke-linecap="round" stroke-linejoin="round"/></svg>
             {{ session('status') }}
+        </div>
+    @endif
+
+    @if (session('error'))
+        <div class="bg-red-50 border border-red-100 text-red-700 px-6 py-4 rounded-2xl text-sm font-bold flex items-center gap-3 animate-showroom-fade-up">
+            <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="2.5"><path d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            {{ session('error') }}
         </div>
     @endif
 
@@ -36,7 +43,7 @@
         >
             <div :class="showForm ? 'bg-white rounded-t-[40px] shadow-[0_-20px_50px_-12px_rgba(0,0,0,0.3)] p-8 max-h-[95vh] overflow-y-auto' : 'bg-white rounded-[32px] border border-zinc-100 shadow-sm p-8 space-y-6'">
                 <div class="flex justify-between items-center mb-8 lg:mb-6">
-                    <h3 class="text-sm font-bold text-black uppercase tracking-widest">New Staff Account</h3>
+                    <h3 class="text-sm font-bold text-black uppercase tracking-widest">New Employee Account</h3>
                     <button @click="showForm = false" class="lg:hidden h-10 w-10 rounded-full bg-zinc-50 flex items-center justify-center text-zinc-400">
                         <svg viewBox="0 0 24 24" fill="none" class="h-6 w-6" stroke="currentColor" stroke-width="2"><path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round"/></svg>
                     </button>
@@ -56,8 +63,12 @@
                     </div>
 
                     <div class="space-y-2">
-                        <label class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest px-2">Job Title</label>
-                        <input type="text" wire:model="job_title" class="w-full bg-zinc-50 border-none rounded-2xl py-3 px-5 font-bold text-sm focus:ring-2 focus:ring-black transition-all" placeholder="Senior Curator">
+                        <label class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest px-2">Job Title / Role</label>
+                        <select wire:model="job_title" class="w-full bg-zinc-50 border-none rounded-2xl py-3 px-5 font-bold text-sm focus:ring-2 focus:ring-black transition-all">
+                            <option value="Staff">Staff (Catalog & QR Scanning)</option>
+                            <option value="Admin">Admin (Full Control, Excl. HR)</option>
+                            <option value="Owner">Owner (Superadmin)</option>
+                        </select>
                         @error('job_title') <p class="text-[10px] text-red-600 font-bold px-2">{{ $message }}</p> @enderror
                     </div>
 
@@ -73,7 +84,7 @@
                     </div>
 
                     <button type="submit" class="w-full bg-black text-white font-bold text-[11px] uppercase tracking-widest py-4 rounded-2xl hover:opacity-90 transition-all ambient-shadow mt-4">
-                        Register Staff
+                        Register Account
                     </button>
                 </form>
             </div>
@@ -83,7 +94,7 @@
         <article class="lg:col-span-2 space-y-6">
             <div class="bg-white rounded-[32px] border border-zinc-100 shadow-sm overflow-hidden">
                 <div class="px-8 py-6 border-b border-zinc-50 flex justify-between items-center">
-                    <h3 class="text-sm font-bold text-black uppercase tracking-widest">Active Curators</h3>
+                    <h3 class="text-sm font-bold text-black uppercase tracking-widest">Active Accounts</h3>
                     <p class="text-[10px] text-zinc-400 font-bold uppercase tracking-widest">{{ $employees->total() }} Total Accounts</p>
                 </div>
                 
@@ -101,16 +112,25 @@
                                         <p class="text-[10px] text-zinc-400 font-bold truncate">{{ $employee->email }}</p>
                                     </div>
                                 </div>
-                                <button 
-                                    wire:click="delete({{ $employee->id }})" 
-                                    wire:confirm="Revoke all access for this staff member? This action is permanent."
-                                    class="h-10 w-10 rounded-xl bg-red-50 text-red-400 hover:text-red-600 transition-all border border-red-100 flex items-center justify-center shrink-0"
-                                >
-                                    <svg viewBox="0 0 24 24" fill="none" class="h-4 w-4" stroke="currentColor" stroke-width="2.5"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M10 11v6M14 11v6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                                </button>
+                                @if($employee->id !== auth()->id())
+                                    <button 
+                                        wire:click="delete({{ $employee->id }})" 
+                                        wire:confirm="Revoke all access for this member? This action is permanent."
+                                        class="h-10 w-10 rounded-xl bg-red-50 text-red-400 hover:text-red-600 transition-all border border-red-100 flex items-center justify-center shrink-0"
+                                    >
+                                        <svg viewBox="0 0 24 24" fill="none" class="h-4 w-4" stroke="currentColor" stroke-width="2.5"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M10 11v6M14 11v6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                    </button>
+                                @endif
                             </div>
-                            <div class="flex items-center justify-between">
-                                <span class="text-[9px] font-bold text-black bg-zinc-100 px-3 py-1 rounded-full uppercase tracking-wider">{{ $employee->job_title }}</span>
+                            <div class="flex items-center justify-between gap-4">
+                                <select 
+                                    wire:change="updateJobTitle({{ $employee->id }}, $event.target.value)" 
+                                    class="bg-zinc-100 font-bold text-xs text-black px-3 py-1.5 rounded-xl uppercase tracking-wider border-none focus:ring-2 focus:ring-black cursor-pointer"
+                                >
+                                    <option value="Staff" {{ $employee->job_title === 'Staff' || (! $employee->is_admin && $employee->is_employee) ? 'selected' : '' }}>Staff</option>
+                                    <option value="Admin" {{ $employee->job_title === 'Admin' ? 'selected' : '' }}>Admin</option>
+                                    <option value="Owner" {{ $employee->isOwner() || $employee->job_title === 'Owner' ? 'selected' : '' }}>Owner</option>
+                                </select>
                                 <span class="text-[9px] font-bold text-zinc-300 uppercase tracking-widest">{{ $employee->created_at?->format('M d, Y') }}</span>
                             </div>
                         </div>
@@ -126,8 +146,8 @@
                     <table class="w-full text-left">
                         <thead>
                             <tr class="bg-zinc-50/50">
-                                <th class="px-8 py-4 text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Curator</th>
-                                <th class="px-8 py-4 text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Job Title</th>
+                                <th class="px-8 py-4 text-[10px] font-bold text-zinc-400 uppercase tracking-widest">User / Account</th>
+                                <th class="px-8 py-4 text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Job Title / Role</th>
                                 <th class="px-8 py-4 text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Registry Date</th>
                                 <th class="px-8 py-4 text-[10px] font-bold text-zinc-400 uppercase tracking-widest text-right">Actions</th>
                             </tr>
@@ -147,19 +167,28 @@
                                         </div>
                                     </td>
                                     <td class="px-8 py-5">
-                                        <span class="text-xs font-bold text-black bg-zinc-100 px-3 py-1 rounded-full uppercase tracking-wider">{{ $employee->job_title }}</span>
+                                        <select 
+                                            wire:change="updateJobTitle({{ $employee->id }}, $event.target.value)" 
+                                            class="bg-zinc-100 font-bold text-xs text-black px-3 py-1.5 rounded-xl uppercase tracking-wider border-none focus:ring-2 focus:ring-black cursor-pointer"
+                                        >
+                                            <option value="Staff" {{ $employee->job_title === 'Staff' || (! $employee->is_admin && $employee->is_employee) ? 'selected' : '' }}>Staff</option>
+                                            <option value="Admin" {{ $employee->job_title === 'Admin' ? 'selected' : '' }}>Admin</option>
+                                            <option value="Owner" {{ $employee->isOwner() || $employee->job_title === 'Owner' ? 'selected' : '' }}>Owner</option>
+                                        </select>
                                     </td>
                                     <td class="px-8 py-5 text-[11px] font-bold text-zinc-400">
                                         {{ $employee->created_at?->format('M d, Y') }}
                                     </td>
                                     <td class="px-8 py-5 text-right">
-                                        <button 
-                                            wire:click="delete({{ $employee->id }})" 
-                                            wire:confirm="Revoke all access for this staff member? This action is permanent."
-                                            class="h-9 w-9 rounded-xl bg-red-50 text-red-400 hover:text-red-600 hover:bg-white hover:ambient-shadow transition-all border border-red-100 inline-flex items-center justify-center"
-                                        >
-                                            <svg viewBox="0 0 24 24" fill="none" class="h-4 w-4" stroke="currentColor" stroke-width="2.5"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M10 11v6M14 11v6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                                        </button>
+                                        @if($employee->id !== auth()->id())
+                                            <button 
+                                                wire:click="delete({{ $employee->id }})" 
+                                                wire:confirm="Revoke all access for this member? This action is permanent."
+                                                class="h-9 w-9 rounded-xl bg-red-50 text-red-400 hover:text-red-600 hover:bg-white hover:ambient-shadow transition-all border border-red-100 inline-flex items-center justify-center"
+                                            >
+                                                <svg viewBox="0 0 24 24" fill="none" class="h-4 w-4" stroke="currentColor" stroke-width="2.5"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M10 11v6M14 11v6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                            </button>
+                                        @endif
                                     </td>
                                 </tr>
                             @endforeach

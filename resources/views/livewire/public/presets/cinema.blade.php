@@ -147,9 +147,11 @@
                 <div class="h-8 w-px bg-zinc-200 hidden md:block"></div>
                 <div class="flex items-center gap-3">
                     <select wire:model.live="sortBy" aria-label="Sort collection" class="bg-transparent border-none text-[12px] font-black text-black focus:ring-0 p-0 cursor-pointer uppercase tracking-[0.15em]">
-                        <option value="newest">Recent</option>    
-                        <option value="price_desc">Premium</option> 
-                        <option value="price_asc">Essential</option> 
+                        <option value="newest">Recent</option>
+                        <option value="price_desc">Premium</option>
+                        <option value="price_asc">Essential</option>
+                        <option value="most_viewed">Most Viewed</option>
+                        <option value="most_favorited">Most Favorited</option>
                     </select>
                 </div>
             </div>
@@ -228,8 +230,12 @@
                             <div class="flex justify-between items-start gap-4">
                                 <div class="min-w-0">
                                     <h3 class="text-2xl md:text-3xl font-bold text-black tracking-tighter truncate mb-1">{{ $unit->name }}</h3>
-                                    <p class="text-[10px] font-bold uppercase tracking-[0.3em] text-zinc-400">
-                                        Ref: #{{ substr($unit->public_id, -6) }}
+                                    <p class="text-[10px] font-bold uppercase tracking-[0.3em] text-zinc-400 flex items-center gap-3">
+                                        <span>Ref: #{{ substr($unit->public_id, -6) }}</span>
+                                        <span class="inline-flex items-center gap-1 normal-case tracking-widest" title="{{ number_format($unit->views_count ?? 0) }} views">
+                                            <svg viewBox="0 0 24 24" fill="none" class="h-3 w-3" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                            {{ $unit->formattedViewCount() }}
+                                        </span>
                                     </p>
                                 </div>
                                 <div class="text-right shrink-0">

@@ -114,7 +114,13 @@
                 </p>
                 <h1 class="font-noir-display text-4xl md:text-6xl leading-[1.02] tracking-tight mb-8">{{ $unit->name }}</h1>
                 <p class="text-3xl font-light text-noir-gold-bright tabular-nums">{{ $unit->formattedPrice() }}</p>
-                <p class="text-[10px] font-bold uppercase tracking-[0.3em] text-noir-muted mt-2">Exclusive of taxes & registration</p>
+                <p class="text-[10px] font-bold uppercase tracking-[0.3em] text-noir-muted mt-2 flex items-center gap-3">
+                    <span>Exclusive of taxes & registration</span>
+                    <span class="inline-flex items-center gap-1.5" title="{{ number_format($unit->views_count ?? 0) }} views">
+                        <svg viewBox="0 0 24 24" fill="none" class="h-3 w-3" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                        {{ $unit->formattedViewCount() }} views
+                    </span>
+                </p>
             </header>
 
             <div class="noir-reveal flex flex-col gap-4" style="animation-delay: 0.35s">

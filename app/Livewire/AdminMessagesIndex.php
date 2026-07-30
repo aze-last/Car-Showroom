@@ -90,9 +90,16 @@ class AdminMessagesIndex extends Component
             ->orderBy('last_msg', 'desc')
             ->get()
             ->map(function ($thread) {
+                $user = User::find($thread->user_id);
+                $unit = Unit::withTrashed()->find($thread->unit_id);
+
+                if (! $user || ! $unit) {
+                    return null;
+                }
+
                 return [
-                    'user' => User::find($thread->user_id),
-                    'unit' => Unit::find($thread->unit_id),
+                    'user' => $user,
+                    'unit' => $unit,
                     'last_message' => ChatMessage::query()
                         ->where('user_id', $thread->user_id)
                         ->where('unit_id', $thread->unit_id)
@@ -105,7 +112,9 @@ class AdminMessagesIndex extends Component
                         ->whereNull('read_at')
                         ->count(),
                 ];
-            });
+            })
+            ->filter()
+            ->values();
     }
 
     public function getMessagesProperty()

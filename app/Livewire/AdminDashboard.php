@@ -6,7 +6,10 @@ use App\Models\Auction;
 use App\Models\BidDeposit;
 use App\Models\Unit;
 use App\Models\UnitStatusLog;
+use App\Models\UnitView;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Livewire\Component;
 
@@ -82,7 +85,8 @@ class AdminDashboard extends Component
             ? (int) round(($availableUnits / $totalUnits) * 100)
             : 0;
 
-        // Calculate Portfolio Velocity (Sales per month for the last 6 months)
+        // Portfolio Velocity (units sold per month, last 6 months) — rendered
+        // client-side by Chart.js; this component only supplies the series.
         $velocityData = [];
         for ($i = 5; $i >= 0; $i--) {
             $month = now()->subMonths($i);
@@ -95,27 +99,57 @@ class AdminDashboard extends Component
             $velocityData[] = [
                 'label' => $month->format('M'),
                 'count' => $count,
-                'x' => (5 - $i) * 200, // For SVG path generation
             ];
         }
 
-        // Generate SVG Path for the velocity chart
-        $maxCount = collect($velocityData)->max('count') ?: 1;
-        $points = [];
-        foreach ($velocityData as $index => $data) {
-            $x = $index * (1000 / 5);
-            $y = 250 - ($data['count'] / $maxCount * 200);
-            $points[] = "$x,$y";
-        }
-        $chartPath = 'M '.implode(' L ', $points);
-        // Smooth curve calculation (simple version)
-        $curvePath = 'M '.$points[0];
-        for ($i = 0; $i < count($points) - 1; $i++) {
-            $curr = explode(',', $points[$i]);
-            $next = explode(',', $points[$i + 1]);
-            $cx = ($curr[0] + $next[0]) / 2;
-            $curvePath .= " C $cx,{$curr[1]} $cx,{$next[1]} {$next[0]},{$next[1]}";
-        }
+        $velocityChart = [
+            'labels' => array_column($velocityData, 'label'),
+            'data' => array_column($velocityData, 'count'),
+            'accent' => '#000000',
+            'fillFrom' => 'rgba(0, 0, 0, 0.06)',
+            'yLabel' => 'Units Sold',
+            'unitLabel' => 'sold',
+        ];
+        $velocityHasData = array_sum($velocityChart['data']) > 0;
+
+        // Views Over Time (daily unit views, last 30 days)
+        $viewsPerDay = UnitView::viewsPerDay(30);
+        $viewsChart = [
+            'labels' => $viewsPerDay->map(fn (array $day) => Carbon::parse($day['date'])->format('M j'))->all(),
+            'data' => $viewsPerDay->pluck('count')->all(),
+            'accent' => '#10b981',
+            'fillFrom' => 'rgba(16, 185, 129, 0.10)',
+            'yLabel' => 'Views',
+            'unitLabel' => 'views',
+        ];
+        $viewsHasData = array_sum($viewsChart['data']) > 0;
+
+        // Engagement leaderboards (top 5 each; only units with activity)
+        $weekStart = now()->subDays(7);
+
+        $mostViewedThisWeek = Unit::query()
+            ->withCount(['views as views_last_week_count' => fn ($q) => $q->where('viewed_at', '>=', $weekStart)])
+            ->whereHas('views', fn ($q) => $q->where('viewed_at', '>=', $weekStart))
+            ->orderByDesc('views_last_week_count')
+            ->limit(5)
+            ->get();
+
+        $mostFavoritedUnits = Unit::query()
+            ->withCount('savedByUsers')
+            ->has('savedByUsers')
+            ->orderByDesc('saved_by_users_count')
+            ->limit(5)
+            ->get();
+
+        // Weekly funnel readout: views → favorites → sold. "Sold this week"
+        // uses updated_at like the monthly sales trend above; favorites come
+        // from the saved_units pivot (no dedicated model exists for it).
+        $viewsThisWeek = UnitView::query()->where('viewed_at', '>=', $weekStart)->count();
+        $favoritesThisWeek = DB::table('saved_units')->where('created_at', '>=', $weekStart)->count();
+        $soldThisWeek = Unit::query()
+            ->where('status', Unit::STATUS_SOLD)
+            ->where('updated_at', '>=', $weekStart)
+            ->count();
 
         $recentLogs = UnitStatusLog::query()
             ->with(['unit', 'user'])
@@ -144,8 +178,15 @@ class AdminDashboard extends Component
             'pendingDepositsCount' => $pendingDepositsCount,
             'resolvedDepositsCount' => $resolvedDepositsCount,
             'availablePercentage' => $availablePercentage,
-            'velocityData' => $velocityData,
-            'chartPath' => $curvePath,
+            'velocityChart' => $velocityChart,
+            'velocityHasData' => $velocityHasData,
+            'viewsChart' => $viewsChart,
+            'viewsHasData' => $viewsHasData,
+            'mostViewedThisWeek' => $mostViewedThisWeek,
+            'mostFavoritedUnits' => $mostFavoritedUnits,
+            'viewsThisWeek' => $viewsThisWeek,
+            'favoritesThisWeek' => $favoritesThisWeek,
+            'soldThisWeek' => $soldThisWeek,
             'recentLogs' => $recentLogs,
             'recentInquiries' => $recentInquiries,
         ])->layout('layouts.admin-panel', [

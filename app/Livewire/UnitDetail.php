@@ -2,13 +2,23 @@
 
 namespace App\Livewire;
 
+use App\Concerns\HandlesLivewireErrors;
 use App\Models\Unit;
+use App\Models\UnitView;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\On;
 use Livewire\Component;
 
 class UnitDetail extends Component
 {
+    use HandlesLivewireErrors;
+
+    /**
+     * Minutes before the same visitor viewing the same unit counts again.
+     */
+    public const VIEW_DEDUP_MINUTES = 30;
+
     public Unit $unit;
 
     public int $currentImageIndex = 0;
@@ -23,6 +33,39 @@ class UnitDetail extends Component
         ]);
 
         $this->compareIds = session()->get('compare_ids', []);
+
+        $this->recordView();
+
+        // Loaded after recordView so the visitor's own view is included.
+        $this->unit->loadCount('views');
+    }
+
+    /**
+     * Record a view for analytics. Guests (the majority of traffic) are
+     * identified by an IP + user agent hash; failures are logged silently —
+     * tracking must never block the customer from seeing the page.
+     */
+    protected function recordView(): void
+    {
+        $this->safely(function () {
+            $visitorHash = hash('sha256', request()->ip().'|'.(request()->userAgent() ?? ''));
+            $userId = Auth::id();
+
+            $alreadyViewed = UnitView::query()
+                ->recentFor($this->unit->id, $visitorHash, $userId, self::VIEW_DEDUP_MINUTES)
+                ->exists();
+
+            if ($alreadyViewed) {
+                return;
+            }
+
+            UnitView::query()->create([
+                'unit_id' => $this->unit->id,
+                'user_id' => $userId,
+                'visitor_hash' => $visitorHash,
+                'viewed_at' => now(),
+            ]);
+        }, null, ['unit_id' => $this->unit->id]);
     }
 
     public function toggleCompare(int $id): void

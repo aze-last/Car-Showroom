@@ -25,7 +25,7 @@ class AdminEmployees extends Component
 
     public string $password_confirmation = '';
 
-    public string $job_title = '';
+    public string $job_title = 'Staff';
 
     public string $phone = '';
 
@@ -35,13 +35,13 @@ class AdminEmployees extends Component
 
     public function mount(): void
     {
-        Gate::authorize('access-admin');
+        Gate::authorize('access-owner');
         $this->applyDefaults();
     }
 
     public function create(): void
     {
-        Gate::authorize('access-admin');
+        Gate::authorize('access-owner');
 
         $this->name = trim($this->name);
         $this->email = Str::lower(trim($this->email));
@@ -54,20 +54,22 @@ class AdminEmployees extends Component
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users', 'email')],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
-            'job_title' => ['required', 'string', 'max:120'],
+            'job_title' => ['required', 'string', Rule::in(['Owner', 'Admin', 'Staff'])],
             'phone' => ['nullable', 'string', 'max:32'],
             'preferred_locale' => ['required', 'string', 'max:10'],
             'preferred_timezone' => ['required', 'string', 'max:64'],
         ]);
 
-        $saved = $this->safely(function () use ($validated) {
+        $isAdmin = in_array($validated['job_title'], ['Owner', 'Admin'], true);
+
+        $saved = $this->safely(function () use ($validated, $isAdmin) {
             $employee = new User;
             $employee->forceFill([
                 'name' => $validated['name'],
                 'email' => $validated['email'],
                 'password' => Hash::make($validated['password']),
                 'email_verified_at' => now(),
-                'is_admin' => false,
+                'is_admin' => $isAdmin,
                 'is_employee' => true,
                 'job_title' => $validated['job_title'],
                 'phone' => $validated['phone'] !== '' ? $validated['phone'] : null,
@@ -92,16 +94,55 @@ class AdminEmployees extends Component
         session()->flash('status', 'Employee account created successfully.');
     }
 
+    public function updateJobTitle(int $employeeId, string $newTitle): void
+    {
+        Gate::authorize('access-owner');
+
+        if (! in_array($newTitle, ['Owner', 'Admin', 'Staff'], true)) {
+            session()->flash('error', 'Invalid job title selected.');
+
+            return;
+        }
+
+        $employee = User::query()->find($employeeId);
+
+        if (! $employee instanceof User) {
+            session()->flash('error', 'Employee account not found.');
+
+            return;
+        }
+
+        $isAdmin = in_array($newTitle, ['Owner', 'Admin'], true);
+
+        $this->safely(function () use ($employee, $newTitle, $isAdmin) {
+            $employee->forceFill([
+                'job_title' => $newTitle,
+                'is_admin' => $isAdmin,
+                'is_employee' => true,
+            ])->save();
+        }, 'Could not update job title. Please try again.');
+
+        session()->flash('status', "Job title for {$employee->name} updated to {$newTitle}.");
+    }
+
     public function delete(int $employeeId): void
     {
-        Gate::authorize('access-admin');
+        Gate::authorize('access-owner');
 
         $employee = User::query()
-            ->where('is_employee', true)
+            ->where(function ($query) {
+                $query->where('is_employee', true)->orWhere('is_admin', true);
+            })
             ->find($employeeId);
 
         if (! $employee instanceof User) {
             session()->flash('error', 'Employee account not found.');
+
+            return;
+        }
+
+        if ($employee->id === auth()->id()) {
+            session()->flash('error', 'You cannot delete your own account.');
 
             return;
         }
@@ -123,21 +164,23 @@ class AdminEmployees extends Component
 
     private function applyDefaults(): void
     {
-        /** @var array{job_title: string, preferred_locale: string, preferred_timezone: string} $defaults */
+        /** @var array{job_title?: string, preferred_locale?: string, preferred_timezone?: string} $defaults */
         $defaults = config('showroom.employee_defaults', []);
 
-        $this->job_title = $defaults['job_title'] ?? 'Showroom Staff';
+        $this->job_title = 'Staff';
         $this->preferred_locale = $defaults['preferred_locale'] ?? 'en_PH';
         $this->preferred_timezone = $defaults['preferred_timezone'] ?? 'Asia/Manila';
     }
 
     public function render(): View
     {
-        Gate::authorize('access-admin');
+        Gate::authorize('access-owner');
 
         return view('livewire.admin-employees', [
             'employees' => User::query()
-                ->where('is_employee', true)
+                ->where(function ($query) {
+                    $query->where('is_employee', true)->orWhere('is_admin', true);
+                })
                 ->orderByDesc('id')
                 ->paginate(12),
         ])->layout('layouts.admin-panel', [

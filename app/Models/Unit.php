@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -145,6 +146,35 @@ class Unit extends Model
             ->latest();
     }
 
+    /**
+     * @return HasMany<UnitView, $this>
+     */
+    public function views(): HasMany
+    {
+        return $this->hasMany(UnitView::class);
+    }
+
+    /**
+     * Users who saved this unit to their garage (inverse of User::savedUnits()).
+     *
+     * @return BelongsToMany<User, $this>
+     */
+    public function savedByUsers(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'saved_units')->withTimestamps();
+    }
+
+    /**
+     * Eager-load total view count as `views_count`.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder<Unit>  $query
+     * @return \Illuminate\Database\Eloquent\Builder<Unit>
+     */
+    public function scopeWithViewCount($query)
+    {
+        return $query->withCount('views');
+    }
+
     public function formattedPrice(): string
     {
         if (! $this->show_price || $this->price_php === null) {
@@ -152,6 +182,24 @@ class Unit extends Model
         }
 
         return "\u{20B1}".number_format($this->price_php);
+    }
+
+    /**
+     * Compact public-facing view count: exact below 1,000, otherwise
+     * abbreviated with one decimal ("1.2K", "3.4M"). Uses the eager-loaded
+     * `views_count` when present (withCount) to avoid extra queries.
+     */
+    public function formattedViewCount(): string
+    {
+        $count = (int) ($this->views_count ?? $this->views()->count());
+
+        if ($count < 1000) {
+            return (string) $count;
+        }
+
+        [$divisor, $suffix] = $count < 1_000_000 ? [1000, 'K'] : [1_000_000, 'M'];
+
+        return rtrim(rtrim(sprintf('%.1f', round($count / $divisor, 1)), '0'), '.').$suffix;
     }
 
     public function markAsSold(): void

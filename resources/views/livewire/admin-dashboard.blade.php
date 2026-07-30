@@ -189,44 +189,22 @@
                 <span class="text-[10px] font-bold text-black px-4 py-1.5 bg-gallery-surface-high rounded-full uppercase tracking-widest">Last 6 Months</span>
             </div>
 
-            <div class="flex-grow relative w-full flex items-end pt-10 px-6">
-                <!-- SVG Line/Area (Dynamic representation of Sales Velocity) -->
-                <div class="relative w-full h-[300px] z-10">
-                    <svg class="w-full h-full overflow-visible" preserveAspectRatio="none" viewBox="0 0 1000 300">
-                        <defs>
-                            <linearGradient id="areaGradient" x1="0" x2="0" y1="0" y2="1">
-                                <stop offset="0%" stop-color="#000000" stop-opacity="0.05"></stop>
-                                <stop offset="100%" stop-color="#000000" stop-opacity="0"></stop>
-                            </linearGradient>
-                        </defs>
-                        <!-- Area -->
-                        <path d="{{ $chartPath }} L 1000,300 L 0,300 Z" fill="url(#areaGradient)"></path>
-                        <!-- Line -->
-                        <path d="{{ $chartPath }}" fill="none" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"></path>
-
-                        <!-- Dynamic Pulse Points -->
-                        @foreach($velocityData as $index => $data)
-                            @php
-                                $maxCount = collect($velocityData)->max('count') ?: 1;
-                                $x = $index * (1000 / 5);
-                                $y = 250 - ($data['count'] / $maxCount * 200);
-                            @endphp
-                            <g class="group/point">
-                                <circle cx="{{ $x }}" cy="{{ $y }}" r="6" fill="#ffffff" stroke="#000000" stroke-width="3" class="transition-all duration-300 group-hover/point:r-8"></circle>
-                                <text x="{{ $x }}" y="{{ $y - 15 }}" text-anchor="middle" class="opacity-0 group-hover/point:opacity-100 transition-opacity duration-300 text-[10px] font-bold fill-black">{{ $data['count'] }}</text>
-                            </g>
-                        @endforeach
-                    </svg>
-                </div>
-
-                <!-- X-Axis Labels (Dynamic) -->
-                <div class="absolute bottom-[-20px] left-6 right-6 flex justify-between text-[10px] font-bold text-zinc-300 uppercase tracking-widest">
-                    @foreach($velocityData as $data)
-                        <span>{{ $data['label'] }}</span>
-                    @endforeach
-                </div>
+            <div class="flex-grow relative w-full">
+                @if($velocityHasData)
+                    <div wire:ignore x-data="adminLineChart(@js($velocityChart))" x-on:livewire:navigating.window="destroy()" class="absolute inset-0">
+                        <canvas x-ref="canvas" aria-label="Units sold per month for the last 6 months"></canvas>
+                    </div>
+                @else
+                    <div class="absolute inset-0 flex flex-col items-center justify-center gap-3 text-center">
+                        <div class="h-12 w-12 rounded-full bg-gallery-surface-low flex items-center justify-center">
+                            <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5 text-zinc-300" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18M7 16l4-6 4 3 5-8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </div>
+                        <p class="text-[13px] font-bold text-black tracking-tight">Not enough sales data yet</p>
+                        <p class="text-[11px] font-medium text-zinc-400 max-w-xs">The velocity curve will appear once units are marked as sold within the six-month window.</p>
+                    </div>
+                @endif
             </div>
-            <div class="mt-16 pt-8 border-t border-gallery-outline/5 flex items-center justify-between">
+            <div class="mt-10 pt-8 border-t border-gallery-outline/5 flex items-center justify-between">
                 <div class="flex items-center gap-2">
                     <div class="h-2 w-2 rounded-full bg-black"></div>
                     <span class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Units Sold Per Month</span>
@@ -268,6 +246,90 @@
             <a href="{{ route('admin.logs.index') }}" class="mt-12 w-full h-12 rounded-full border border-gallery-outline/30 flex items-center justify-center text-[10px] font-bold text-black uppercase tracking-widest hover:bg-gallery-surface-low transition-all">
                 Full Integrity Log
             </a>
+        </div>
+    </section>
+
+    <!-- Engagement Grid (Views Chart & Leaderboards) -->
+    <section class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <!-- Views Over Time -->
+        <div class="lg:col-span-8 bg-white rounded-[40px] p-10 border border-gallery-outline/20 ambient-shadow flex flex-col min-h-[420px]">
+            <div class="flex justify-between items-center mb-10">
+                <h3 class="text-[12px] font-bold text-black uppercase tracking-[0.4em]">Views Over Time</h3>
+                <span class="text-[10px] font-bold text-black px-4 py-1.5 bg-gallery-surface-high rounded-full uppercase tracking-widest">Last 30 Days</span>
+            </div>
+
+            <div class="flex-grow relative w-full">
+                @if($viewsHasData)
+                    <div wire:ignore x-data="adminLineChart(@js($viewsChart))" x-on:livewire:navigating.window="destroy()" class="absolute inset-0">
+                        <canvas x-ref="canvas" aria-label="Unit page views per day for the last 30 days"></canvas>
+                    </div>
+                @else
+                    <div class="absolute inset-0 flex flex-col items-center justify-center gap-3 text-center">
+                        <div class="h-12 w-12 rounded-full bg-gallery-surface-low flex items-center justify-center">
+                            <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5 text-zinc-300" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                        </div>
+                        <p class="text-[13px] font-bold text-black tracking-tight">No views recorded yet</p>
+                        <p class="text-[11px] font-medium text-zinc-400 max-w-xs">Daily traffic will chart here as collectors browse the public showroom.</p>
+                    </div>
+                @endif
+            </div>
+
+            <!-- Weekly Funnel Readout -->
+            <div class="mt-10 pt-8 border-t border-gallery-outline/5 flex items-center justify-between flex-wrap gap-4">
+                <div class="flex items-center gap-3 flex-wrap">
+                    <span class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">This Week</span>
+                    <span class="text-[12px] font-bold text-black tracking-tight">
+                        {{ number_format($viewsThisWeek) }} {{ Str::plural('view', $viewsThisWeek) }}
+                        <span class="text-zinc-300 mx-1">→</span>
+                        {{ number_format($favoritesThisWeek) }} {{ Str::plural('favorite', $favoritesThisWeek) }}
+                        <span class="text-zinc-300 mx-1">→</span>
+                        {{ number_format($soldThisWeek) }} sold
+                    </span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="h-2 w-2 rounded-full bg-emerald-500"></div>
+                    <span class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Unit Page Views Per Day</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Leaderboards -->
+        <div class="lg:col-span-4 flex flex-col gap-8">
+            <!-- Most Viewed This Week -->
+            <div class="bg-white rounded-[40px] p-10 border border-gallery-outline/20 ambient-shadow flex-1">
+                <h3 class="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.4em] mb-8">Most Viewed This Week</h3>
+                <ol class="flex flex-col gap-5">
+                    @forelse($mostViewedThisWeek as $index => $unit)
+                        <li>
+                            <a href="{{ route('admin.units.edit', $unit) }}" class="flex items-center gap-4 group">
+                                <span class="w-7 h-7 rounded-full {{ $index === 0 ? 'bg-black text-white' : 'bg-gallery-surface-low text-zinc-400' }} flex items-center justify-center text-[10px] font-bold shrink-0">{{ $index + 1 }}</span>
+                                <span class="text-[13px] font-bold text-black tracking-tight truncate flex-1 group-hover:opacity-60 transition-opacity">{{ $unit->name }}</span>
+                                <span class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest shrink-0">{{ number_format($unit->views_last_week_count) }} {{ Str::plural('view', $unit->views_last_week_count) }}</span>
+                            </a>
+                        </li>
+                    @empty
+                        <li class="text-[11px] font-medium text-zinc-400">No unit views in the last 7 days.</li>
+                    @endforelse
+                </ol>
+            </div>
+
+            <!-- Most Favorited -->
+            <div class="bg-white rounded-[40px] p-10 border border-gallery-outline/20 ambient-shadow flex-1">
+                <h3 class="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.4em] mb-8">Most Favorited</h3>
+                <ol class="flex flex-col gap-5">
+                    @forelse($mostFavoritedUnits as $index => $unit)
+                        <li>
+                            <a href="{{ route('admin.units.edit', $unit) }}" class="flex items-center gap-4 group">
+                                <span class="w-7 h-7 rounded-full {{ $index === 0 ? 'bg-red-50 text-red-600' : 'bg-gallery-surface-low text-zinc-400' }} flex items-center justify-center text-[10px] font-bold shrink-0">{{ $index + 1 }}</span>
+                                <span class="text-[13px] font-bold text-black tracking-tight truncate flex-1 group-hover:opacity-60 transition-opacity">{{ $unit->name }}</span>
+                                <span class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest shrink-0">{{ number_format($unit->saved_by_users_count) }} {{ Str::plural('save', $unit->saved_by_users_count) }}</span>
+                            </a>
+                        </li>
+                    @empty
+                        <li class="text-[11px] font-medium text-zinc-400">No units have been favorited yet.</li>
+                    @endforelse
+                </ol>
+            </div>
         </div>
     </section>
 

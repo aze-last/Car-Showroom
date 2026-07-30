@@ -19,12 +19,12 @@ class UnitPolicy
 
     public function create(User $user): bool
     {
-        return $user->isStaff();
+        return $user->is_admin;
     }
 
     public function update(User $user, Unit $unit): bool
     {
-        return $user->isStaff();
+        return $user->is_admin;
     }
 
     public function delete(User $user, Unit $unit): bool

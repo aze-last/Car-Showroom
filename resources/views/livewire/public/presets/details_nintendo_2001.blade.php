@@ -187,7 +187,13 @@
                     <div class="absolute top-0 right-0 w-24 h-24 bg-white/5 rotate-45 translate-x-12 -translate-y-12"></div>
                     
                     <div class="space-y-2">
-                        <p class="nintendo-label text-[#ecab37] tracking-[2px]">MSRP LISTING</p>
+                        <p class="nintendo-label text-[#ecab37] tracking-[2px] flex items-center gap-3">
+                            <span>MSRP LISTING</span>
+                            <span class="inline-flex items-center gap-1.5 text-white/60" title="{{ number_format($unit->views_count ?? 0) }} views">
+                                <svg viewBox="0 0 24 24" fill="none" class="h-3 w-3" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                {{ $unit->formattedViewCount() }} VIEWS
+                            </span>
+                        </p>
                         <h2 class="nintendo-display text-4xl sm:text-5xl text-white">{{ $unit->formattedPrice() }}</h2>
                     </div>
 

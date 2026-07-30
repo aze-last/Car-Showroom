@@ -92,7 +92,13 @@
                 </div>
                 <div class="text-left md:text-right">
                     <p class="text-4xl font-bold tracking-tight text-black">{{ $unit->formattedPrice() }}</p>
-                    <p class="text-[11px] font-bold uppercase tracking-widest text-zinc-400 mt-2">Curated Premium Listing</p>
+                    <p class="text-[11px] font-bold uppercase tracking-widest text-zinc-400 mt-2 flex items-center md:justify-end gap-3">
+                        <span>Curated Premium Listing</span>
+                        <span class="inline-flex items-center gap-1.5 text-zinc-500" title="{{ number_format($unit->views_count ?? 0) }} views">
+                            <svg viewBox="0 0 24 24" fill="none" class="h-3.5 w-3.5" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                            {{ $unit->formattedViewCount() }} views
+                        </span>
+                    </p>
                 </div>
             </div>
         </div>

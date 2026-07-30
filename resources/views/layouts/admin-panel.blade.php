@@ -14,12 +14,13 @@
     <body class="min-h-screen bg-gallery-background font-hanken text-zinc-900 antialiased overflow-x-hidden">
         @php
             $currentUser = auth()->user();
+            $isOwner = (bool) ($currentUser?->isOwner() ?? false);
             $isAdmin = (bool) ($currentUser?->is_admin ?? false);
             $isStaff = (bool) ($currentUser?->isStaff() ?? false);
             $isCollector = ! $isStaff;
             
-            $panelTitle = $isAdmin ? 'Admin Suite' : ($isStaff ? 'Staff Portal' : 'Member Portal');
-            $panelSubtitle = $isAdmin ? 'Elite Management' : ($isStaff ? 'Gallery Operations' : 'Collector Registry');
+            $panelTitle = $isOwner ? 'Owner Suite' : ($isAdmin ? 'Admin Suite' : ($isStaff ? 'Staff Portal' : 'Member Portal'));
+            $panelSubtitle = $isOwner ? 'Superadmin Control' : ($isAdmin ? 'Elite Management' : ($isStaff ? 'Gallery Operations' : 'Collector Registry'));
             $homeRoute = $isAdmin ? route('admin.dashboard') : ($isStaff ? route('admin.units.index') : route('garage'));
         @endphp
 
@@ -134,12 +135,14 @@
                             </a>
                         </li>
 
+                    @if ($isOwner)
                         <li>
                             <a href="{{ route('admin.employees.index') }}" class="flex items-center gap-4 px-4 py-4 rounded-2xl transition-all {{ request()->routeIs('admin.employees.*') ? 'bg-white text-black ambient-shadow font-bold' : 'text-zinc-400 hover:text-black' }}">
                                 <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="2"><path d="M17 21V19A4 4 0 0 0 13 15H5A4 4 0 0 0 1 19V21M9 11A4 4 0 1 0 9 3A4 4 0 0 0 9 11ZM23 21V19A4 4 0 0 0 19.33 15.17M16 3.13A4 4 0 0 1 16 11" stroke-linecap="round" stroke-linejoin="round"/></svg>
                                 <span class="text-[12px] uppercase tracking-widest">Employees</span>
                             </a>
                         </li>
+                    @endif
 
                          <li>
                             <a href="{{ route('admin.logs.index') }}" class="flex items-center gap-4 px-4 py-4 rounded-2xl transition-all {{ request()->routeIs('admin.logs.*') ? 'bg-white text-black ambient-shadow font-bold' : 'text-zinc-400 hover:text-black' }}">
