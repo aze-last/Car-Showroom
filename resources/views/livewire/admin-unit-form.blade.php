@@ -330,6 +330,71 @@
                     </div>
                 </article>
 
+                @if ($isEdit && $unit instanceof Unit)
+                    @php
+                        $readiness = $unit->auctionReadiness();
+                    @endphp
+                    <article class="admin-card mt-6" data-test="auction-readiness-card">
+                        <div class="admin-card-header flex items-center justify-between">
+                            <h3 class="text-base font-semibold text-slate-900 flex items-center gap-2">
+                                <svg viewBox="0 0 24 24" fill="none" class="h-4 w-4 text-amber-600" stroke="currentColor" stroke-width="2.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                Auction Readiness
+                            </h3>
+                            @if ($readiness['is_candidate'])
+                                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-widest bg-amber-50 text-amber-700 border border-amber-200">
+                                    Candidate
+                                </span>
+                            @else
+                                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-widest bg-zinc-100 text-zinc-600 border border-zinc-200">
+                                    Fresh Listing
+                                </span>
+                            @endif
+                        </div>
+                        <div class="admin-card-body space-y-4 text-sm">
+                            <div class="p-3.5 bg-amber-50/60 rounded-xl border border-amber-100/80 space-y-2">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs font-bold uppercase tracking-wider text-amber-900">Days Listed:</span>
+                                    <span class="font-bold text-amber-900">{{ $readiness['days_listed'] }} days</span>
+                                </div>
+                                <div class="flex items-center justify-between text-xs">
+                                    <span class="text-amber-800/80 font-medium">Category Benchmark:</span>
+                                    <span class="font-semibold text-amber-900">{{ $readiness['benchmark_comparison'] ?? 'No benchmark' }}</span>
+                                </div>
+                                @if ($readiness['engagement_adjusted'])
+                                    <div class="flex items-center gap-1.5 text-[11px] font-semibold text-emerald-700 pt-1">
+                                        <svg viewBox="0 0 24 24" fill="none" class="h-3.5 w-3.5" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17L4 12" stroke-linecap="round"/></svg>
+                                        {{ $readiness['engagement_note'] }}
+                                    </div>
+                                @endif
+                            </div>
+
+                            @if ($readiness['is_candidate'])
+                                <div class="grid grid-cols-2 gap-3 pt-1">
+                                    <div class="p-3 bg-zinc-50 rounded-xl border border-zinc-200/60">
+                                        <span class="block text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-1">Suggested Reserve</span>
+                                        <span class="font-bold text-base text-zinc-900">₱{{ number_format($readiness['suggested_reserve_php']) }}</span>
+                                    </div>
+                                    <div class="p-3 bg-zinc-50 rounded-xl border border-zinc-200/60">
+                                        <span class="block text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-1">Suggested Start Bid</span>
+                                        <span class="font-bold text-base text-zinc-900">₱{{ number_format($readiness['suggested_starting_bid_php']) }}</span>
+                                    </div>
+                                </div>
+
+                                <a href="{{ route('admin.auctions.create', ['unit_id' => $unit->id]) }}" class="admin-btn-primary w-full justify-center bg-black hover:bg-zinc-800 text-white mt-2 flex items-center gap-2">
+                                    <svg viewBox="0 0 24 24" fill="none" class="h-4 w-4" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14" stroke-linecap="round"/></svg>
+                                    Create Auction Lot
+                                </a>
+                            @else
+                                <p class="text-xs text-zinc-500 italic">This unit has been listed for {{ $readiness['days_listed'] }} days (0–30 days tier). Auction is not recommended yet.</p>
+                            @endif
+
+                            <p class="text-[10px] leading-tight text-zinc-400 font-normal pt-1 border-t border-zinc-100">
+                                <strong class="font-semibold text-zinc-500">Note:</strong> {{ $readiness['disclaimer'] }}
+                            </p>
+                        </div>
+                    </article>
+                @endif
+
 
             </div>
         </div>

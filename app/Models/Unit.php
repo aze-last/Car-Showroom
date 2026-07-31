@@ -220,4 +220,40 @@ class Unit extends Model
     {
         return URL::signedRoute('admin.units.qr', $this);
     }
+
+    /**
+     * Compute days in current AVAILABLE state using the most recent AVAILABLE status log,
+     * or fallback to created_at if no such log exists.
+     */
+    public function daysInCurrentListing(): int
+    {
+        /** @var \App\Models\UnitStatusLog|null $latestAvailableLog */
+        $latestAvailableLog = $this->statusLogs()
+            ->where('to_status', self::STATUS_AVAILABLE)
+            ->latest('created_at')
+            ->first();
+
+        $startDate = $latestAvailableLog ? $latestAvailableLog->created_at : $this->created_at;
+
+        if (! $startDate) {
+            return 0;
+        }
+
+        return (int) max(0, $startDate->diffInDays(now()));
+    }
+
+    public function isAuctionCandidate(): bool
+    {
+        return $this->isAvailable() && $this->daysInCurrentListing() >= 31;
+    }
+
+    /**
+     * Evaluate auction readiness details and price suggestions for this unit.
+     *
+     * @return array<string, mixed>
+     */
+    public function auctionReadiness(): array
+    {
+        return app(\App\Services\AuctionReadinessService::class)->evaluate($this);
+    }
 }

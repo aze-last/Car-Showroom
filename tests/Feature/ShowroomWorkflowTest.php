@@ -155,6 +155,7 @@ it('employee staff can only view units and scan qr in admin panel', function ():
 });
 
 it('uses concurrency-safe set-state logic for stale reads', function (): void {
+    $initialCount = UnitStatusLog::query()->count();
     $user = User::factory()->create();
     $unit = Unit::factory()->create([
         'status' => Unit::STATUS_AVAILABLE,
@@ -184,11 +185,12 @@ it('uses concurrency-safe set-state logic for stale reads', function (): void {
 
     expect($first['changed'])->toBeTrue();
     expect($second['changed'])->toBeFalse();
-    expect(UnitStatusLog::query()->count())->toBe(1);
+    expect(UnitStatusLog::query()->count())->toBe($initialCount + 1);
     expect($unit->fresh()->status)->toBe(Unit::STATUS_SOLD);
 });
 
 it('rolls back status change if audit log write fails', function (): void {
+    $initialCount = UnitStatusLog::query()->count();
     $unit = Unit::factory()->create([
         'status' => Unit::STATUS_AVAILABLE,
     ]);
@@ -205,7 +207,7 @@ it('rolls back status change if audit log write fails', function (): void {
     ))->toThrow(QueryException::class);
 
     expect($unit->fresh()->status)->toBe(Unit::STATUS_AVAILABLE);
-    expect(UnitStatusLog::query()->count())->toBe(0);
+    expect(UnitStatusLog::query()->count())->toBe($initialCount);
 });
 
 it('does not allow mass-assigning admin privileges', function (): void {

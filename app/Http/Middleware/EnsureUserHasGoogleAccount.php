@@ -16,14 +16,7 @@ class EnsureUserHasGoogleAccount
             return redirect()->guest(route('login'));
         }
 
-        if ($user->isStaff() || $user->hasGoogleAccount()) {
-            return $next($request);
-        }
-
-        session()->put('url.intended', $request->fullUrl());
-
-        return redirect()
-            ->route('auth.google.redirect')
-            ->with('status', 'Sign in with Google to participate in auctions.');
+        // Postponed Google account check: allow all authenticated non-blocked users
+        return $next($request);
     }
 }

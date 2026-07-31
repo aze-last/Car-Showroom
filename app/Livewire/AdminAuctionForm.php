@@ -51,6 +51,30 @@ class AdminAuctionForm extends Component
         } else {
             $this->start_at = now()->addDay()->format('Y-m-d\TH:i');
             $this->end_at = now()->addDay()->addHours(4)->format('Y-m-d\TH:i');
+
+            if (request()->has('unit_id')) {
+                $this->unit_id = (int) request()->query('unit_id');
+                $this->applySuggestionsForUnit();
+            }
+        }
+    }
+
+    public function updatedUnitId(): void
+    {
+        $this->applySuggestionsForUnit();
+    }
+
+    public function applySuggestionsForUnit(): void
+    {
+        if ($this->unit_id && ! $this->isEdit) {
+            $unit = Unit::find($this->unit_id);
+            if ($unit) {
+                $readiness = app(\App\Services\AuctionReadinessService::class)->evaluate($unit);
+                if ($readiness['is_candidate'] && $readiness['suggested_reserve_php']) {
+                    $this->reserve_price_php = $readiness['suggested_reserve_php'];
+                    $this->starting_bid_php = $readiness['suggested_starting_bid_php'];
+                }
+            }
         }
     }
 

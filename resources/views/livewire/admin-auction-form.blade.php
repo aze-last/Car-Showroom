@@ -47,9 +47,34 @@
                     <input type="checkbox" wire:model="is_featured" class="h-6 w-6 rounded-lg border-zinc-200 text-black focus:ring-black">
                 </div>
 
+                @if ($unit_id && ($unitForSuggestion = \App\Models\Unit::find($unit_id)))
+                    @php
+                        $readiness = $unitForSuggestion->auctionReadiness();
+                    @endphp
+                    @if ($readiness['is_candidate'])
+                        <div class="md:col-span-2 p-5 bg-amber-50 rounded-2xl border border-amber-200/80 flex items-start gap-3.5 shadow-xs" data-test="auction-pricing-suggestion-banner">
+                            <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5 text-amber-600 shrink-0 mt-0.5" stroke="currentColor" stroke-width="2.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            <div class="space-y-1">
+                                <p class="text-xs font-bold text-amber-900 uppercase tracking-wider">
+                                    Suggested Auction Pricing (Pre-filled): Reserve ₱{{ number_format($readiness['suggested_reserve_php']) }} | Start Bid ₱{{ number_format($readiness['suggested_starting_bid_php']) }}
+                                </p>
+                                <p class="text-[11px] text-amber-800/90 font-medium leading-relaxed">
+                                    Based on {{ $readiness['days_listed'] }} days sitting listed ({{ $readiness['benchmark_comparison'] ?? 'no category benchmark' }}).
+                                    <span class="font-bold underline">You can override these values anytime.</span>
+                                </p>
+                            </div>
+                        </div>
+                    @endif
+                @endif
+
                 <!-- Pricing -->
                 <div>
-                    <label class="block text-[11px] font-bold text-zinc-400 uppercase tracking-widest mb-2">Starting Bid (₱)</label>
+                    <div class="flex items-center gap-1.5 mb-2">
+                        <label class="block text-[11px] font-bold text-zinc-400 uppercase tracking-widest">Starting Bid (₱)</label>
+                        <flux:tooltip content="The minimum initial amount required for collectors to place an opening bid on this vehicle lot." position="top">
+                            <svg viewBox="0 0 24 24" fill="none" class="h-3.5 w-3.5 text-zinc-400 hover:text-black transition-colors cursor-pointer" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4m0-4h.01" stroke-linecap="round"/></svg>
+                        </flux:tooltip>
+                    </div>
                     <input 
                         type="text" 
                         x-data="{ 
@@ -71,7 +96,12 @@
                 </div>
 
                 <div>
-                    <label class="block text-[11px] font-bold text-zinc-400 uppercase tracking-widest mb-2">Reserve Price (₱)</label>
+                    <div class="flex items-center gap-1.5 mb-2">
+                        <label class="block text-[11px] font-bold text-zinc-400 uppercase tracking-widest">Reserve Price (₱)</label>
+                        <flux:tooltip content="The confidential minimum threshold price required for the seller to successfully complete the sale." position="top">
+                            <svg viewBox="0 0 24 24" fill="none" class="h-3.5 w-3.5 text-zinc-400 hover:text-black transition-colors cursor-pointer" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4m0-4h.01" stroke-linecap="round"/></svg>
+                        </flux:tooltip>
+                    </div>
                     <input 
                         type="text" 
                         x-data="{ 

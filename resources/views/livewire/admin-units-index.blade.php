@@ -249,10 +249,18 @@
                                     </td>
                                 @else
                                     <td class="p-8">
-                                        <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full font-bold text-[10px] uppercase tracking-widest {{ $unit->isAvailable() ? 'bg-emerald-50 text-emerald-600' : 'bg-zinc-100 text-zinc-500' }}">
-                                            <span class="w-1.5 h-1.5 rounded-full {{ $unit->isAvailable() ? 'bg-emerald-500 animate-pulse' : 'bg-zinc-400' }}"></span>
-                                            {{ $unit->status }}
-                                        </span>
+                                        <div class="flex flex-col gap-1.5 items-start">
+                                            <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full font-bold text-[10px] uppercase tracking-widest {{ $unit->isAvailable() ? 'bg-emerald-50 text-emerald-600' : 'bg-zinc-100 text-zinc-500' }}">
+                                                <span class="w-1.5 h-1.5 rounded-full {{ $unit->isAvailable() ? 'bg-emerald-500 animate-pulse' : 'bg-zinc-400' }}"></span>
+                                                {{ $unit->status }}
+                                            </span>
+                                            @if ($unit->isAuctionCandidate())
+                                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full font-bold text-[9px] uppercase tracking-widest bg-amber-50 text-amber-800 border border-amber-200/80 shadow-xs" data-test="auction-candidate-badge">
+                                                    <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
+                                                    Auction Candidate ({{ $unit->daysInCurrentListing() }}d)
+                                                </span>
+                                            @endif
+                                        </div>
                                     </td>
                                 @endif
 

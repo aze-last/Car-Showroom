@@ -30,20 +30,6 @@ trait EnforcesCollectorAuthentication
 
     protected function redirectIfGoogleRequiredForAuctions(): bool
     {
-        /** @var \App\Models\User $user */
-        $user = Auth::user();
-
-        if ($user->isStaff()) {
-            return false;
-        }
-
-        if ($user->hasGoogleAccount()) {
-            return false;
-        }
-
-        session()->put('url.intended', url()->current());
-        $this->redirectRoute('auth.google.redirect');
-
-        return true;
+        return false;
     }
 }

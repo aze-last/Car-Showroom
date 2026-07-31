@@ -75,6 +75,39 @@
                     </div>
                 </div>
 
+                <!-- Deposit Security Check -->
+                @php
+                    $myDeposit = auth()->check() ? auth()->user()->bidDeposits()->where('auction_id', $auction->id)->first() : null;
+                    $isStaff = auth()->check() && auth()->user()->isStaff();
+                @endphp
+
+                @if(!$isStaff && (!$myDeposit || $myDeposit->status !== 'approved'))
+                    <div class="p-6 bg-amber-50/80 rounded-3xl border border-amber-200/80 space-y-3">
+                        <div class="flex items-center gap-2">
+                            <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5 text-amber-600 shrink-0" stroke="currentColor" stroke-width="2.5"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                            <p class="text-xs font-bold text-amber-900 uppercase tracking-wider">
+                                {{ $myDeposit?->status === 'pending' ? 'Deposit Pending Approval' : 'Security Deposit Required' }}
+                            </p>
+                        </div>
+                        <p class="text-[11px] text-amber-800 font-medium leading-relaxed">
+                            @if($myDeposit?->status === 'pending')
+                                Your ₱{{ number_format($myDeposit->amount) }} deposit slip was submitted and is undergoing admin verification.
+                            @else
+                                A refundable security deposit of ₱{{ number_format($deposit_amount) }} is required to participate in live bidding.
+                            @endif
+                        </p>
+                        @if(!$myDeposit || $myDeposit->status !== 'pending')
+                            <button 
+                                type="button"
+                                x-on:click="$flux.modal('join-auction-modal').show()"
+                                class="w-full mt-2 bg-black text-white text-[10px] font-black uppercase tracking-widest py-3.5 px-6 rounded-2xl hover:bg-zinc-800 transition-all shadow-md"
+                            >
+                                + Upload Security Deposit Slip
+                            </button>
+                        @endif
+                    </div>
+                @endif
+
                 <!-- Bidding Form -->
                 <div class="space-y-6 pt-6 border-t border-zinc-50">
                     <div class="flex items-center gap-3">
@@ -179,4 +212,177 @@
             </div>
         </div>
     </div>
+
+    <!-- Deposit Upload Modal -->
+    <flux:modal name="join-auction-modal" class="min-w-[22rem] md:min-w-[36rem] max-h-[85vh] overflow-y-auto rounded-[40px] border-none shadow-2xl">
+        <form wire:submit.prevent="submitDeposit" class="space-y-8 p-4">
+            <div class="space-y-6">
+                <div>
+                    <h2 class="text-xs font-black uppercase tracking-[0.3em] text-emerald-600 mb-2">Strict Collector Verification</h2>
+                    <p class="text-sm font-medium text-zinc-500 leading-relaxed">
+                        To participate in bidding for <strong class="text-black">{{ $auction->unit->name }}</strong>, complete identity verification and submit your refundable deposit.
+                    </p>
+                </div>
+
+                <div class="p-6 bg-zinc-50 rounded-[30px] border border-zinc-100 flex justify-between items-center">
+                    <div>
+                        <p class="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-1">Security Deposit</p>
+                        <h4 class="text-3xl font-bold text-black tracking-tighter">₱{{ number_format($deposit_amount) }}</h4>
+                    </div>
+                    <span class="text-[9px] font-black text-white bg-black px-4 py-2 rounded-full uppercase tracking-widest">100% Refundable</span>
+                </div>
+
+                <!-- 1. Full Name & Email -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 block px-1">Collector Name</label>
+                        <input wire:model="full_name" type="text" required placeholder="Full Legal Name" class="w-full h-12 bg-zinc-50 border-none rounded-2xl px-4 text-xs font-bold text-black focus:ring-2 focus:ring-black">
+                        @error('full_name') <span class="text-red-500 text-[10px] font-bold uppercase tracking-widest">{{ $message }}</span> @enderror
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 block px-1">Email Address</label>
+                        <input wire:model="email" type="email" required placeholder="name@domain.com" class="w-full h-12 bg-zinc-50 border-none rounded-2xl px-4 text-xs font-bold text-black focus:ring-2 focus:ring-black">
+                        @error('email') <span class="text-red-500 text-[10px] font-bold uppercase tracking-widest">{{ $message }}</span> @enderror
+                    </div>
+                </div>
+
+                <!-- 2. Mobile Phone & SMS Verification Code -->
+                <div class="space-y-3 p-5 bg-zinc-50 rounded-3xl border border-zinc-100">
+                    <div class="flex items-center justify-between">
+                        <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Mobile Phone Verification</label>
+                        @if($phone_is_verified)
+                            <span class="inline-flex items-center gap-1 text-[9px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                ✓ Verified
+                            </span>
+                        @endif
+                    </div>
+
+                    <div class="flex gap-2">
+                        <input wire:model="phone" type="text" placeholder="+63 9XX XXX XXXX" class="flex-1 h-12 bg-white border-none rounded-2xl px-4 text-xs font-bold text-black focus:ring-2 focus:ring-black" {{ $phone_is_verified ? 'disabled' : '' }}>
+                        @if(!$phone_is_verified)
+                            <button type="button" wire:click="sendVerificationCode" class="px-5 bg-black text-white text-[10px] font-bold uppercase tracking-widest rounded-2xl hover:bg-zinc-800 transition-all shrink-0">
+                                Send Code
+                            </button>
+                        @endif
+                    </div>
+                    @error('phone') <p class="text-red-500 text-[10px] font-bold uppercase tracking-widest">{{ $message }}</p> @enderror
+
+                    @if($generated_otp && !$phone_is_verified)
+                        <div class="pt-2 flex gap-2 animate-showroom-fade-up">
+                            <input wire:model="verification_code" type="text" placeholder="Enter 6-digit SMS code" class="flex-1 h-12 bg-white border-none rounded-2xl px-4 text-xs font-mono font-bold text-black focus:ring-2 focus:ring-black">
+                            <button type="button" wire:click="verifyCode" class="px-5 bg-emerald-600 text-white text-[10px] font-bold uppercase tracking-widest rounded-2xl hover:bg-emerald-700 transition-all shrink-0">
+                                Verify Code
+                            </button>
+                        </div>
+                        @error('verification_code') <p class="text-red-500 text-[10px] font-bold uppercase tracking-widest">{{ $message }}</p> @enderror
+                    @endif
+                </div>
+
+                <!-- 3. Delivery Address & Interactive Pinpoint Map -->
+                <div class="space-y-3">
+                    <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 block px-1">Physical Address & Map Pinpoint</label>
+                    <input wire:model="address" type="text" required placeholder="Full Street Address / City / Postal Code" class="w-full h-12 bg-zinc-50 border-none rounded-2xl px-4 text-xs font-bold text-black focus:ring-2 focus:ring-black">
+                    @error('address') <p class="text-red-500 text-[10px] font-bold uppercase tracking-widest">{{ $message }}</p> @enderror
+
+                    <div 
+                        wire:ignore
+                        x-data="{
+                            map: null,
+                            marker: null,
+                            initMap() {
+                                if (typeof L === 'undefined') {
+                                    setTimeout(() => this.initMap(), 150);
+                                    return;
+                                }
+                                const container = this.$refs.mapContainer;
+                                if (!container || container._leaflet_id) return;
+                                
+                                const lat = @js($latitude) || 14.5995;
+                                const lng = @js($longitude) || 120.9842;
+                                
+                                this.map = L.map(container, {
+                                    center: [lat, lng],
+                                    zoom: 14,
+                                    zoomControl: true
+                                });
+                                
+                                L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                                    maxZoom: 19,
+                                    attribution: '&copy; OpenStreetMap contributors'
+                                }).addTo(this.map);
+                                
+                                this.marker = L.marker([lat, lng], { draggable: true }).addTo(this.map);
+                                
+                                this.marker.on('dragend', (e) => {
+                                    const pos = this.marker.getLatLng();
+                                    $wire.updateCoordinates(pos.lat, pos.lng);
+                                });
+                                
+                                this.map.on('click', (e) => {
+                                    this.marker.setLatLng(e.latlng);
+                                    $wire.updateCoordinates(e.latlng.lat, e.latlng.lng);
+                                });
+
+                                const observer = new IntersectionObserver((entries) => {
+                                    entries.forEach(entry => {
+                                        if (entry.isIntersecting && this.map) {
+                                            setTimeout(() => this.map.invalidateSize(), 100);
+                                            setTimeout(() => this.map.invalidateSize(), 300);
+                                            setTimeout(() => this.map.invalidateSize(), 600);
+                                        }
+                                    });
+                                }, { threshold: 0.1 });
+                                observer.observe(container);
+                            }
+                        }"
+                        x-init="initMap()"
+                        class="space-y-1"
+                    >
+                        <div x-ref="mapContainer" class="h-52 w-full rounded-2xl overflow-hidden border border-zinc-200 relative z-0 shadow-inner" style="min-height: 208px; background-color: #e5e7eb;"></div>
+                        <div class="flex justify-between items-center px-1 text-[9px] font-mono text-zinc-400">
+                            <span>📍 GPS: {{ number_format($latitude, 5) }}, {{ number_format($longitude, 5) }}</span>
+                            <span class="font-sans font-bold text-zinc-400 uppercase tracking-wider">Drag marker or tap map</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. Deposit Slip Receipt Upload -->
+                <div class="space-y-3">
+                    <label class="block text-[10px] font-black text-zinc-400 uppercase tracking-widest px-2">Upload GCash / Bank Receipt</label>
+                    <div class="relative group">
+                        <input type="file" wire:model="proof_image" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
+                        <div class="p-8 border-2 border-dashed border-zinc-200 rounded-[30px] text-center group-hover:border-black transition-all bg-white relative">
+                            <div wire:loading wire:target="proof_image" class="absolute inset-0 bg-white/80 backdrop-blur-sm z-20 flex flex-col items-center justify-center rounded-[30px]">
+                                <div class="w-8 h-8 border-4 border-zinc-200 border-t-black rounded-full animate-spin"></div>
+                                <p class="text-[10px] font-black uppercase tracking-widest mt-4">Uploading Document...</p>
+                            </div>
+
+                            @if($proof_image)
+                                <div class="flex flex-col items-center gap-2">
+                                    <svg viewBox="0 0 24 24" fill="none" class="h-8 w-8 text-emerald-500" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17L4 12" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                    <span class="text-black text-xs font-bold">{{ $proof_image->getClientOriginalName() }}</span>
+                                </div>
+                            @else
+                                <svg viewBox="0 0 24 24" fill="none" class="h-8 w-8 mx-auto text-zinc-300 group-hover:text-black mb-2 transition-transform group-hover:-translate-y-1" stroke="currentColor" stroke-width="2"><path d="M12 16V6M12 6L8 10M12 6L16 10" stroke-linecap="round"/><path d="M5 15V17A2 2 0 0 0 7 19H17A2 2 0 0 0 19 17V15" stroke-linecap="round"/></svg>
+                                <p class="text-xs font-bold text-zinc-400 group-hover:text-black transition-colors">Tap to select or drag document</p>
+                            @endif
+                        </div>
+                    </div>
+                    @error('proof_image') <span class="text-red-600 text-[10px] font-black uppercase tracking-widest px-2">{{ $message }}</span> @enderror
+                </div>
+            </div>
+
+            <div class="flex gap-4 pt-4 border-t border-zinc-100">
+                <flux:modal.close>
+                    <button type="button" class="flex-1 bg-zinc-50 text-zinc-500 font-black uppercase tracking-widest text-[10px] py-5 px-8 rounded-2xl">Cancel</button>
+                </flux:modal.close>
+                <flux:spacer />
+                <button type="submit" wire:loading.attr="disabled" wire:target="submitDeposit" class="flex-2 bg-black text-white font-black uppercase tracking-widest text-[10px] py-5 px-12 rounded-2xl shadow-xl shadow-black/10 active:scale-95 disabled:opacity-50 transition-all">
+                    <span wire:loading.remove wire:target="submitDeposit">Submit Verification</span>
+                    <span wire:loading wire:target="submitDeposit">Processing...</span>
+                </button>
+            </div>
+        </form>
+    </flux:modal>
 </div>

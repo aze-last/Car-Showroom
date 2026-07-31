@@ -21,6 +21,7 @@ new class extends Component {
     public string $current_password = '';
     public string $password = '';
     public string $password_confirmation = '';
+    public string $logout_password = '';
 
     /**
      * Update the password for the currently authenticated user.
@@ -46,9 +47,25 @@ new class extends Component {
 
         $this->dispatch('password-updated');
     }
+
+    /**
+     * Log out of other browser sessions across all devices.
+     */
+    public function logoutOtherDevices(): void
+    {
+        $this->validate([
+            'logout_password' => ['required', 'current_password'],
+        ]);
+
+        Auth::logoutOtherDevices($this->logout_password);
+
+        $this->reset('logout_password');
+
+        $this->dispatch('logged-out-other-devices');
+    }
 }; ?>
 
-<section class="w-full">
+<section class="w-full space-y-12">
     @include('partials.settings-heading')
 
     <flux:heading class="sr-only">{{ __('Password Settings') }}</flux:heading>
@@ -101,6 +118,37 @@ new class extends Component {
 
                 <x-action-message class="text-emerald-600 font-black text-[10px] uppercase tracking-[0.2em]" on="password-updated">
                     {{ __('Password Updated') }}
+                </x-action-message>
+            </div>
+        </form>
+    </x-pages::settings.layout>
+
+    <x-pages::settings.layout :heading="__('Log Out Other Browser Sessions')" :subheading="__('Please enter your password to confirm you would like to log out of your other browser sessions across all of your devices.')">
+        <form method="POST" wire:submit="logoutOtherDevices" class="mt-6 space-y-6">
+            <div>
+                <label class="block text-xs font-black uppercase tracking-widest text-zinc-400 mb-2">{{ __('Current Password') }}</label>
+                <input
+                    wire:model="logout_password"
+                    type="password"
+                    required
+                    autocomplete="current-password"
+                    class="admin-input !h-14 !bg-zinc-50/50 !text-zinc-900 font-bold"
+                />
+                @error('logout_password') <p class="mt-2 text-xs font-bold text-red-600 uppercase tracking-widest">{{ $message }}</p> @enderror
+            </div>
+
+            <div class="flex items-center gap-6 pt-4">
+                <button 
+                    type="submit" 
+                    class="admin-btn-primary min-w-[220px] !h-14 shadow-2xl shadow-zinc-200" 
+                    data-test="logout-other-devices-button"
+                >
+                    <span wire:loading wire:target="logoutOtherDevices" class="h-4 w-4 animate-spin rounded-full border-2 border-white/20 border-t-white mr-2"></span>
+                    {{ __('Log Out Other Sessions') }}
+                </button>
+
+                <x-action-message class="text-emerald-600 font-black text-[10px] uppercase tracking-[0.2em]" on="logged-out-other-devices">
+                    {{ __('Logged Out Other Sessions') }}
                 </x-action-message>
             </div>
         </form>

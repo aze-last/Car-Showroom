@@ -66,117 +66,138 @@
                 @endif
             </div>
 
-            <nav class="flex-grow">
-                <ul class="space-y-2">
-                    @if ($isCollector)
-                        <li>
-                            <a href="{{ route('garage') }}" class="flex items-center gap-4 px-4 py-4 rounded-2xl transition-all {{ request()->routeIs('garage') ? 'bg-white text-black ambient-shadow font-bold' : 'text-zinc-400 hover:text-black' }}">
-                                <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9z"/></svg>
-                                <span class="text-[12px] uppercase tracking-widest">My Garage</span>
-                            </a>
-                        </li>
-                    @endif
+            <nav class="flex-grow space-y-6 overflow-y-auto pr-1">
+                @if ($isCollector)
+                    <div>
+                        <a href="{{ route('garage') }}" class="flex items-center gap-3 px-4 py-3 rounded-2xl transition-all {{ request()->routeIs('garage') ? 'bg-white text-black ambient-shadow font-bold' : 'text-zinc-400 hover:text-black' }}">
+                            <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9z"/></svg>
+                            <span class="text-[11px] uppercase tracking-widest">My Garage</span>
+                        </a>
+                    </div>
+                @endif
 
-                    @if ($isAdmin)
-                        <li>
-                            <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-4 px-4 py-4 rounded-2xl transition-all {{ request()->routeIs('admin.dashboard') ? 'bg-white text-black ambient-shadow font-bold' : 'text-zinc-400 hover:text-black' }}">
-                                <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="2"><path d="M3 12L12 4L21 12V20A1 1 0 0 1 20 21H4A1 1 0 0 1 3 20V12Z" stroke-linejoin="round"/></svg>
-                                <span class="text-[12px] uppercase tracking-widest">Dashboard</span>
-                            </a>
-                        </li>
-                    @endif
+                {{-- DASHBOARD ZONE --}}
+                @if ($isAdmin)
+                    <div>
+                        <div class="px-4 mb-2 text-[10px] font-bold uppercase tracking-widest text-zinc-400">Dashboard</div>
+                        <ul class="space-y-1">
+                            <li>
+                                <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3 px-4 py-3 rounded-2xl transition-all {{ request()->routeIs('admin.dashboard') ? 'bg-white text-black ambient-shadow font-bold' : 'text-zinc-400 hover:text-black hover:bg-white/50' }}">
+                                    <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="2"><path d="M3 12L12 4L21 12V20A1 1 0 0 1 20 21H4A1 1 0 0 1 3 20V12Z" stroke-linejoin="round"/></svg>
+                                    <span class="text-[11px] uppercase tracking-widest">Overview</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                @endif
 
-                    @if ($isStaff)
-                        <li>
-                            <a href="{{ route('admin.units.index') }}" class="flex items-center gap-4 px-4 py-4 rounded-2xl transition-all {{ request()->routeIs('admin.units.*') ? 'bg-white text-black ambient-shadow font-bold' : 'text-zinc-400 hover:text-black' }}">
-                                <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="2"><path d="M4 8.5L12 4L20 8.5V15.5L12 20L4 15.5V8.5Z" stroke-linejoin="round"/></svg>
-                                <span class="text-[12px] uppercase tracking-widest">Inventory</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{ route('admin.messages') }}" class="flex items-center justify-between gap-4 px-4 py-4 rounded-2xl transition-all {{ request()->routeIs('admin.messages') ? 'bg-white text-black shadow-[0_8px_30px_rgb(0,0,0,0.04)] font-bold' : 'text-zinc-400 hover:text-black hover:bg-white/50' }}">
-                                <div class="flex items-center gap-4">
-                                    <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="2"><path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 0 1-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                                    <span class="text-[12px] uppercase tracking-[0.2em]">Messages</span>
-                                </div>
-                                <livewire:admin.⚡message-badge />
-                            </a>
-                        </li>
-                    @endif
+                {{-- OPERATIONS ZONE --}}
+                @if ($isStaff)
+                    <div>
+                        <div class="px-4 mb-2 text-[10px] font-bold uppercase tracking-widest text-zinc-400">Operations</div>
+                        <ul class="space-y-1">
+                            <li>
+                                <a href="{{ route('admin.units.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-2xl transition-all {{ request()->routeIs('admin.units.*') ? 'bg-white text-black ambient-shadow font-bold' : 'text-zinc-400 hover:text-black hover:bg-white/50' }}">
+                                    <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="2"><path d="M4 8.5L12 4L20 8.5V15.5L12 20L4 15.5V8.5Z" stroke-linejoin="round"/></svg>
+                                    <span class="text-[11px] uppercase tracking-widest">Inventory</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ route('admin.messages') }}" class="flex items-center justify-between gap-3 px-4 py-3 rounded-2xl transition-all {{ request()->routeIs('admin.messages') ? 'bg-white text-black ambient-shadow font-bold' : 'text-zinc-400 hover:text-black hover:bg-white/50' }}">
+                                    <div class="flex items-center gap-3">
+                                        <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="2"><path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 0 1-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                        <span class="text-[11px] uppercase tracking-widest">Messages</span>
+                                    </div>
+                                    <livewire:admin.⚡message-badge />
+                                </a>
+                            </li>
+                            @if ($isAdmin)
+                                <li>
+                                    <a href="{{ route('admin.inquiries.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-2xl transition-all {{ request()->routeIs('admin.inquiries.*') ? 'bg-white text-black ambient-shadow font-bold' : 'text-zinc-400 hover:text-black hover:bg-white/50' }}">
+                                        <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="2"><path d="M21 15V19A2 2 0 0 1 19 21H5A2 2 0 0 1 3 19V15M7 10L12 15L17 10M12 15V3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                        <span class="text-[11px] uppercase tracking-widest">Inquiries</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ route('admin.categories.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-2xl transition-all {{ request()->routeIs('admin.categories.*') ? 'bg-white text-black ambient-shadow font-bold' : 'text-zinc-400 hover:text-black hover:bg-white/50' }}">
+                                        <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="2"><path d="M4 7H20M4 12H20M4 17H14" stroke-linecap="round"/></svg>
+                                        <span class="text-[11px] uppercase tracking-widest">Categories</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ route('admin.auctions.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-2xl transition-all {{ request()->routeIs('admin.auctions.*') ? 'bg-white text-black ambient-shadow font-bold' : 'text-zinc-400 hover:text-black hover:bg-white/50' }}">
+                                        <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="2"><path d="M12 8V12L15 15M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                        <span class="text-[11px] uppercase tracking-widest">Auctions</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ route('admin.deposits.index') }}" class="relative flex items-center justify-between gap-3 px-4 py-3 rounded-2xl transition-all {{ request()->routeIs('admin.deposits.*') ? 'bg-white text-black ambient-shadow font-bold' : 'text-zinc-400 hover:text-black hover:bg-white/50' }}">
+                                        <div class="flex items-center gap-3">
+                                            <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="2"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                            <span class="text-[11px] uppercase tracking-widest">Deposits</span>
+                                        </div>
+                                        <livewire:deposit-badge />
+                                    </a>
+                                </li>
+                            @endif
+                        </ul>
+                    </div>
+                @endif
 
-                    @if ($isAdmin)
-                        {{-- Inquiries Hidden --}}
-                        <li>
-                            <a href="{{ route('admin.categories.index') }}" class="flex items-center gap-4 px-4 py-4 rounded-2xl transition-all {{ request()->routeIs('admin.categories.*') ? 'bg-white text-black ambient-shadow font-bold' : 'text-zinc-400 hover:text-black' }}">
-                                <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="2"><path d="M4 7H20M4 12H20M4 17H14" stroke-linecap="round"/></svg>
-                                <span class="text-[12px] uppercase tracking-widest">Categories</span>
-                            </a>
-                        </li>
+                {{-- PEOPLE ZONE --}}
+                @if ($isAdmin)
+                    <div>
+                        <div class="px-4 mb-2 text-[10px] font-bold uppercase tracking-widest text-zinc-400">People</div>
+                        <ul class="space-y-1">
+                            <li>
+                                <a href="{{ route('admin.customers.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-2xl transition-all {{ request()->routeIs('admin.customers.*') ? 'bg-white text-black ambient-shadow font-bold' : 'text-zinc-400 hover:text-black hover:bg-white/50' }}">
+                                    <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                                    <span class="text-[11px] uppercase tracking-widest">Customers</span>
+                                </a>
+                            </li>
+                            @if ($isOwner)
+                                <li>
+                                    <a href="{{ route('admin.employees.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-2xl transition-all {{ request()->routeIs('admin.employees.*') ? 'bg-white text-black ambient-shadow font-bold' : 'text-zinc-400 hover:text-black hover:bg-white/50' }}">
+                                        <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="2"><path d="M17 21V19A4 4 0 0 0 13 15H5A4 4 0 0 0 1 19V21M9 11A4 4 0 1 0 9 3A4 4 0 0 0 9 11ZM23 21V19A4 4 0 0 0 19.33 15.17M16 3.13A4 4 0 0 1 16 11" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                        <span class="text-[11px] uppercase tracking-widest">Employees</span>
+                                    </a>
+                                </li>
+                            @endif
+                        </ul>
+                    </div>
 
-                        <li>
-                            <a href="{{ route('admin.inquiries.index') }}" class="flex items-center gap-4 px-4 py-4 rounded-2xl transition-all {{ request()->routeIs('admin.inquiries.*') ? 'bg-white text-black ambient-shadow font-bold' : 'text-zinc-400 hover:text-black' }}">
-                                <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="2"><path d="M21 15V19A2 2 0 0 1 19 21H5A2 2 0 0 1 3 19V15M7 10L12 15L17 10M12 15V3" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                                <span class="text-[12px] uppercase tracking-widest">Inquiries</span>
-                            </a>
-                        </li>
-
-                        <li>
-                            <a href="{{ route('admin.auctions.index') }}" class="flex items-center gap-4 px-4 py-4 rounded-2xl transition-all {{ request()->routeIs('admin.auctions.*') ? 'bg-white text-black ambient-shadow font-bold' : 'text-zinc-400 hover:text-black' }}">
-                                <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="2"><path d="M12 8V12L15 15M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                                <span class="text-[12px] uppercase tracking-widest">Auctions</span>
-                            </a>
-                        </li>
-
-                        <li>
-                            <a href="{{ route('admin.customers.index') }}" class="flex items-center gap-4 px-4 py-4 rounded-2xl transition-all {{ request()->routeIs('admin.customers.*') ? 'bg-white text-black ambient-shadow font-bold' : 'text-zinc-400 hover:text-black' }}">
-                                <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                                <span class="text-[12px] uppercase tracking-widest">Customers</span>
-                            </a>
-                        </li>
-
-                        <li>
-                            <a href="{{ route('admin.deposits.index') }}" class="relative flex items-center gap-4 px-4 py-4 rounded-2xl transition-all {{ request()->routeIs('admin.deposits.*') ? 'bg-white text-black ambient-shadow font-bold' : 'text-zinc-400 hover:text-black' }}">
-                                <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="2"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                                <span class="text-[12px] uppercase tracking-widest">Deposits</span>
-                                <livewire:deposit-badge />
-                            </a>
-                        </li>
-
-                    @if ($isOwner)
-                        <li>
-                            <a href="{{ route('admin.employees.index') }}" class="flex items-center gap-4 px-4 py-4 rounded-2xl transition-all {{ request()->routeIs('admin.employees.*') ? 'bg-white text-black ambient-shadow font-bold' : 'text-zinc-400 hover:text-black' }}">
-                                <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="2"><path d="M17 21V19A4 4 0 0 0 13 15H5A4 4 0 0 0 1 19V21M9 11A4 4 0 1 0 9 3A4 4 0 0 0 9 11ZM23 21V19A4 4 0 0 0 19.33 15.17M16 3.13A4 4 0 0 1 16 11" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                                <span class="text-[12px] uppercase tracking-widest">Employees</span>
-                            </a>
-                        </li>
-                    @endif
-
-                         <li>
-                            <a href="{{ route('admin.logs.index') }}" class="flex items-center gap-4 px-4 py-4 rounded-2xl transition-all {{ request()->routeIs('admin.logs.*') ? 'bg-white text-black ambient-shadow font-bold' : 'text-zinc-400 hover:text-black' }}">
-                                <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="2"><path d="M6 6H18V18H6V6Z" stroke-linejoin="round"/><path d="M9 10H15M9 14H13" stroke-linecap="round"/></svg>
-                                <span class="text-[12px] uppercase tracking-widest">Audit Trail</span>
-                            </a>
-                        </li>
-                    @endif
-                </ul>
+                    {{-- REPORTS ZONE --}}
+                    <div>
+                        <div class="px-4 mb-2 text-[10px] font-bold uppercase tracking-widest text-zinc-400">Reports</div>
+                        <ul class="space-y-1">
+                            <li>
+                                <a href="{{ route('admin.logs.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-2xl transition-all {{ request()->routeIs('admin.logs.*') ? 'bg-white text-black ambient-shadow font-bold' : 'text-zinc-400 hover:text-black hover:bg-white/50' }}">
+                                    <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="2"><path d="M6 6H18V18H6V6Z" stroke-linejoin="round"/><path d="M9 10H15M9 14H13" stroke-linecap="round"/></svg>
+                                    <span class="text-[11px] uppercase tracking-widest">Audit Trail</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                @endif
             </nav>
 
-            <div class="mt-auto pt-8 border-t border-gallery-outline/10 space-y-4">
-                <a href="{{ route('profile.edit') }}" class="flex items-center gap-4 px-4 py-3 rounded-2xl {{ request()->routeIs('profile.edit') || request()->routeIs('user-password.edit') || request()->routeIs('two-factor.show') ? 'bg-white text-black font-bold ambient-shadow' : 'text-zinc-400 hover:text-black' }} transition-all">
+            <div class="mt-auto pt-6 border-t border-gallery-outline/10 space-y-2">
+                <div class="px-4 mb-1 text-[10px] font-bold uppercase tracking-widest text-zinc-400">Settings</div>
+                <a href="{{ route('profile.edit') }}" class="flex items-center gap-3 px-4 py-2.5 rounded-2xl {{ request()->routeIs('profile.edit') || request()->routeIs('user-password.edit') || request()->routeIs('two-factor.show') ? 'bg-white text-black font-bold ambient-shadow' : 'text-zinc-400 hover:text-black' }} transition-all">
                     <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                    <span class="text-[12px] uppercase tracking-widest">Account Settings</span>
+                    <span class="text-[11px] uppercase tracking-widest">Account Settings</span>
                 </a>
                 @if ($isAdmin)
-                    <a href="{{ route('admin.settings.shop') }}" class="flex items-center gap-4 px-4 py-3 rounded-2xl {{ request()->routeIs('admin.settings.*') ? 'bg-white text-black font-bold ambient-shadow' : 'text-zinc-400 hover:text-black' }} transition-all">
+                    <a href="{{ route('admin.settings.shop') }}" class="flex items-center gap-3 px-4 py-2.5 rounded-2xl {{ request()->routeIs('admin.settings.*') || request()->routeIs('admin.customization') ? 'bg-white text-black font-bold ambient-shadow' : 'text-zinc-400 hover:text-black' }} transition-all">
                         <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-                        <span class="text-[12px] uppercase tracking-widest">System Master</span>
+                        <span class="text-[11px] uppercase tracking-widest">System Master</span>
                     </a>
                 @endif
                 <form method="POST" action="{{ route('logout') }}" x-data>
                     @csrf
-                    <button type="submit" class="w-full flex items-center gap-4 px-4 py-3 rounded-2xl text-zinc-400 hover:text-black transition-all">
+                    <button type="submit" class="w-full flex items-center gap-3 px-4 py-2.5 rounded-2xl text-zinc-400 hover:text-black transition-all">
                         <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
-                        <span class="text-[12px] uppercase tracking-widest">Sign Out</span>
+                        <span class="text-[11px] uppercase tracking-widest">Sign Out</span>
                     </button>
                 </form>
             </div>
@@ -192,6 +213,7 @@
         </main>
 
         @include('partials.toast-center')
+        <livewire:admin-global-search />
 
         @fluxScripts
         <script>

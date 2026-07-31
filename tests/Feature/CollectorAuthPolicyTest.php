@@ -59,7 +59,7 @@ test('unverified collectors cannot send chat inquiries', function () {
         ->assertRedirect(route('verification.notice'));
 });
 
-test('password-only collectors are redirected to google before joining an auction', function () {
+test('password-only collectors can open the auction join modal without google', function () {
     $user = User::factory()->create();
     $auction = createLiveAuction();
 
@@ -67,7 +67,7 @@ test('password-only collectors are redirected to google before joining an auctio
 
     Livewire::test(\App\Livewire\Public\AuctionHall::class)
         ->call('openJoinModal', $auction->id)
-        ->assertRedirect(route('auth.google.redirect'));
+        ->assertSet('selectedAuction.id', $auction->id);
 });
 
 test('google-linked collectors can open the auction join modal', function () {
@@ -81,16 +81,26 @@ test('google-linked collectors can open the auction join modal', function () {
         ->assertSet('selectedAuction.id', $auction->id);
 });
 
-test('password-only collectors are redirected to google before placing a bid', function () {
+test('password-only collectors can place bids without google requirement', function () {
     $user = User::factory()->create();
     $auction = createLiveAuction();
+
+    \App\Models\BidDeposit::query()->create([
+        'user_id' => $user->id,
+        'auction_id' => $auction->id,
+        'amount' => 50_000,
+        'proof_image' => 'deposits/test.jpg',
+        'status' => 'approved',
+    ]);
 
     $this->actingAs($user);
 
     Livewire::test(\App\Livewire\Public\AuctionRoom::class, ['auction' => $auction])
         ->set('bidAmount', 600_000)
         ->call('placeBid')
-        ->assertRedirect(route('auth.google.redirect'));
+        ->assertSet('message', 'Bid placed successfully!');
+
+    expect($auction->fresh()->current_bid_php)->toBe(600_000);
 });
 
 test('google-linked collectors can place bids', function () {

@@ -128,7 +128,7 @@ class User extends Authenticatable implements MustVerifyEmail
             return false;
         }
 
-        return $this->isStaff() || $this->hasGoogleAccount();
+        return ! $this->isBlocked();
     }
 
     /**

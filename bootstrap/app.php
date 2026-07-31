@@ -18,6 +18,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->trustProxies(at: '*');
         $middleware->web(append: [
+            \App\Http\Middleware\EnforceHttps::class,
             EnsureUserNotBlocked::class,
         ]);
         $middleware->alias([
@@ -26,6 +27,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'google' => EnsureUserHasGoogleAccount::class,
             'staff' => EnsureUserIsStaff::class,
             'not_blocked' => EnsureUserNotBlocked::class,
+            'no_store' => \App\Http\Middleware\SetNoStoreCacheHeaders::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

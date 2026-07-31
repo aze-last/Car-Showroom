@@ -14,6 +14,13 @@ class BidDeposit extends Model
         'proof_image',
         'status',
         'admin_note',
+        'full_name',
+        'phone',
+        'phone_verified_at',
+        'email',
+        'address',
+        'latitude',
+        'longitude',
     ];
 
     public function user(): BelongsTo

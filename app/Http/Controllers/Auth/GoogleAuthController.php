@@ -23,6 +23,7 @@ class GoogleAuthController extends Controller
             $user = $googleAuthService->resolveUser($googleUser);
 
             Auth::login($user, remember: true);
+            request()->session()->regenerate();
 
             return redirect()->intended(route('dashboard'));
         } catch (ValidationException $exception) {

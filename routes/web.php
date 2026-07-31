@@ -69,7 +69,7 @@ Route::get('/terms', function () {
 /**
  * Admin & Staff Routes
  */
-Route::middleware(['auth', 'verified'])
+Route::middleware(['auth', 'verified', 'no_store'])
     ->prefix('admin')
     ->name('admin.')
     ->group(function (): void {

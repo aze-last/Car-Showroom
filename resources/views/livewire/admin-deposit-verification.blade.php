@@ -23,12 +23,22 @@
                         <tr class="hover:bg-zinc-50/50 transition-colors">
                             <td class="px-10 py-8">
                                 <div class="flex items-center gap-4">
-                                    <div class="w-12 h-12 rounded-full bg-zinc-900 text-white flex items-center justify-center text-xs font-black">
-                                        {{ strtoupper(substr($deposit->user->name, 0, 2)) }}
+                                    <div class="w-12 h-12 rounded-full bg-zinc-900 text-white flex items-center justify-center text-xs font-black shrink-0">
+                                        {{ strtoupper(substr($deposit->full_name ?: $deposit->user->name, 0, 2)) }}
                                     </div>
                                     <div>
-                                        <p class="text-sm font-bold text-black">{{ $deposit->user->name }}</p>
-                                        <p class="text-[10px] text-zinc-400 font-medium">{{ $deposit->user->email }}</p>
+                                        <p class="text-sm font-bold text-black">{{ $deposit->full_name ?: $deposit->user->name }}</p>
+                                        <p class="text-[10px] text-zinc-400 font-medium">{{ $deposit->email ?: $deposit->user->email }}</p>
+                                        @if($deposit->phone)
+                                            <p class="text-[10px] font-mono text-emerald-700 font-bold mt-1 flex items-center gap-1">
+                                                <span>✓ {{ $deposit->phone }}</span>
+                                            </p>
+                                        @endif
+                                        @if($deposit->address)
+                                            <p class="text-[10px] text-zinc-500 font-medium mt-0.5 max-w-xs truncate" title="{{ $deposit->address }}">
+                                                📍 {{ $deposit->address }}
+                                            </p>
+                                        @endif
                                     </div>
                                 </div>
                             </td>

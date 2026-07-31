@@ -191,7 +191,7 @@ new class extends Component {
     <flux:heading class="sr-only">{{ __('Two-Factor Authentication Settings') }}</flux:heading>
 
     <x-pages::settings.layout
-        :heading="__('Two-Step Verification')"
+        :heading="__('Two Factor Authentication')"
         :subheading="__('Enable or disable two-step login security')"
     >
         <div class="flex flex-col w-full mx-auto space-y-6 text-sm" wire:cloak>

@@ -4,6 +4,15 @@
     </div>
 
     <div class="flex items-center gap-6">
+        <button 
+            x-data 
+            x-on:click="$dispatch('openGlobalSearch')"
+            class="flex items-center gap-3 bg-zinc-100/80 hover:bg-zinc-100 text-zinc-500 hover:text-zinc-900 px-4 py-2 rounded-xl text-xs font-bold transition-all border border-zinc-200/60"
+        >
+            <svg viewBox="0 0 24 24" fill="none" class="h-4 w-4" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="7"/><path d="M20 20L16.65 16.65" stroke-linecap="round"/></svg>
+            <span>Search...</span>
+            <kbd class="font-mono text-[9px] bg-white text-zinc-400 px-1.5 py-0.5 rounded border border-zinc-200">Ctrl K</kbd>
+        </button>
         <livewire:public.notification-bell />
         <div class="h-10 w-px bg-gallery-outline/10"></div>
         
@@ -12,7 +21,7 @@
                 <div class="flex items-center gap-4 text-left">
                     <div class="hidden lg:block">
                         <p class="text-xs font-bold text-black leading-none">{{ auth()->user()->name }}</p>
-                        <p class="text-[9px] text-zinc-400 font-bold uppercase tracking-widest mt-1">Institutional Admin</p>
+                        <p class="text-[9px] text-zinc-400 font-bold uppercase tracking-widest mt-1">{{ auth()->user()?->isOwner() ? 'Superadmin Owner' : (auth()->user()?->is_admin ? 'Admin Executive' : 'Staff Operations') }}</p>
                     </div>
                     <div class="h-10 w-10 rounded-full bg-zinc-900 text-white flex items-center justify-center font-bold text-xs shadow-lg ring-4 ring-white">
                         {{ auth()->user()->initials() }}
@@ -30,7 +39,7 @@
                 </flux:menu.item>
                 
                 <flux:menu.item href="{{ route('user-password.edit') }}" wire:navigate icon="key" class="rounded-xl font-bold text-xs py-3 uppercase tracking-widest">
-                    Manage Password
+                    Change Password
                 </flux:menu.item>
 
                 <flux:separator variant="subtle" class="my-2" />
